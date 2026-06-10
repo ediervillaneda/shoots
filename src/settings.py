@@ -103,7 +103,7 @@ SPRITE_PU_EXTRA_LIFE = "ship/bonus_life.png"
 # Shot sprites (from assets/Shots/)
 SPRITE_SHOT1 = "Shots/Shot1/shot1_4.png"
 SPRITE_SHOT2 = "Shots/Shot2/shot2_4.png"
-SPRITE_SHOT4 = "Shots/Shot4/shot3_asset.png"
+SPRITE_SHOT4 = "Shots/Shot4/shot4_asset.png"
 
 # Bullet sizes per shot level
 BULLET_W_L1 = 50
