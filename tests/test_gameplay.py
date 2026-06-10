@@ -1,9 +1,12 @@
 import pygame
+from unittest.mock import patch
 from src.scenes.gameplay import GameplayScene
 from src.entities.scout import Scout
 from src.entities.fighter import Fighter
 from src.entities.bullet import Bullet
 from src.entities.enemy_bullet import EnemyBullet
+from src.entities.powerup import PowerUp
+from src.entities.kamikaze import Kamikaze
 from src.settings import SCOUT_POINTS, PLAYER_LIVES, SCREEN_H, WAVE_SPAWN_MIN, FIGHTER_HP, BULLET_DAMAGE
 
 
@@ -227,7 +230,8 @@ def test_game_over_when_lives_reach_zero():
     scene.all_sprites.add(scout)
 
     scene.spawn_system._last_spawn = pygame.time.get_ticks()
-    scene.update(0.0)
+    with patch("src.scenes.gameplay.random.random", return_value=1.0):  # no drop
+        scene.update(0.0)
     assert scene.state == "game_over"
 
 
@@ -267,9 +271,6 @@ def test_spawn_system_adds_enemy_to_groups():
     assert len(scene.enemies) > initial_enemies
 
 
-from unittest.mock import patch
-
-
 def test_powerup_group_exists_after_reset():
     scene = GameplayScene()
     scene._reset()
@@ -296,7 +297,6 @@ def test_bullet_kill_drops_powerup_when_lucky():
 
 
 def test_player_picks_up_powerup():
-    from src.entities.powerup import PowerUp
     scene = GameplayScene()
     scene._reset()
     pu = PowerUp("rapid_fire", scene.player.rect.centerx, scene.player.rect.centery)
@@ -310,7 +310,6 @@ def test_player_picks_up_powerup():
 
 
 def test_kamikaze_gets_target_on_spawn():
-    from src.entities.kamikaze import Kamikaze
     scene = GameplayScene()
     scene._reset()
     scene.spawn_system._last_spawn = pygame.time.get_ticks() - WAVE_SPAWN_MIN
