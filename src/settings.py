@@ -63,3 +63,23 @@ WAVE_SPAWN_MIN_CAP   = 600      # mínimo spawn interval
 WAVE_FIGHTER_BASE    = 30       # % probabilidad Fighter en oleada 0
 WAVE_FIGHTER_INC     = 10       # % adicional por oleada
 WAVE_FIGHTER_CAP     = 80       # % máximo Fighter
+
+# Kamikaze
+KAMIKAZE_SPEED  = 200
+KAMIKAZE_W      = 48
+KAMIKAZE_H      = 48
+KAMIKAZE_HP     = 2
+KAMIKAZE_POINTS = 500
+
+# Kamikaze wave scaling
+WAVE_KAMIKAZE_BASE = 10   # % probability at wave 0
+WAVE_KAMIKAZE_INC  = 5    # % added per wave
+WAVE_KAMIKAZE_CAP  = 40   # % maximum
+
+# Power-ups
+POWERUP_SPEED           = 150     # px/s downward
+POWERUP_W               = 32
+POWERUP_H               = 32
+POWERUP_DROP_CHANCE     = 0.20    # 20% per kill
+PLAYER_LIVES_MAX        = 5
+RAPIDFIRE_COOLDOWN_MULT = 0.4     # BULLET_COOLDOWN × 0.4 with RapidFire active
