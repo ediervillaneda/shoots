@@ -169,10 +169,11 @@ def test_gun_upgrade_twice_increments_to_triple():
 
 
 def test_gun_upgrade_capped_at_triple():
+    from src.settings import SHOT_LEVEL_MAX
     player = Player()
-    for _ in range(5):
+    for _ in range(10):
         player.apply_powerup("gun_upgrade")
-    assert player.shot_level == 3
+    assert player.shot_level == SHOT_LEVEL_MAX
 
 
 def test_apply_powerup_extra_life_increments_lives():
@@ -284,3 +285,139 @@ def test_take_damage_resets_shot_level():
     assert player.shot_level == 3
     player.take_damage(0)
     assert player.shot_level == 1
+
+
+# --- v0.7: rocket powerup ---
+
+def test_shoot_rocket_without_powerup_returns_empty():
+    from src.entities.rocket import Rocket
+    player = Player()
+    assert player.shoot_rocket(0) == []
+
+
+def test_shoot_rocket_with_powerup_returns_rocket():
+    from src.entities.rocket import Rocket
+    from src.settings import ROCKET_COOLDOWN
+    player = Player()
+    player.apply_powerup("rocket")
+    rockets = player.shoot_rocket(ROCKET_COOLDOWN)
+    assert len(rockets) == 1
+    assert isinstance(rockets[0], Rocket)
+
+
+def test_shoot_rocket_respects_cooldown():
+    from src.settings import ROCKET_COOLDOWN
+    player = Player()
+    player.apply_powerup("rocket")
+    player.shoot_rocket(ROCKET_COOLDOWN)
+    assert player.shoot_rocket(ROCKET_COOLDOWN) == []
+
+
+def test_shoot_rocket_spawns_at_left_side():
+    from src.entities.rocket import Rocket
+    from src.settings import ROCKET_COOLDOWN
+    player = Player()
+    player.apply_powerup("rocket")
+    rockets = player.shoot_rocket(ROCKET_COOLDOWN)
+    # left-side rocket: centerx at player.rect.left, bottom at player.rect.top
+    assert rockets[0].rect.centerx == player.rect.left
+    assert rockets[0].rect.bottom == player.rect.top
+
+
+# --- v0.8: rocket_count, dual rockets, shot levels 4-6 ---
+
+def test_rocket_count_starts_at_zero():
+    player = Player()
+    assert player.rocket_count == 0
+
+
+def test_apply_rocket_increments_count():
+    player = Player()
+    player.apply_powerup("rocket")
+    assert player.rocket_count == 1
+
+
+def test_apply_rocket_twice_gives_count_two():
+    player = Player()
+    player.apply_powerup("rocket")
+    player.apply_powerup("rocket")
+    assert player.rocket_count == 2
+
+
+def test_apply_rocket_capped_at_two():
+    from src.settings import ROCKET_MAX_COUNT
+    player = Player()
+    for _ in range(5):
+        player.apply_powerup("rocket")
+    assert player.rocket_count == ROCKET_MAX_COUNT
+
+
+def test_shoot_rocket_fires_two_when_count_two():
+    from src.entities.rocket import Rocket
+    from src.settings import ROCKET_COOLDOWN
+    player = Player()
+    player.apply_powerup("rocket")
+    player.apply_powerup("rocket")
+    rockets = player.shoot_rocket(ROCKET_COOLDOWN)
+    assert len(rockets) == 2
+
+
+def test_shoot_two_rockets_spawn_at_sides():
+    from src.entities.rocket import Rocket
+    from src.settings import ROCKET_COOLDOWN
+    player = Player()
+    player.apply_powerup("rocket")
+    player.apply_powerup("rocket")
+    rockets = player.shoot_rocket(ROCKET_COOLDOWN)
+    assert rockets[0].rect.centerx == player.rect.left
+    assert rockets[1].rect.centerx == player.rect.right
+
+
+def test_take_damage_resets_rocket_count():
+    player = Player()
+    player.apply_powerup("rocket")
+    player.apply_powerup("rocket")
+    player.take_damage(0)
+    assert player.rocket_count == 0
+
+
+def test_rocket_not_in_active_powerups():
+    player = Player()
+    player.apply_powerup("rocket")
+    assert "rocket" not in player.active_powerups
+
+
+def test_shot_level_max_is_six():
+    from src.settings import SHOT_LEVEL_MAX
+    assert SHOT_LEVEL_MAX == 6
+
+
+def test_gun_upgrade_to_level_four():
+    player = Player()
+    for _ in range(3):
+        player.apply_powerup("gun_upgrade")
+    assert player.shot_level == 4
+
+
+def test_shoot_level_four_returns_three_bullets():
+    player = Player()
+    for _ in range(3):
+        player.apply_powerup("gun_upgrade")
+    bullets = player.shoot(0)
+    assert len(bullets) == 3
+
+
+def test_shoot_level_five_returns_five_bullets():
+    player = Player()
+    for _ in range(4):
+        player.apply_powerup("gun_upgrade")
+    bullets = player.shoot(0)
+    assert len(bullets) == 5
+
+
+def test_shoot_level_six_returns_five_bullets():
+    player = Player()
+    for _ in range(5):
+        player.apply_powerup("gun_upgrade")
+    bullets = player.shoot(0)
+    assert len(bullets) == 5

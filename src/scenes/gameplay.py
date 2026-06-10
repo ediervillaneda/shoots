@@ -237,6 +237,11 @@ class GameplayScene:
             icon = pygame.transform.scale(assets.get(POWERUP_ASSETS[kind]), (24, 24))
             screen.blit(icon, (x, SCREEN_H - 24 - HUD_MARGIN))
             x += 28
+        if self.player.rocket_count > 0:
+            rocket_icon = pygame.transform.scale(assets.get(POWERUP_ASSETS["rocket"]), (24, 24))
+            for _ in range(self.player.rocket_count):
+                screen.blit(rocket_icon, (x, SCREEN_H - 24 - HUD_MARGIN))
+                x += 28
 
         if self.boss and self.boss.alive():
             bar_w = SCREEN_W - 2 * HUD_MARGIN

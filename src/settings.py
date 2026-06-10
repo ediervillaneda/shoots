@@ -105,15 +105,26 @@ SPRITE_PU_EXTRA_LIFE = "ship/bonus_life.png"
 # Shot sprites (from assets/Shots/)
 SPRITE_SHOT1 = "Shots/Shot1/shot1_4.png"
 SPRITE_SHOT2 = "Shots/Shot2/shot2_4.png"
+SPRITE_SHOT3 = "Shots/Shot3/shot3_asset.png"
 SPRITE_SHOT4 = "Shots/Shot4/shot4_asset.png"
+SPRITE_SHOT5 = "Shots/Shot5/shot5_asset.png"
+SPRITE_SHOT6 = "Shots/Shot6/shot6_asset.png"
+
+SHOT_LEVEL_MAX = 6
 
 # Bullet sizes per shot level
 BULLET_W_L1 = 50
 BULLET_H_L1 = 50
 BULLET_W_L2 = 75
 BULLET_H_L2 = 75
-BULLET_W_L3 = 80
-BULLET_H_L3 = 80
+BULLET_W_L3 = 75
+BULLET_H_L3 = 75
+BULLET_W_L4 = 80
+BULLET_H_L4 = 80
+BULLET_W_L5 = 85
+BULLET_H_L5 = 85
+BULLET_W_L6 = 90
+BULLET_H_L6 = 90
 
 # Boss
 BOSS_W = 96
@@ -127,7 +138,7 @@ BOSS_SHOOT_INTERVAL_P1 = 1500  # ms fase 1 (single shot)
 BOSS_SHOOT_INTERVAL_P2 = 1000  # ms fase 2 (spread)
 BOSS_SPREAD_ANGLE = 20  # grados desde vertical
 BOSS_HEALTH_BAR_H = 12
-BOSS_BAR_Y_OFFSET = 6   # px gap between score row and boss health bar
+BOSS_BAR_Y_OFFSET = 6  # px gap between score row and boss health bar
 BOSS_WAVE_INTERVAL = 10  # waves entre apariciones del boss
 BOSS_SPRITES = [
     "enemy/Enemy_1_A.png",
@@ -145,6 +156,8 @@ ROCKET_DAMAGE = 5
 ROCKET_AREA_DAMAGE = 2
 ROCKET_RADIUS = 90
 ROCKET_COOLDOWN = 1000  # ms entre cohetes
+ROCKET_ANGLE_DEG = 20.0  # ángulo desde la vertical para rockets laterales
+ROCKET_MAX_COUNT = 2     # máximo rockets simultáneos
 
 # Explosion
 EXPLOSION_W = 80
@@ -152,37 +165,104 @@ EXPLOSION_H = 80
 EXPLOSION_W_BOSS = 160
 EXPLOSION_H_BOSS = 160
 EXPLOSION_FRAME_MS = 55  # ms por frame (11 frames ≈ 600 ms total)
-EXPLOSION_FRAMES = [f"Explosions/Explosion1/Explosion1_{i}.png" for i in range(1, 12)]
-EXPLOSION_FRAMES_2 = [f"Explosions/Explosion2/Explosion2_{i}.png" for i in range(1, 12)]
-EXPLOSION_FRAMES_3 = [f"Explosions/Explosion3/Explosion3_{i}.png" for i in range(1, 12)]
+EXPLOSION_FRAMES = [
+    f"enemy_explosions/Explosion1/Explosion1_{i}.png" for i in range(1, 12)
+]
+EXPLOSION_FRAMES_2 = [
+    f"enemy_explosions/Explosion2/Explosion2_{i}.png" for i in range(1, 12)
+]
+EXPLOSION_FRAMES_3 = [
+    f"enemy_explosions/Explosion3/Explosion3_{i}.png" for i in range(1, 12)
+]
 EXPLOSION_FRAMES_SHIP1 = [
-    f"Explosions/Ship1_Explosion/Ship1_Explosion_{n}.png"
+    f"enemy_explosions/Ship1_Explosion/Ship1_Explosion_{n}.png"
     for n in ["001", "003", "008", "009", "012", "013", "014", "017", "019", "020"]
 ]
 EXPLOSION_FRAMES_SHIP2 = [
-    f"Explosions/Ship2_Explosion/Ship2_Explosion_{n}.png"
-    for n in ["000", "004", "005", "008", "009", "010", "013", "014", "015", "016", "019", "021"]
+    f"enemy_explosions/Ship2_Explosion/Ship2_Explosion_{n}.png"
+    for n in [
+        "000",
+        "004",
+        "005",
+        "008",
+        "009",
+        "010",
+        "013",
+        "014",
+        "015",
+        "016",
+        "019",
+        "021",
+    ]
 ]
 EXPLOSION_FRAMES_SHIP3 = [
-    f"Explosions/Ship3_Explosion/Ship3_Explosion_{n}.png"
-    for n in ["000", "004", "005", "007", "009", "012", "013", "015", "018", "019", "021"]
+    f"enemy_explosions/Ship3_Explosion/Ship3_Explosion_{n}.png"
+    for n in [
+        "000",
+        "004",
+        "005",
+        "007",
+        "009",
+        "012",
+        "013",
+        "015",
+        "018",
+        "019",
+        "021",
+    ]
 ]
 EXPLOSION_FRAMES_SHIP4 = [
-    f"Explosions/Ship4_Explosion/Ship4_Explosion_{n}.png"
-    for n in ["000", "003", "005", "007", "008", "012", "013", "015", "018", "019", "020"]
+    f"enemy_explosions/Ship4_Explosion/Ship4_Explosion_{n}.png"
+    for n in [
+        "000",
+        "003",
+        "005",
+        "007",
+        "008",
+        "012",
+        "013",
+        "015",
+        "018",
+        "019",
+        "020",
+    ]
 ]
 EXPLOSION_FRAMES_SHIP5 = [
-    f"Explosions/Ship5_Explosion/Ship5_Explosion_{n}.png"
-    for n in ["001", "003", "006", "007", "008", "011", "013", "014", "017", "019", "020"]
+    f"enemy_explosions/Ship5_Explosion/Ship5_Explosion_{n}.png"
+    for n in [
+        "001",
+        "003",
+        "006",
+        "007",
+        "008",
+        "011",
+        "013",
+        "014",
+        "017",
+        "019",
+        "020",
+    ]
 ]
 EXPLOSION_FRAMES_SHIP6 = [
-    f"Explosions/Ship6_Explosion/Ship6_Explosion_{n}.png"
-    for n in ["000", "004", "005", "007", "009", "011", "013", "016", "017", "019", "021"]
+    f"enemy_explosions/Ship6_Explosion/Ship6_Explosion_{n}.png"
+    for n in [
+        "000",
+        "004",
+        "005",
+        "007",
+        "009",
+        "011",
+        "013",
+        "016",
+        "017",
+        "019",
+        "021",
+    ]
 ]
 
 # Entity-specific explosion assignments
-EXPL_SCOUT    = EXPLOSION_FRAMES_2      # small energy burst
-EXPL_KAMIKAZE = EXPLOSION_FRAMES_3      # small energy burst (variant)
-EXPL_FIGHTER  = EXPLOSION_FRAMES_SHIP1  # medium ship explosion
-EXPL_BOSS     = EXPLOSION_FRAMES_SHIP6  # large ship explosion
-EXPL_PLAYER   = EXPLOSION_FRAMES_SHIP5  # player ship explosion
+EXPL_SCOUT = EXPLOSION_FRAMES_2  # small energy burst
+EXPL_KAMIKAZE = EXPLOSION_FRAMES_3  # small energy burst (variant)
+EXPL_FIGHTER = EXPLOSION_FRAMES_SHIP1  # medium ship explosion
+EXPL_BOSS = EXPLOSION_FRAMES_SHIP6  # large ship explosion
+EXPL_PLAYER = EXPLOSION_FRAMES_SHIP5  # player ship explosion

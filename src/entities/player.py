@@ -15,21 +15,34 @@ from src.settings import (
     SPRITE_SHIP,
     SPRITE_SHOT1,
     SPRITE_SHOT2,
+    SPRITE_SHOT3,
     SPRITE_SHOT4,
+    SPRITE_SHOT5,
+    SPRITE_SHOT6,
     BULLET_W_L1,
     BULLET_H_L1,
     BULLET_W_L2,
     BULLET_H_L2,
     BULLET_W_L3,
     BULLET_H_L3,
+    BULLET_W_L4,
+    BULLET_H_L4,
+    BULLET_W_L5,
+    BULLET_H_L5,
+    BULLET_W_L6,
+    BULLET_H_L6,
+    SHOT_LEVEL_MAX,
+    ROCKET_COOLDOWN,
+    ROCKET_ANGLE_DEG,
+    ROCKET_MAX_COUNT,
 )
 from src.entities.bullet import Bullet
+from src.entities.rocket import Rocket
 
 SQRT2_INV = 0.7071067811865476  # 1/sqrt(2)
 
 
 def calc_velocity(left, right, up, down):
-    """Calcula vector de velocidad normalizado a partir de teclas booleanas."""
     dx = float(right) - float(left)
     dy = float(down) - float(up)
     if dx != 0 and dy != 0:
@@ -57,12 +70,16 @@ class Player(pygame.sprite.Sprite):
         self.invincible_until = 0
         self.active_powerups: set[str] = set()
         self.shot_level: int = 1
+        self.last_rocket: int = -ROCKET_COOLDOWN
+        self.rocket_count: int = 0
 
     def apply_powerup(self, kind: str) -> None:
         if kind == "extra_life":
             self.lives = min(PLAYER_LIVES_MAX, self.lives + 1)
         elif kind == "gun_upgrade":
-            self.shot_level = min(3, self.shot_level + 1)
+            self.shot_level = min(SHOT_LEVEL_MAX, self.shot_level + 1)
+        elif kind == "rocket":
+            self.rocket_count = min(ROCKET_MAX_COUNT, self.rocket_count + 1)
         else:
             self.active_powerups.add(kind)
 
@@ -75,6 +92,7 @@ class Player(pygame.sprite.Sprite):
         self.lives = max(0, self.lives - 1)
         self.active_powerups.clear()
         self.shot_level = 1
+        self.rocket_count = 0
         self.invincible = True
         self.invincible_until = now + INVINCIBILITY_MS
 
@@ -111,11 +129,33 @@ class Player(pygame.sprite.Sprite):
         self.last_shot = now
         cx = self.rect.centerx
         top = self.rect.top
+        if self.shot_level >= 6:
+            return [
+                Bullet(cx - 28, top, SPRITE_SHOT6, BULLET_W_L6, BULLET_H_L6),
+                Bullet(cx - 12, top, SPRITE_SHOT6, BULLET_W_L6, BULLET_H_L6),
+                Bullet(cx,      top, SPRITE_SHOT6, BULLET_W_L6, BULLET_H_L6),
+                Bullet(cx + 12, top, SPRITE_SHOT6, BULLET_W_L6, BULLET_H_L6),
+                Bullet(cx + 28, top, SPRITE_SHOT6, BULLET_W_L6, BULLET_H_L6),
+            ]
+        if self.shot_level >= 5:
+            return [
+                Bullet(cx - 28, top, SPRITE_SHOT5, BULLET_W_L5, BULLET_H_L5),
+                Bullet(cx - 12, top, SPRITE_SHOT5, BULLET_W_L5, BULLET_H_L5),
+                Bullet(cx,      top, SPRITE_SHOT5, BULLET_W_L5, BULLET_H_L5),
+                Bullet(cx + 12, top, SPRITE_SHOT5, BULLET_W_L5, BULLET_H_L5),
+                Bullet(cx + 28, top, SPRITE_SHOT5, BULLET_W_L5, BULLET_H_L5),
+            ]
+        if self.shot_level >= 4:
+            return [
+                Bullet(cx - 16, top, SPRITE_SHOT4, BULLET_W_L4, BULLET_H_L4),
+                Bullet(cx,      top, SPRITE_SHOT4, BULLET_W_L4, BULLET_H_L4),
+                Bullet(cx + 16, top, SPRITE_SHOT4, BULLET_W_L4, BULLET_H_L4),
+            ]
         if self.shot_level >= 3:
             return [
-                Bullet(cx, top, SPRITE_SHOT4, BULLET_W_L3, BULLET_H_L3),
-                Bullet(cx - 16, top, SPRITE_SHOT4, BULLET_W_L3, BULLET_H_L3),
-                Bullet(cx + 16, top, SPRITE_SHOT4, BULLET_W_L3, BULLET_H_L3),
+                Bullet(cx - 16, top, SPRITE_SHOT3, BULLET_W_L3, BULLET_H_L3),
+                Bullet(cx,      top, SPRITE_SHOT3, BULLET_W_L3, BULLET_H_L3),
+                Bullet(cx + 16, top, SPRITE_SHOT3, BULLET_W_L3, BULLET_H_L3),
             ]
         if self.shot_level >= 2:
             return [
@@ -123,3 +163,16 @@ class Player(pygame.sprite.Sprite):
                 Bullet(cx + 10, top, SPRITE_SHOT2, BULLET_W_L2, BULLET_H_L2),
             ]
         return [Bullet(cx, top, SPRITE_SHOT1, BULLET_W_L1, BULLET_H_L1)]
+
+    def shoot_rocket(self, now: int) -> list[Rocket]:
+        if self.rocket_count == 0:
+            return []
+        if now - self.last_rocket < ROCKET_COOLDOWN:
+            return []
+        self.last_rocket = now
+        rockets = []
+        if self.rocket_count >= 1:
+            rockets.append(Rocket(self.rect.left, self.rect.top, -ROCKET_ANGLE_DEG))
+        if self.rocket_count >= 2:
+            rockets.append(Rocket(self.rect.right, self.rect.top, ROCKET_ANGLE_DEG))
+        return rockets
