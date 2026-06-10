@@ -318,3 +318,77 @@ def test_kamikaze_gets_target_on_spawn():
     kamikazes = [e for e in scene.enemies if isinstance(e, Kamikaze)]
     assert len(kamikazes) == 1
     assert kamikazes[0].target is scene.player
+
+
+from src.entities.boss import Boss
+from src.settings import BOSS_SPRITES, BOSS_SHOOT_INTERVAL_P1
+
+
+def test_boss_added_to_enemies_on_spawn():
+    scene = GameplayScene()
+    scene._reset()
+    boss = Boss(BOSS_SPRITES[0])
+    with patch.object(scene.spawn_system, 'get_boss_spawn', return_value=boss):
+        scene.spawn_system._last_spawn = pygame.time.get_ticks()
+        scene.update(0.0)
+    assert boss in scene.enemies
+
+
+def test_boss_reference_set_on_spawn():
+    scene = GameplayScene()
+    scene._reset()
+    boss = Boss(BOSS_SPRITES[0])
+    with patch.object(scene.spawn_system, 'get_boss_spawn', return_value=boss):
+        scene.spawn_system._last_spawn = pygame.time.get_ticks()
+        scene.update(0.0)
+    assert scene.boss is boss
+
+
+def test_boss_reference_cleared_when_dead():
+    scene = GameplayScene()
+    scene._reset()
+    boss = Boss(BOSS_SPRITES[0])
+    scene.boss = boss
+    scene.enemies.add(boss)
+    scene.all_sprites.add(boss)
+    boss.kill()
+    scene.spawn_system._last_spawn = pygame.time.get_ticks()
+    with patch.object(scene.spawn_system, 'notify_boss_killed'):
+        scene.update(0.0)
+    assert scene.boss is None
+
+
+def test_boss_death_calls_notify_boss_killed():
+    scene = GameplayScene()
+    scene._reset()
+    boss = Boss(BOSS_SPRITES[0])
+    scene.boss = boss
+    scene.enemies.add(boss)
+    scene.all_sprites.add(boss)
+    boss.kill()
+    scene.spawn_system._last_spawn = pygame.time.get_ticks()
+    with patch.object(scene.spawn_system, 'notify_boss_killed') as mock_notify:
+        scene.update(0.0)
+    mock_notify.assert_called_once()
+
+
+def test_boss_shoot_adds_enemy_bullets():
+    scene = GameplayScene()
+    scene._reset()
+    boss = Boss(BOSS_SPRITES[0])
+    boss._entry_done = True
+    boss.last_shot = -(BOSS_SHOOT_INTERVAL_P1 + 1)
+    scene.boss = boss
+    scene.enemies.add(boss)
+    scene.all_sprites.add(boss)
+    scene.spawn_system._last_spawn = pygame.time.get_ticks()
+    initial_count = len(scene.enemy_bullets)
+    scene.update(0.0)
+    assert len(scene.enemy_bullets) > initial_count
+
+
+def test_boss_none_after_reset():
+    scene = GameplayScene()
+    scene.boss = Boss(BOSS_SPRITES[0])
+    scene._reset()
+    assert scene.boss is None

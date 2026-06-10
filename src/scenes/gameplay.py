@@ -10,6 +10,7 @@ from src.settings import (
     SCREEN_W, SCREEN_H,
     BULLET_DAMAGE, HUD_FONT_SIZE, HUD_COLOR, HUD_MARGIN,
     POWERUP_DROP_CHANCE, PLAYER_W, PLAYER_H, SPRITE_SHIELD_OVERLAY,
+    BOSS_HP, BOSS_HEALTH_BAR_H,
 )
 
 
@@ -25,6 +26,7 @@ class GameplayScene:
         self.powerups = pygame.sprite.Group()
         self.all_sprites = pygame.sprite.Group(self.player)
         self.spawn_system = SpawnSystem()
+        self.boss = None
 
     def _reset(self):
         self.player = Player()
@@ -36,6 +38,7 @@ class GameplayScene:
         self.score = 0
         self.spawn_system = SpawnSystem()
         self.state = "playing"
+        self.boss = None
 
     def process_input(self, events):
         keys = pygame.key.get_pressed()
@@ -73,6 +76,21 @@ class GameplayScene:
                 enemy.target = self.player
             self.enemies.add(enemy)
             self.all_sprites.add(enemy)
+
+        b = self.spawn_system.get_boss_spawn(now)
+        if b:
+            self.boss = b
+            self.enemies.add(b)
+            self.all_sprites.add(b)
+
+        if self.boss and self.boss.alive():
+            for eb in self.boss.shoot(now):
+                self.enemy_bullets.add(eb)
+                self.all_sprites.add(eb)
+
+        if self.boss and not self.boss.alive():
+            self.spawn_system.notify_boss_killed(now)
+            self.boss = None
 
         for sprite in self.enemies:
             if isinstance(sprite, Fighter):
@@ -147,6 +165,14 @@ class GameplayScene:
             icon = pygame.transform.scale(assets.get(POWERUP_ASSETS[kind]), (24, 24))
             screen.blit(icon, (x, SCREEN_H - 24 - HUD_MARGIN))
             x += 28
+
+        if self.boss and self.boss.alive():
+            bar_w = SCREEN_W - 2 * HUD_MARGIN
+            filled = int(bar_w * self.boss.hp / BOSS_HP)
+            y = HUD_MARGIN + HUD_FONT_SIZE + 6
+            pygame.draw.rect(screen, (80, 0, 0),      (HUD_MARGIN, y, bar_w, BOSS_HEALTH_BAR_H))
+            pygame.draw.rect(screen, (220, 30, 30),   (HUD_MARGIN, y, filled, BOSS_HEALTH_BAR_H))
+            pygame.draw.rect(screen, (255, 255, 255), (HUD_MARGIN, y, bar_w, BOSS_HEALTH_BAR_H), 1)
 
         if self.state == "start":
             self._draw_overlay(screen, "STARFALL", "PRESS SPACE TO PLAY")
