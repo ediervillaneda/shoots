@@ -1,3 +1,5 @@
+SPRITE_BG = "SpaceRage/BG.png"
+
 SPRITE_SCOUT = "enemy_ships/Ship1/Ship1.png"
 SPRITE_SHIP = "enemy_boss/Ship_1_D.png"
 
