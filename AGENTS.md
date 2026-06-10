@@ -1,5 +1,7 @@
 # AGENTS.md — Starfall
 
+**Language:** Spanish (Español), or English when the case calls for it.
+
 ## Project
 
 Starfall: vertical 2D shoot-'em-up (Python 3.13+, pygame-ce).  
