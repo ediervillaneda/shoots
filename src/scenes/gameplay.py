@@ -6,6 +6,9 @@ from src.entities.player import Player
 from src.entities.scout import Scout
 from src.entities.fighter import Fighter
 from src.entities.kamikaze import Kamikaze
+from src.entities.gunner import Gunner
+from src.entities.striker import Striker
+from src.entities.interceptor import Interceptor
 from src.entities.boss import Boss
 from src.entities.powerup import PowerUp, POWERUP_ASSETS, POWERUP_KINDS
 from src.entities.explosion import Explosion
@@ -17,7 +20,9 @@ from src.settings import (
     BOSS_HP, BOSS_HEALTH_BAR_H, BOSS_BAR_Y_OFFSET,
     ROCKET_DAMAGE, ROCKET_AREA_DAMAGE, ROCKET_RADIUS,
     EXPLOSION_W, EXPLOSION_H, EXPLOSION_W_BOSS, EXPLOSION_H_BOSS,
-    EXPL_SCOUT, EXPL_KAMIKAZE, EXPL_FIGHTER, EXPL_BOSS, EXPL_PLAYER,
+    EXPL_SCOUT, EXPL_KAMIKAZE, EXPL_FIGHTER,
+    EXPL_GUNNER, EXPL_STRIKER, EXPL_INTERCEPTOR,
+    EXPL_BOSS, EXPL_PLAYER,
 )
 
 
@@ -76,17 +81,19 @@ class GameplayScene:
 
     def _spawn_death_explosion(self, entity) -> None:
         if isinstance(entity, Boss):
-            paths = EXPL_BOSS
-            size = (EXPLOSION_W_BOSS, EXPLOSION_H_BOSS)
+            paths, size = EXPL_BOSS, (EXPLOSION_W_BOSS, EXPLOSION_H_BOSS)
+        elif isinstance(entity, Interceptor):
+            paths, size = EXPL_INTERCEPTOR, (EXPLOSION_W_BOSS, EXPLOSION_H_BOSS)
+        elif isinstance(entity, Striker):
+            paths, size = EXPL_STRIKER, (EXPLOSION_W, EXPLOSION_H)
+        elif isinstance(entity, Gunner):
+            paths, size = EXPL_GUNNER, (EXPLOSION_W, EXPLOSION_H)
         elif isinstance(entity, Fighter):
-            paths = EXPL_FIGHTER
-            size = (EXPLOSION_W, EXPLOSION_H)
+            paths, size = EXPL_FIGHTER, (EXPLOSION_W, EXPLOSION_H)
         elif isinstance(entity, Kamikaze):
-            paths = EXPL_KAMIKAZE
-            size = (EXPLOSION_W, EXPLOSION_H)
+            paths, size = EXPL_KAMIKAZE, (EXPLOSION_W, EXPLOSION_H)
         else:
-            paths = EXPL_SCOUT
-            size = (EXPLOSION_W, EXPLOSION_H)
+            paths, size = EXPL_SCOUT, (EXPLOSION_W, EXPLOSION_H)
         expl = Explosion(entity.rect.centerx, entity.rect.centery, paths, size)
         self.explosions.add(expl)
         self.all_sprites.add(expl)
@@ -134,7 +141,7 @@ class GameplayScene:
         now = pygame.time.get_ticks()
 
         for enemy in self.spawn_system.update(now):
-            if isinstance(enemy, Kamikaze):
+            if isinstance(enemy, (Kamikaze, Striker, Interceptor)):
                 enemy.target = self.player
             self.enemies.add(enemy)
             self.all_sprites.add(enemy)
@@ -156,9 +163,8 @@ class GameplayScene:
             self.boss = None
 
         for sprite in self.enemies:
-            if isinstance(sprite, Fighter):
-                eb = sprite.shoot(now)
-                if eb:
+            if hasattr(sprite, "shoot"):
+                for eb in sprite.shoot(now):
                     self.enemy_bullets.add(eb)
                     self.all_sprites.add(eb)
 

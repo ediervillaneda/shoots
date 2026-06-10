@@ -65,21 +65,23 @@ def test_fighter_spawns_above_screen():
 def test_fighter_shoot_returns_enemy_bullet():
     f = Fighter(240)
     result = f.shoot(0)
-    assert isinstance(result, EnemyBullet)
+    assert len(result) == 1
+    assert isinstance(result[0], EnemyBullet)
 
 
 def test_fighter_shoot_respects_cooldown():
     f = Fighter(240)
     f.shoot(0)
     result = f.shoot(0)
-    assert result is None
+    assert result == []
 
 
 def test_fighter_shoot_after_cooldown():
     f = Fighter(240)
     f.shoot(0)
     result = f.shoot(FIGHTER_SHOOT_INTERVAL)
-    assert isinstance(result, EnemyBullet)
+    assert len(result) == 1
+    assert isinstance(result[0], EnemyBullet)
 
 
 def test_fighter_speed_bonus():

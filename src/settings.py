@@ -72,10 +72,54 @@ KAMIKAZE_H = 48
 KAMIKAZE_HP = 2
 KAMIKAZE_POINTS = 500
 
+# Gunner — straight down + 3-bullet spread, wave 3+
+GUNNER_SPEED = 110
+GUNNER_W = 52
+GUNNER_H = 52
+GUNNER_HP = 5
+GUNNER_POINTS = 600
+GUNNER_SHOOT_INTERVAL = 2200  # ms
+GUNNER_SPREAD_ANGLE = 20       # degrees per side bullet
+
+# Striker — diagonal entry + aimed bursts, wave 6+
+STRIKER_SPEED = 210
+STRIKER_W = 56
+STRIKER_H = 56
+STRIKER_HP = 8
+STRIKER_POINTS = 1000
+STRIKER_SHOOT_INTERVAL = 1500  # ms
+STRIKER_ENTRY_Y = 260          # Y past which diagonal becomes straight-down
+
+# Interceptor — fast entry → patrol + rapid fire, wave 10+
+INTERCEPTOR_SPEED = 260
+INTERCEPTOR_W = 60
+INTERCEPTOR_H = 60
+INTERCEPTOR_HP = 15
+INTERCEPTOR_POINTS = 1500
+INTERCEPTOR_SHOOT_INTERVAL = 700   # ms
+INTERCEPTOR_Y_TARGET = 170         # Y where patrol begins
+INTERCEPTOR_PATROL_SPEED = 190     # px/s horizontal
+
 # Kamikaze wave scaling
 WAVE_KAMIKAZE_BASE = 10  # % probability at wave 0
-WAVE_KAMIKAZE_INC = 5  # % added per wave
-WAVE_KAMIKAZE_CAP = 40  # % maximum
+WAVE_KAMIKAZE_INC = 5    # % added per wave
+WAVE_KAMIKAZE_CAP = 40   # % maximum
+
+# New enemies wave scaling
+WAVE_GUNNER_MIN_WAVE = 3
+WAVE_GUNNER_BASE = 25
+WAVE_GUNNER_INC = 5
+WAVE_GUNNER_CAP = 50
+
+WAVE_STRIKER_MIN_WAVE = 6
+WAVE_STRIKER_BASE = 20
+WAVE_STRIKER_INC = 5
+WAVE_STRIKER_CAP = 40
+
+WAVE_INTERCEPTOR_MIN_WAVE = 10
+WAVE_INTERCEPTOR_BASE = 15
+WAVE_INTERCEPTOR_INC = 5
+WAVE_INTERCEPTOR_CAP = 35
 
 # Power-ups
 POWERUP_SPEED = 150  # px/s downward
@@ -86,13 +130,16 @@ PLAYER_LIVES_MAX = 5
 RAPIDFIRE_COOLDOWN_MULT = 0.4  # BULLET_COOLDOWN × 0.4 with RapidFire active
 
 # Sprites
-SPRITE_SCOUT = "enemy_boss/Boss_1_B.png"
+SPRITE_SCOUT = "enemy_ships/Ship1/Ship1.png"
 SPRITE_SHIP = "enemy_boss/Ship_1_D.png"
 SPRITE_PLASMA = "ship/plasm.png"
 SPRITE_ROCKET = "enemy_boss/Missile_A.png"
-SPRITE_FIGHTER = "enemy_boss/Enemy_4_C.png"
+SPRITE_FIGHTER = "enemy_ships/Ship2/Ship2.png"
 SPRITE_FIGHTER_BULLET = "ship/bullet-1.png"
-SPRITE_KAMIKAZE = "enemy_boss/Enemy_1_D.png"
+SPRITE_KAMIKAZE = "enemy_ships/Ship3/Ship3.png"
+SPRITE_GUNNER = "enemy_ships/Ship4/Ship4.png"
+SPRITE_STRIKER = "enemy_ships/Ship5/Ship5.png"
+SPRITE_INTERCEPTOR = "enemy_ships/Ship6/Ship6.png"
 SPRITE_KAMIKAZE_BULLET = "ship/bullet-2.png"
 SPRITE_SHIELD_OVERLAY = "ship/shield.png"
 SPRITE_PU_RAPID_FIRE = "ship/bonus_time.png"
@@ -261,8 +308,11 @@ EXPLOSION_FRAMES_SHIP6 = [
 ]
 
 # Entity-specific explosion assignments
-EXPL_SCOUT = EXPLOSION_FRAMES_2  # small energy burst
-EXPL_KAMIKAZE = EXPLOSION_FRAMES_3  # small energy burst (variant)
+EXPL_SCOUT = EXPLOSION_FRAMES_2        # small energy burst
+EXPL_KAMIKAZE = EXPLOSION_FRAMES_3     # small energy burst (variant)
 EXPL_FIGHTER = EXPLOSION_FRAMES_SHIP1  # medium ship explosion
-EXPL_BOSS = EXPLOSION_FRAMES_SHIP6  # large ship explosion
-EXPL_PLAYER = EXPLOSION_FRAMES_SHIP5  # player ship explosion
+EXPL_GUNNER = EXPLOSION_FRAMES_SHIP2   # medium ship explosion (variant)
+EXPL_STRIKER = EXPLOSION_FRAMES_SHIP3  # larger ship explosion
+EXPL_INTERCEPTOR = EXPLOSION_FRAMES_SHIP4  # large ship explosion
+EXPL_BOSS = EXPLOSION_FRAMES_SHIP6     # large ship explosion
+EXPL_PLAYER = EXPLOSION_FRAMES_SHIP5   # player ship explosion

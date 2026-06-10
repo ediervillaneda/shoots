@@ -15,6 +15,7 @@ class Fighter(Enemy):
         super().__init__(x, FIGHTER_W, FIGHTER_H, FIGHTER_COLOR, FIGHTER_HP, FIGHTER_POINTS)
         raw = assets.get(SPRITE_FIGHTER)
         self.image = pygame.transform.scale(raw, (FIGHTER_W, FIGHTER_H))
+        self.image = pygame.transform.flip(self.image, False, True)
         self.rect = self.image.get_rect(centerx=x, bottom=0)
         self.x = float(self.rect.x)
         self.y = float(self.rect.y)
@@ -22,11 +23,11 @@ class Fighter(Enemy):
         self.elapsed = 0.0
         self.last_shot = -FIGHTER_SHOOT_INTERVAL
 
-    def shoot(self, now):
+    def shoot(self, now) -> list:
         if now - self.last_shot >= FIGHTER_SHOOT_INTERVAL:
             self.last_shot = now
-            return EnemyBullet(self.rect.centerx, self.rect.bottom)
-        return None
+            return [EnemyBullet(self.rect.centerx, self.rect.bottom)]
+        return []
 
     def update(self, dt):
         self.elapsed += dt

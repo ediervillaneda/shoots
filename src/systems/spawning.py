@@ -3,6 +3,9 @@ import pygame
 from src.entities.scout import Scout
 from src.entities.fighter import Fighter
 from src.entities.kamikaze import Kamikaze
+from src.entities.gunner import Gunner
+from src.entities.striker import Striker
+from src.entities.interceptor import Interceptor
 from src.entities.boss import Boss
 from src.settings import (
     SCREEN_W, SCOUT_W, FIGHTER_W,
@@ -10,6 +13,9 @@ from src.settings import (
     WAVE_SPAWN_MIN, WAVE_SPAWN_MIN_CAP, WAVE_SPAWN_DEC,
     WAVE_FIGHTER_BASE, WAVE_FIGHTER_INC, WAVE_FIGHTER_CAP,
     WAVE_KAMIKAZE_BASE, WAVE_KAMIKAZE_INC, WAVE_KAMIKAZE_CAP,
+    WAVE_GUNNER_MIN_WAVE, WAVE_GUNNER_BASE, WAVE_GUNNER_INC, WAVE_GUNNER_CAP,
+    WAVE_STRIKER_MIN_WAVE, WAVE_STRIKER_BASE, WAVE_STRIKER_INC, WAVE_STRIKER_CAP,
+    WAVE_INTERCEPTOR_MIN_WAVE, WAVE_INTERCEPTOR_BASE, WAVE_INTERCEPTOR_INC, WAVE_INTERCEPTOR_CAP,
     WAVE_SPEED_FACTOR,
     BOSS_WAVE_INTERVAL, BOSS_SPRITES, BOSS_SPRITES_FIXED_COUNT,
 )
@@ -68,10 +74,31 @@ class SpawnSystem:
     def _fighter_prob(self):
         return min(WAVE_FIGHTER_CAP, WAVE_FIGHTER_BASE + self.wave * WAVE_FIGHTER_INC)
 
+    def _gunner_prob(self):
+        return min(WAVE_GUNNER_CAP, WAVE_GUNNER_BASE + (self.wave - WAVE_GUNNER_MIN_WAVE) * WAVE_GUNNER_INC)
+
+    def _striker_prob(self):
+        return min(WAVE_STRIKER_CAP, WAVE_STRIKER_BASE + (self.wave - WAVE_STRIKER_MIN_WAVE) * WAVE_STRIKER_INC)
+
+    def _interceptor_prob(self):
+        return min(WAVE_INTERCEPTOR_CAP, WAVE_INTERCEPTOR_BASE + (self.wave - WAVE_INTERCEPTOR_MIN_WAVE) * WAVE_INTERCEPTOR_INC)
+
     def _make_enemy(self):
         margin = max(SCOUT_W, FIGHTER_W) // 2
         x = random.randint(margin, SCREEN_W - margin)
         speed_bonus = self.wave * WAVE_SPEED_FACTOR
+        if self.wave >= WAVE_INTERCEPTOR_MIN_WAVE and random.randint(1, 100) <= self._interceptor_prob():
+            e = Interceptor(x)
+            e.speed_bonus = speed_bonus
+            return e
+        if self.wave >= WAVE_STRIKER_MIN_WAVE and random.randint(1, 100) <= self._striker_prob():
+            e = Striker(x)
+            e.speed_bonus = speed_bonus
+            return e
+        if self.wave >= WAVE_GUNNER_MIN_WAVE and random.randint(1, 100) <= self._gunner_prob():
+            e = Gunner(x)
+            e.speed_bonus = speed_bonus
+            return e
         if random.randint(1, 100) <= self._kamikaze_prob():
             k = Kamikaze(x)
             k.speed_bonus = speed_bonus
