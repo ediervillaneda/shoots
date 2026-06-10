@@ -1,12 +1,13 @@
 import pygame
-from src.settings import BULLET_SPEED, BULLET_COLOR, BULLET_W, BULLET_H
+import src.assets as assets
+from src.settings import BULLET_SPEED, BULLET_W, BULLET_H, SPRITE_PLASMA
 
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
-        self.image = pygame.Surface((BULLET_W, BULLET_H))
-        self.image.fill(BULLET_COLOR)
+        raw = assets.get(SPRITE_PLASMA)
+        self.image = pygame.transform.scale(raw, (BULLET_W, BULLET_H))
         self.rect = self.image.get_rect(centerx=x, bottom=y)
         self.y = float(self.rect.y)
 

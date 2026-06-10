@@ -1,8 +1,10 @@
 import pygame
+import src.assets as assets
 from src.settings import (
     PLAYER_SPEED, PLAYER_COLOR, PLAYER_W, PLAYER_H,
     SCREEN_W, SCREEN_H, BULLET_COOLDOWN,
     PLAYER_LIVES, PLAYER_LIVES_MAX, INVINCIBILITY_MS, RAPIDFIRE_COOLDOWN_MULT,
+    SPRITE_SHIP,
 )
 from src.entities.bullet import Bullet
 
@@ -22,8 +24,8 @@ def calc_velocity(left, right, up, down):
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.Surface((PLAYER_W, PLAYER_H))
-        self.image.fill(PLAYER_COLOR)
+        raw = assets.get(SPRITE_SHIP)
+        self.image = pygame.transform.scale(raw, (PLAYER_W, PLAYER_H))
         self.rect = self.image.get_rect(
             centerx=SCREEN_W // 2,
             bottom=SCREEN_H - 80,
@@ -37,10 +39,13 @@ class Player(pygame.sprite.Sprite):
         self.invincible = False
         self.invincible_until = 0
         self.active_powerups: set[str] = set()
+        self.shot_level: int = 1
 
     def apply_powerup(self, kind: str) -> None:
         if kind == "extra_life":
             self.lives = min(PLAYER_LIVES_MAX, self.lives + 1)
+        elif kind == "gun_upgrade":
+            self.shot_level = min(3, self.shot_level + 1)
         else:
             self.active_powerups.add(kind)
 
@@ -52,6 +57,7 @@ class Player(pygame.sprite.Sprite):
             return
         self.lives = max(0, self.lives - 1)
         self.active_powerups.clear()
+        self.shot_level = 1
         self.invincible = True
         self.invincible_until = now + INVINCIBILITY_MS
 
@@ -88,8 +94,8 @@ class Player(pygame.sprite.Sprite):
         self.last_shot = now
         cx = self.rect.centerx
         top = self.rect.top
-        if "triple_shot" in self.active_powerups:
+        if self.shot_level >= 3:
             return [Bullet(cx, top), Bullet(cx - 16, top), Bullet(cx + 16, top)]
-        if "double_shot" in self.active_powerups:
+        if self.shot_level >= 2:
             return [Bullet(cx - 10, top), Bullet(cx + 10, top)]
         return [Bullet(cx, top)]

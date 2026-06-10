@@ -35,14 +35,14 @@ def test_powerup_speed():
 
 
 def test_powerup_killed_off_screen():
-    pu = PowerUp("double_shot", 270, SCREEN_H)
+    pu = PowerUp("gun_upgrade", 270, SCREEN_H)
     group = pygame.sprite.Group(pu)
     pu.update(1.0)
     assert not pu.alive()
 
 
-def test_powerup_kinds_contains_all_five():
-    assert set(POWERUP_KINDS) == {"rapid_fire", "shield", "double_shot", "triple_shot", "extra_life"}
+def test_powerup_kinds_contains_all_four():
+    assert set(POWERUP_KINDS) == {"rapid_fire", "shield", "gun_upgrade", "extra_life"}
 
 
 def test_powerup_assets_keys_match_kinds():

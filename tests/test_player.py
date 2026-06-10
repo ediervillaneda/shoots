@@ -150,16 +150,29 @@ def test_apply_powerup_rapid_fire():
     assert "rapid_fire" in player.active_powerups
 
 
-def test_apply_powerup_double_shot():
+def test_player_initial_shot_level():
     player = Player()
-    player.apply_powerup("double_shot")
-    assert "double_shot" in player.active_powerups
+    assert player.shot_level == 1
 
 
-def test_apply_powerup_triple_shot():
+def test_gun_upgrade_increments_to_double():
     player = Player()
-    player.apply_powerup("triple_shot")
-    assert "triple_shot" in player.active_powerups
+    player.apply_powerup("gun_upgrade")
+    assert player.shot_level == 2
+
+
+def test_gun_upgrade_twice_increments_to_triple():
+    player = Player()
+    player.apply_powerup("gun_upgrade")
+    player.apply_powerup("gun_upgrade")
+    assert player.shot_level == 3
+
+
+def test_gun_upgrade_capped_at_triple():
+    player = Player()
+    for _ in range(5):
+        player.apply_powerup("gun_upgrade")
+    assert player.shot_level == 3
 
 
 def test_apply_powerup_extra_life_increments_lives():
@@ -205,24 +218,17 @@ def test_shoot_returns_empty_list_on_cooldown():
     assert player.shoot(0) == []
 
 
-def test_shoot_double_shot_returns_two_bullets():
+def test_shoot_gun_upgrade_once_returns_two_bullets():
     player = Player()
-    player.apply_powerup("double_shot")
+    player.apply_powerup("gun_upgrade")
     bullets = player.shoot(0)
     assert len(bullets) == 2
 
 
-def test_shoot_triple_shot_returns_three_bullets():
+def test_shoot_gun_upgrade_twice_returns_three_bullets():
     player = Player()
-    player.apply_powerup("triple_shot")
-    bullets = player.shoot(0)
-    assert len(bullets) == 3
-
-
-def test_shoot_triple_takes_precedence_over_double():
-    player = Player()
-    player.apply_powerup("double_shot")
-    player.apply_powerup("triple_shot")
+    player.apply_powerup("gun_upgrade")
+    player.apply_powerup("gun_upgrade")
     bullets = player.shoot(0)
     assert len(bullets) == 3
 
@@ -265,6 +271,16 @@ def test_take_damage_shield_preserves_other_powerups():
 def test_take_damage_clears_active_powerups():
     player = Player()
     player.apply_powerup("rapid_fire")
-    player.apply_powerup("double_shot")
-    player.take_damage(0)
+    player.apply_powerup("shield")
+    player.take_damage(0)  # shield absorbs, no damage
+    player.take_damage(0)  # second hit: real damage clears powerups
     assert player.active_powerups == set()
+
+
+def test_take_damage_resets_shot_level():
+    player = Player()
+    player.apply_powerup("gun_upgrade")
+    player.apply_powerup("gun_upgrade")
+    assert player.shot_level == 3
+    player.take_damage(0)
+    assert player.shot_level == 1
