@@ -41,8 +41,8 @@ def test_powerup_killed_off_screen():
     assert not pu.alive()
 
 
-def test_powerup_kinds_contains_all_four():
-    assert set(POWERUP_KINDS) == {"rapid_fire", "shield", "gun_upgrade", "extra_life"}
+def test_powerup_kinds_contains_all_five():
+    assert set(POWERUP_KINDS) == {"rapid_fire", "shield", "gun_upgrade", "extra_life", "rocket"}
 
 
 def test_powerup_assets_keys_match_kinds():
