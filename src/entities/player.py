@@ -1,10 +1,27 @@
 import pygame
 import src.assets as assets
 from src.settings import (
-    PLAYER_SPEED, PLAYER_COLOR, PLAYER_W, PLAYER_H,
-    SCREEN_W, SCREEN_H, BULLET_COOLDOWN,
-    PLAYER_LIVES, PLAYER_LIVES_MAX, INVINCIBILITY_MS, RAPIDFIRE_COOLDOWN_MULT,
+    PLAYER_SPEED,
+    PLAYER_COLOR,
+    PLAYER_W,
+    PLAYER_H,
+    SCREEN_W,
+    SCREEN_H,
+    BULLET_COOLDOWN,
+    PLAYER_LIVES,
+    PLAYER_LIVES_MAX,
+    INVINCIBILITY_MS,
+    RAPIDFIRE_COOLDOWN_MULT,
     SPRITE_SHIP,
+    SPRITE_SHOT1,
+    SPRITE_SHOT2,
+    SPRITE_SHOT4,
+    BULLET_W_L1,
+    BULLET_H_L1,
+    BULLET_W_L2,
+    BULLET_H_L2,
+    BULLET_W_L3,
+    BULLET_H_L3,
 )
 from src.entities.bullet import Bullet
 
@@ -95,7 +112,14 @@ class Player(pygame.sprite.Sprite):
         cx = self.rect.centerx
         top = self.rect.top
         if self.shot_level >= 3:
-            return [Bullet(cx, top), Bullet(cx - 16, top), Bullet(cx + 16, top)]
+            return [
+                Bullet(cx, top, SPRITE_SHOT4, BULLET_W_L3, BULLET_H_L3),
+                Bullet(cx - 16, top, SPRITE_SHOT4, BULLET_W_L3, BULLET_H_L3),
+                Bullet(cx + 16, top, SPRITE_SHOT4, BULLET_W_L3, BULLET_H_L3),
+            ]
         if self.shot_level >= 2:
-            return [Bullet(cx - 10, top), Bullet(cx + 10, top)]
-        return [Bullet(cx, top)]
+            return [
+                Bullet(cx - 10, top, SPRITE_SHOT2, BULLET_W_L2, BULLET_H_L2),
+                Bullet(cx + 10, top, SPRITE_SHOT2, BULLET_W_L2, BULLET_H_L2),
+            ]
+        return [Bullet(cx, top, SPRITE_SHOT1, BULLET_W_L1, BULLET_H_L1)]

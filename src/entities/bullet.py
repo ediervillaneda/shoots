@@ -4,10 +4,10 @@ from src.settings import BULLET_SPEED, BULLET_W, BULLET_H, SPRITE_PLASMA
 
 
 class Bullet(pygame.sprite.Sprite):
-    def __init__(self, x, y):
+    def __init__(self, x, y, sprite_path=SPRITE_PLASMA, w=BULLET_W, h=BULLET_H):
         super().__init__()
-        raw = assets.get(SPRITE_PLASMA)
-        self.image = pygame.transform.scale(raw, (BULLET_W, BULLET_H))
+        raw = assets.get(sprite_path)
+        self.image = pygame.transform.scale(raw, (w, h))
         self.rect = self.image.get_rect(centerx=x, bottom=y)
         self.y = float(self.rect.y)
 
