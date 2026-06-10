@@ -3,7 +3,7 @@ from src.scenes.gameplay import GameplayScene
 from src.entities.scout import Scout
 from src.entities.fighter import Fighter
 from src.entities.bullet import Bullet
-from src.settings import SCOUT_POINTS, FIGHTER_POINTS, PLAYER_LIVES, SCREEN_H
+from src.settings import SCOUT_POINTS, PLAYER_LIVES, SCREEN_H
 
 
 # --- tests existentes (actualizados para state="playing") ---
