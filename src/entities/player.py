@@ -40,7 +40,7 @@ class Player(pygame.sprite.Sprite):
     def take_damage(self, now):
         if self.invincible:
             return
-        self.lives -= 1
+        self.lives = max(0, self.lives - 1)
         self.invincible = True
         self.invincible_until = now + INVINCIBILITY_MS
 
