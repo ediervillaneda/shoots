@@ -25,11 +25,12 @@ def test_spawn_returns_empty_before_interval():
 
 
 def test_spawn_returns_enemy_on_interval():
+    from src.entities.kamikaze import Kamikaze
     ss = SpawnSystem()
-    now = ss._last_spawn + WAVE_SPAWN_MIN
-    result = ss.update(now)
+    ss._last_spawn = pygame.time.get_ticks() - WAVE_SPAWN_MIN
+    result = ss.update(pygame.time.get_ticks())
     assert len(result) == 1
-    assert isinstance(result[0], (Scout, Fighter))
+    assert isinstance(result[0], (Scout, Fighter, Kamikaze))
 
 
 def test_wave_advances_by_time():
@@ -72,3 +73,37 @@ def test_fighter_prob_capped():
     ss = SpawnSystem()
     ss.wave = 100
     assert ss._fighter_prob() == WAVE_FIGHTER_CAP
+
+
+from unittest.mock import patch
+from src.entities.kamikaze import Kamikaze
+from src.settings import WAVE_KAMIKAZE_BASE, WAVE_KAMIKAZE_INC, WAVE_KAMIKAZE_CAP
+
+
+def test_make_enemy_returns_kamikaze():
+    ss = SpawnSystem()
+    # side_effect order: [x_position, kamikaze_prob_check]
+    with patch("src.systems.spawning.random.randint", side_effect=[270, 1]):
+        enemy = ss._make_enemy()
+    assert isinstance(enemy, Kamikaze)
+
+
+def test_make_enemy_returns_scout_when_probs_low():
+    ss = SpawnSystem()
+    # x=270, kamikaze_check=100 (fail, 100>10), fighter_check=100 (fail, 100>30) → Scout
+    with patch("src.systems.spawning.random.randint", side_effect=[270, 100, 100]):
+        enemy = ss._make_enemy()
+    assert isinstance(enemy, Scout)
+
+
+def test_kamikaze_prob_increases_with_wave():
+    ss = SpawnSystem()
+    prob_wave0 = ss._kamikaze_prob()
+    ss.wave = 3
+    assert ss._kamikaze_prob() > prob_wave0
+
+
+def test_kamikaze_prob_capped():
+    ss = SpawnSystem()
+    ss.wave = 1000
+    assert ss._kamikaze_prob() == WAVE_KAMIKAZE_CAP

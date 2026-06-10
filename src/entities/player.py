@@ -2,7 +2,7 @@ import pygame
 from src.settings import (
     PLAYER_SPEED, PLAYER_COLOR, PLAYER_W, PLAYER_H,
     SCREEN_W, SCREEN_H, BULLET_COOLDOWN,
-    PLAYER_LIVES, INVINCIBILITY_MS,
+    PLAYER_LIVES, PLAYER_LIVES_MAX, INVINCIBILITY_MS, RAPIDFIRE_COOLDOWN_MULT,
 )
 from src.entities.bullet import Bullet
 
@@ -32,15 +32,26 @@ class Player(pygame.sprite.Sprite):
         self.y = float(self.rect.y)
         self.vel_x = 0.0
         self.vel_y = 0.0
-        self.last_shot = 0
+        self.last_shot = -BULLET_COOLDOWN
         self.lives = PLAYER_LIVES
         self.invincible = False
         self.invincible_until = 0
+        self.active_powerups: set[str] = set()
 
-    def take_damage(self, now):
+    def apply_powerup(self, kind: str) -> None:
+        if kind == "extra_life":
+            self.lives = min(PLAYER_LIVES_MAX, self.lives + 1)
+        else:
+            self.active_powerups.add(kind)
+
+    def take_damage(self, now: int) -> None:
         if self.invincible:
             return
+        if "shield" in self.active_powerups:
+            self.active_powerups.discard("shield")
+            return
         self.lives = max(0, self.lives - 1)
+        self.active_powerups.clear()
         self.invincible = True
         self.invincible_until = now + INVINCIBILITY_MS
 
@@ -68,8 +79,17 @@ class Player(pygame.sprite.Sprite):
             visible = (now // 100) % 2 == 0
             self.image.set_alpha(255 if visible else 0)
 
-    def shoot(self, now):
-        if now - self.last_shot >= BULLET_COOLDOWN:
-            self.last_shot = now
-            return Bullet(self.rect.centerx, self.rect.top)
-        return None
+    def shoot(self, now: int) -> list[Bullet]:
+        cooldown = BULLET_COOLDOWN
+        if "rapid_fire" in self.active_powerups:
+            cooldown = int(BULLET_COOLDOWN * RAPIDFIRE_COOLDOWN_MULT)
+        if now - self.last_shot < cooldown:
+            return []
+        self.last_shot = now
+        cx = self.rect.centerx
+        top = self.rect.top
+        if "triple_shot" in self.active_powerups:
+            return [Bullet(cx, top), Bullet(cx - 16, top), Bullet(cx + 16, top)]
+        if "double_shot" in self.active_powerups:
+            return [Bullet(cx - 10, top), Bullet(cx + 10, top)]
+        return [Bullet(cx, top)]

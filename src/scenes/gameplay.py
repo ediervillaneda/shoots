@@ -1,10 +1,15 @@
+import random
 import pygame
+import src.assets as assets
 from src.entities.player import Player
 from src.entities.fighter import Fighter
+from src.entities.kamikaze import Kamikaze
+from src.entities.powerup import PowerUp, POWERUP_ASSETS, POWERUP_KINDS
 from src.systems.spawning import SpawnSystem
 from src.settings import (
     SCREEN_W, SCREEN_H,
     BULLET_DAMAGE, HUD_FONT_SIZE, HUD_COLOR, HUD_MARGIN,
+    POWERUP_DROP_CHANCE, PLAYER_W, PLAYER_H,
 )
 
 
@@ -17,6 +22,7 @@ class GameplayScene:
         self.bullets = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
         self.enemy_bullets = pygame.sprite.Group()
+        self.powerups = pygame.sprite.Group()
         self.all_sprites = pygame.sprite.Group(self.player)
         self.spawn_system = SpawnSystem()
 
@@ -25,6 +31,7 @@ class GameplayScene:
         self.bullets = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
         self.enemy_bullets = pygame.sprite.Group()
+        self.powerups = pygame.sprite.Group()
         self.all_sprites = pygame.sprite.Group(self.player)
         self.score = 0
         self.spawn_system = SpawnSystem()
@@ -38,10 +45,16 @@ class GameplayScene:
             return
         self.player.handle_keys(keys)
         if keys[pygame.K_SPACE]:
-            bullet = self.player.shoot(pygame.time.get_ticks())
-            if bullet:
+            for bullet in self.player.shoot(pygame.time.get_ticks()):
                 self.bullets.add(bullet)
                 self.all_sprites.add(bullet)
+
+    def _maybe_drop_powerup(self, x, y):
+        if random.random() < POWERUP_DROP_CHANCE:
+            kind = random.choice(POWERUP_KINDS)
+            pu = PowerUp(kind, x, y)
+            self.powerups.add(pu)
+            self.all_sprites.add(pu)
 
     def update(self, dt):
         if self.state != "playing":
@@ -51,10 +64,13 @@ class GameplayScene:
         self.bullets.update(dt)
         self.enemies.update(dt)
         self.enemy_bullets.update(dt)
+        self.powerups.update(dt)
 
         now = pygame.time.get_ticks()
 
         for enemy in self.spawn_system.update(now):
+            if isinstance(enemy, Kamikaze):
+                enemy.target = self.player
             self.enemies.add(enemy)
             self.all_sprites.add(enemy)
 
@@ -74,6 +90,7 @@ class GameplayScene:
             self.score += enemy.points
             self.player.take_damage(now)
             self.spawn_system.register_kill()
+            self._maybe_drop_powerup(enemy.rect.centerx, enemy.rect.centery)
 
         hits = pygame.sprite.groupcollide(self.bullets, self.enemies, True, False)
         for enemies_hit in hits.values():
@@ -83,6 +100,11 @@ class GameplayScene:
                     if not enemy.alive():
                         self.score += enemy.points
                         self.spawn_system.register_kill()
+                        self._maybe_drop_powerup(enemy.rect.centerx, enemy.rect.centery)
+
+        picked = pygame.sprite.spritecollide(self.player, self.powerups, True)
+        for pu in picked:
+            self.player.apply_powerup(pu.kind)
 
         if self.player.lives <= 0:
             self.state = "game_over"
@@ -111,6 +133,20 @@ class GameplayScene:
         lives_text = ("♥ " * self.player.lives).strip()
         lives_surf = self._font.render(lives_text, True, (220, 50, 50))
         screen.blit(lives_surf, (SCREEN_W - lives_surf.get_width() - HUD_MARGIN, HUD_MARGIN))
+
+        if "shield" in self.player.active_powerups:
+            sh = assets.get("ship/shield.png")
+            sh_scaled = pygame.transform.scale(sh, (PLAYER_W + 20, PLAYER_H + 20))
+            screen.blit(sh_scaled, (
+                self.player.rect.centerx - sh_scaled.get_width() // 2,
+                self.player.rect.top - 10,
+            ))
+
+        x = HUD_MARGIN
+        for kind in sorted(self.player.active_powerups):
+            icon = pygame.transform.scale(assets.get(POWERUP_ASSETS[kind]), (24, 24))
+            screen.blit(icon, (x, SCREEN_H - 24 - HUD_MARGIN))
+            x += 28
 
         if self.state == "start":
             self._draw_overlay(screen, "STARFALL", "PRESS SPACE TO PLAY")

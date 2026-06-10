@@ -1,9 +1,12 @@
 import pygame
+from unittest.mock import patch
 from src.scenes.gameplay import GameplayScene
 from src.entities.scout import Scout
 from src.entities.fighter import Fighter
 from src.entities.bullet import Bullet
 from src.entities.enemy_bullet import EnemyBullet
+from src.entities.powerup import PowerUp
+from src.entities.kamikaze import Kamikaze
 from src.settings import SCOUT_POINTS, PLAYER_LIVES, SCREEN_H, WAVE_SPAWN_MIN, FIGHTER_HP, BULLET_DAMAGE
 
 
@@ -227,7 +230,8 @@ def test_game_over_when_lives_reach_zero():
     scene.all_sprites.add(scout)
 
     scene.spawn_system._last_spawn = pygame.time.get_ticks()
-    scene.update(0.0)
+    with patch("src.scenes.gameplay.random.random", return_value=1.0):  # no drop
+        scene.update(0.0)
     assert scene.state == "game_over"
 
 
@@ -265,3 +269,52 @@ def test_spawn_system_adds_enemy_to_groups():
     initial_enemies = len(scene.enemies)
     scene.update(0.016)
     assert len(scene.enemies) > initial_enemies
+
+
+def test_powerup_group_exists_after_reset():
+    scene = GameplayScene()
+    scene._reset()
+    assert isinstance(scene.powerups, pygame.sprite.Group)
+
+
+def test_bullet_kill_drops_powerup_when_lucky():
+    scene = GameplayScene()
+    scene._reset()
+    scout = Scout(270)
+    scout.rect.center = (270, 480)
+    scout.x = float(scout.rect.x)
+    scout.y = float(scout.rect.y)
+    scene.enemies.add(scout)
+    scene.all_sprites.add(scout)
+    bullet = Bullet(270, 480)
+    bullet.rect.center = (270, 480)
+    scene.bullets.add(bullet)
+    scene.all_sprites.add(bullet)
+    scene.spawn_system._last_spawn = pygame.time.get_ticks()
+    with patch("src.scenes.gameplay.random.random", return_value=0.0):  # always drop
+        scene.update(0.0)
+    assert len(scene.powerups) == 1
+
+
+def test_player_picks_up_powerup():
+    scene = GameplayScene()
+    scene._reset()
+    pu = PowerUp("rapid_fire", scene.player.rect.centerx, scene.player.rect.centery)
+    pu.rect.center = scene.player.rect.center
+    scene.powerups.add(pu)
+    scene.all_sprites.add(pu)
+    scene.spawn_system._last_spawn = pygame.time.get_ticks()
+    scene.update(0.0)
+    assert "rapid_fire" in scene.player.active_powerups
+    assert not pu.alive()
+
+
+def test_kamikaze_gets_target_on_spawn():
+    scene = GameplayScene()
+    scene._reset()
+    scene.spawn_system._last_spawn = pygame.time.get_ticks() - WAVE_SPAWN_MIN
+    with patch("src.systems.spawning.random.randint", side_effect=[270, 1]):
+        scene.update(0.016)
+    kamikazes = [e for e in scene.enemies if isinstance(e, Kamikaze)]
+    assert len(kamikazes) == 1
+    assert kamikazes[0].target is scene.player
