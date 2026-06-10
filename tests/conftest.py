@@ -10,3 +10,10 @@ def pygame_init():
     pygame.display.set_mode((1, 1))
     yield
     pygame.quit()
+
+@pytest.fixture(autouse=True)
+def clear_asset_cache():
+    import src.assets as assets
+    assets._cache.clear()
+    yield
+    assets._cache.clear()
