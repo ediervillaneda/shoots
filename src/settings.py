@@ -46,3 +46,23 @@ INVINCIBILITY_MS = 2000
 HUD_FONT_SIZE = 24
 HUD_COLOR     = (255, 255, 255)
 HUD_MARGIN    = 10
+
+# Enemy bullet
+ENEMY_BULLET_SPEED  = 300
+ENEMY_BULLET_DAMAGE = 1
+ENEMY_BULLET_COLOR  = (255, 80, 80)
+ENEMY_BULLET_W      = 6
+ENEMY_BULLET_H      = 12
+
+# Fighter shoot
+FIGHTER_SHOOT_INTERVAL = 2000   # ms entre disparos por Fighter
+
+# Waves
+WAVE_TIME_THRESHOLD  = 30_000   # ms para subir oleada (oleadas 0-2)
+WAVE_KILL_THRESHOLD  = 10       # kills para subir oleada (oleada 3+)
+WAVE_SPEED_FACTOR    = 0.2      # px/s extra por oleada
+WAVE_SPAWN_MIN       = 1500     # ms spawn interval en oleada 0
+WAVE_SPAWN_MIN_CAP   = 600      # mínimo spawn interval
+WAVE_FIGHTER_BASE    = 30       # % probabilidad Fighter en oleada 0
+WAVE_FIGHTER_INC     = 10       # % adicional por oleada
+WAVE_FIGHTER_CAP     = 80       # % máximo Fighter
