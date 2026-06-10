@@ -247,7 +247,7 @@ class GameplayScene:
             sh_scaled = pygame.transform.scale(sh, (PLAYER_W + 20, PLAYER_H + 20))
             screen.blit(sh_scaled, (
                 self.player.rect.centerx - sh_scaled.get_width() // 2,
-                self.player.rect.top - 10,
+                self.player.rect.top - sh_scaled.get_height(),
             ))
 
         x = HUD_MARGIN
