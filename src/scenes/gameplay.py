@@ -13,6 +13,7 @@ from src.entities.boss import Boss
 from src.entities.powerup import PowerUp, POWERUP_ASSETS, POWERUP_KINDS
 from src.entities.explosion import Explosion
 from src.entities.impact_effect import ImpactEffect
+from src.entities.scrolling_bg import ScrollingBG
 from src.systems.spawning import SpawnSystem
 from src.settings import (
     SCREEN_W, SCREEN_H,
@@ -32,6 +33,7 @@ class GameplayScene:
         self._font = pygame.font.SysFont(None, HUD_FONT_SIZE)
         self.score = 0
         self.state = "start"
+        self._bg = ScrollingBG()
         self.player = Player()
         self.bullets = pygame.sprite.Group()
         self.rockets = pygame.sprite.Group()
@@ -128,6 +130,7 @@ class GameplayScene:
                     self._maybe_drop_powerup(enemy.rect.centerx, enemy.rect.centery)
 
     def update(self, dt):
+        self._bg.update(dt)
         if self.state != "playing":
             return
 
@@ -224,7 +227,9 @@ class GameplayScene:
         screen.blit(sub_surf, (cx - sub_surf.get_width() // 2, cy + 10))
 
     def render(self, screen):
-        screen.fill((0, 0, 0))
+        self._bg.draw(screen)
+        if not self.player.invincible:
+            screen.blit(self.player.shadow_image, self.player.shadow_rect)
         self.all_sprites.draw(screen)
 
         score_surf = self._font.render(f"SCORE: {self.score}", True, HUD_COLOR)
@@ -242,7 +247,7 @@ class GameplayScene:
             sh_scaled = pygame.transform.scale(sh, (PLAYER_W + 20, PLAYER_H + 20))
             screen.blit(sh_scaled, (
                 self.player.rect.centerx - sh_scaled.get_width() // 2,
-                self.player.rect.top - 10,
+                self.player.rect.top - sh_scaled.get_height(),
             ))
 
         x = HUD_MARGIN

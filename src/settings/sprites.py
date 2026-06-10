@@ -1,26 +1,38 @@
-SPRITE_SCOUT = "enemy_ships/Ship1/Ship1.png"
-SPRITE_SHIP = "enemy_boss/Ship_1_D.png"
-SPRITE_PLASMA = "ship/plasm.png"
-SPRITE_ROCKET = "enemy_boss/Missile_A.png"
-SPRITE_FIGHTER = "enemy_ships/Ship2/Ship2.png"
-SPRITE_FIGHTER_BULLET = "ship/bullet-1.png"
-SPRITE_KAMIKAZE = "enemy_ships/Ship3/Ship3.png"
-SPRITE_GUNNER = "enemy_ships/Ship4/Ship4.png"
-SPRITE_STRIKER = "enemy_ships/Ship5/Ship5.png"
-SPRITE_INTERCEPTOR = "enemy_ships/Ship6/Ship6.png"
-SPRITE_SHIELD_OVERLAY = "ship/shield.png"
-SPRITE_PU_RAPID_FIRE = "ship/bonus_time.png"
-SPRITE_PU_SHIELD = "ship/bonus_shield.png"
-SPRITE_PU_DOUBLE_SHOT = "ship/bonus_gun.png"
-SPRITE_PU_ROCKET = "ship/bonus_rocket.png"
-SPRITE_PU_EXTRA_LIFE = "ship/bonus_life.png"
+SPRITE_BG = "bg/bg.png"
+
+SPRITE_PLAYER_L2 = "player/l2.png"
+SPRITE_PLAYER_L1 = "player/l1.png"
+SPRITE_PLAYER_M  = "player/m.png"
+SPRITE_PLAYER_R1 = "player/r1.png"
+SPRITE_PLAYER_R2 = "player/r2.png"
+
+SPRITE_PLAYER_SHADOW_L2 = "player/shadow_l2.png"
+SPRITE_PLAYER_SHADOW_L1 = "player/shadow_l1.png"
+SPRITE_PLAYER_SHADOW_M  = "player/shadow_m.png"
+SPRITE_PLAYER_SHADOW_R1 = "player/shadow_r1.png"
+SPRITE_PLAYER_SHADOW_R2 = "player/shadow_r2.png"
+
+SPRITE_SHIELD_OVERLAY = "player/shield_overlay.png"
+
+SPRITE_SCOUT       = "enemies/scout.png"
+SPRITE_FIGHTER     = "enemies/fighter.png"
+SPRITE_KAMIKAZE    = "enemies/kamikaze.png"
+SPRITE_GUNNER      = "enemies/gunner.png"
+SPRITE_STRIKER     = "enemies/striker.png"
+SPRITE_INTERCEPTOR = "enemies/interceptor.png"
+SPRITE_ROCKET      = "enemies/missile.png"
+
+SPRITE_PU_RAPID_FIRE  = "powerups/rapid_fire.png"
+SPRITE_PU_SHIELD      = "powerups/shield.png"
+SPRITE_PU_DOUBLE_SHOT = "powerups/gun_upgrade.png"
+SPRITE_PU_ROCKET      = "powerups/rocket.png"
+SPRITE_PU_EXTRA_LIFE  = "powerups/extra_life.png"
 
 SHOT_LEVEL_MAX = 6
 
-# Enemy projectile animation frames (SpaceRage/FX)
-ENEMY_PROJ_PLASMA = ["SpaceRage/FX/plasma_1.png", "SpaceRage/FX/plasma_2.png"]
-ENEMY_PROJ_PROTON = [f"SpaceRage/FX/proton_0{i}.png" for i in range(1, 4)]
-ENEMY_PROJ_VULCAN = [f"SpaceRage/FX/vulcan_{i}.png" for i in range(1, 4)]
+ENEMY_PROJ_PLASMA = ["enemy_fx/plasma_1.png", "enemy_fx/plasma_2.png"]
+ENEMY_PROJ_PROTON = [f"enemy_fx/proton_0{i}.png" for i in range(1, 4)]
+ENEMY_PROJ_VULCAN = [f"enemy_fx/vulcan_{i}.png" for i in range(1, 4)]
 
 ENEMY_PROJ_PLASMA_W, ENEMY_PROJ_PLASMA_H = 12, 42
 ENEMY_PROJ_PROTON_W, ENEMY_PROJ_PROTON_H = 22, 22
