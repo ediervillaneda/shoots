@@ -87,3 +87,48 @@ def test_player_clamped_to_screen_top():
     player.vel_y = 0.0
     player.update(0.016)
     assert player.rect.top >= 0
+
+
+# --- v0.3: lives & invincibility ---
+
+def test_player_initial_lives():
+    from src.settings import PLAYER_LIVES
+    player = Player()
+    assert player.lives == PLAYER_LIVES
+
+
+def test_take_damage_reduces_lives():
+    from src.settings import PLAYER_LIVES
+    player = Player()
+    player.take_damage(0)
+    assert player.lives == PLAYER_LIVES - 1
+
+
+def test_take_damage_activates_invincibility():
+    player = Player()
+    player.take_damage(0)
+    assert player.invincible is True
+
+
+def test_take_damage_ignored_when_invincible():
+    from src.settings import PLAYER_LIVES
+    player = Player()
+    player.take_damage(0)   # primera vez: invincible=True
+    player.take_damage(0)   # segunda vez: ignorada
+    assert player.lives == PLAYER_LIVES - 1
+
+
+def test_invincibility_expires_after_update():
+    player = Player()
+    player.invincible = True
+    player.invincible_until = 0   # ya expiró (pygame.time.get_ticks() > 0)
+    player.update(0.016)
+    assert player.invincible is False
+
+
+def test_invincibility_not_expired_if_future():
+    player = Player()
+    player.invincible = True
+    player.invincible_until = pygame.time.get_ticks() + 10_000
+    player.update(0.016)
+    assert player.invincible is True
