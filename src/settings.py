@@ -63,6 +63,7 @@ WAVE_SPAWN_MIN_CAP = 600  # mínimo spawn interval
 WAVE_FIGHTER_BASE = 30  # % probabilidad Fighter en oleada 0
 WAVE_FIGHTER_INC = 10  # % adicional por oleada
 WAVE_FIGHTER_CAP = 80  # % máximo Fighter
+WAVE_SPAWN_DEC = 150  # ms reduction per wave
 
 # Kamikaze
 KAMIKAZE_SPEED = 200

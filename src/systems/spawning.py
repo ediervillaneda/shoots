@@ -7,7 +7,7 @@ from src.entities.boss import Boss
 from src.settings import (
     SCREEN_W, SCOUT_W, FIGHTER_W,
     WAVE_TIME_THRESHOLD, WAVE_KILL_THRESHOLD,
-    WAVE_SPAWN_MIN, WAVE_SPAWN_MIN_CAP,
+    WAVE_SPAWN_MIN, WAVE_SPAWN_MIN_CAP, WAVE_SPAWN_DEC,
     WAVE_FIGHTER_BASE, WAVE_FIGHTER_INC, WAVE_FIGHTER_CAP,
     WAVE_KAMIKAZE_BASE, WAVE_KAMIKAZE_INC, WAVE_KAMIKAZE_CAP,
     WAVE_SPEED_FACTOR,
@@ -60,7 +60,7 @@ class SpawnSystem:
         return random.choice(BOSS_SPRITES)
 
     def _spawn_interval(self):
-        return max(WAVE_SPAWN_MIN_CAP, WAVE_SPAWN_MIN - self.wave * 150)
+        return max(WAVE_SPAWN_MIN_CAP, WAVE_SPAWN_MIN - self.wave * WAVE_SPAWN_DEC)
 
     def _kamikaze_prob(self):
         return min(WAVE_KAMIKAZE_CAP, WAVE_KAMIKAZE_BASE + self.wave * WAVE_KAMIKAZE_INC)
