@@ -4,7 +4,7 @@ from src.entities.scout import Scout
 from src.entities.fighter import Fighter
 from src.entities.bullet import Bullet
 from src.entities.enemy_bullet import EnemyBullet
-from src.settings import SCOUT_POINTS, PLAYER_LIVES, SCREEN_H, WAVE_SPAWN_MIN
+from src.settings import SCOUT_POINTS, PLAYER_LIVES, SCREEN_H, WAVE_SPAWN_MIN, FIGHTER_HP, BULLET_DAMAGE
 
 
 # --- tests de estado y reset ---
@@ -104,7 +104,7 @@ def test_bullet_damages_fighter_without_killing():
 
     assert not bullet.alive()
     assert fighter.alive()
-    assert fighter.hp == 1
+    assert fighter.hp == FIGHTER_HP - BULLET_DAMAGE
 
 
 def test_bullet_scores_on_kill():
