@@ -427,8 +427,8 @@ def test_rocket_hit_spawns_explosion():
     scene.all_sprites.add(rocket)
     scene.spawn_system._last_spawn = pygame.time.get_ticks()
     scene.update(0.0)
-    assert len(scene.explosions) == 1
-    assert isinstance(list(scene.explosions)[0], Explosion)
+    assert len(scene.explosions) >= 1
+    assert all(isinstance(e, Explosion) for e in scene.explosions)
 
 
 def test_rocket_hit_kills_direct_enemy():
@@ -477,3 +477,79 @@ def test_rocket_area_damage_hits_nearby_enemy():
     scene.spawn_system._last_spawn = pygame.time.get_ticks()
     scene.update(0.0)
     assert fighter.hp == fighter_initial_hp - ROCKET_AREA_DAMAGE
+
+
+# --- v0.7: entity death explosions ---
+
+from src.settings import EXPL_SCOUT, EXPL_FIGHTER, EXPL_BOSS, EXPL_PLAYER
+
+
+def test_bullet_kill_spawns_explosion():
+    scene = GameplayScene()
+    scene._reset()
+    scout = _Scout(270)
+    scout.rect.center = (270, 480)
+    scout.x = float(scout.rect.x)
+    scout.y = float(scout.rect.y)
+    scene.enemies.add(scout)
+    scene.all_sprites.add(scout)
+    bullet = Bullet(270, 480)
+    bullet.rect.center = (270, 480)
+    scene.bullets.add(bullet)
+    scene.all_sprites.add(bullet)
+    scene.spawn_system._last_spawn = pygame.time.get_ticks()
+    scene.update(0.0)
+    assert not scout.alive()
+    assert len(scene.explosions) == 1
+    assert isinstance(list(scene.explosions)[0], Explosion)
+
+
+def test_player_collision_spawns_enemy_explosion():
+    scene = GameplayScene()
+    scene._reset()
+    scout = _Scout(scene.player.rect.centerx)
+    scout.rect.center = scene.player.rect.center
+    scout.x = float(scout.rect.x)
+    scout.y = float(scout.rect.y)
+    scene.enemies.add(scout)
+    scene.all_sprites.add(scout)
+    scene.spawn_system._last_spawn = pygame.time.get_ticks()
+    with patch("src.scenes.gameplay.random.random", return_value=1.0):
+        scene.update(0.0)
+    assert not scout.alive()
+    assert any(isinstance(e, Explosion) for e in scene.explosions)
+
+
+def test_player_hit_spawns_player_explosion():
+    scene = GameplayScene()
+    scene._reset()
+    scout = _Scout(scene.player.rect.centerx)
+    scout.rect.center = scene.player.rect.center
+    scout.x = float(scout.rect.x)
+    scout.y = float(scout.rect.y)
+    scene.enemies.add(scout)
+    scene.all_sprites.add(scout)
+    initial_lives = scene.player.lives
+    scene.spawn_system._last_spawn = pygame.time.get_ticks()
+    with patch("src.scenes.gameplay.random.random", return_value=1.0):
+        scene.update(0.0)
+    assert scene.player.lives < initial_lives
+    explosions = list(scene.explosions)
+    assert len(explosions) >= 2  # enemy death + player explosion
+
+
+def test_boss_death_spawns_explosion():
+    scene = GameplayScene()
+    scene._reset()
+    boss = Boss(BOSS_SPRITES[0])
+    scene.boss = boss
+    scene.enemies.add(boss)
+    scene.all_sprites.add(boss)
+    boss.kill()
+    scene.spawn_system._last_spawn = pygame.time.get_ticks()
+    with patch.object(scene.spawn_system, 'notify_boss_killed'):
+        scene.update(0.0)
+    assert len(scene.explosions) == 1
+    expl = list(scene.explosions)[0]
+    assert isinstance(expl, Explosion)
+    assert expl.image.get_size() == (160, 160)

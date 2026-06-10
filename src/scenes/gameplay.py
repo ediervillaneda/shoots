@@ -1,16 +1,23 @@
+import math
 import random
 import pygame
 import src.assets as assets
 from src.entities.player import Player
+from src.entities.scout import Scout
 from src.entities.fighter import Fighter
 from src.entities.kamikaze import Kamikaze
+from src.entities.boss import Boss
 from src.entities.powerup import PowerUp, POWERUP_ASSETS, POWERUP_KINDS
+from src.entities.explosion import Explosion
 from src.systems.spawning import SpawnSystem
 from src.settings import (
     SCREEN_W, SCREEN_H,
     BULLET_DAMAGE, HUD_FONT_SIZE, HUD_COLOR, HUD_MARGIN,
     POWERUP_DROP_CHANCE, PLAYER_W, PLAYER_H, SPRITE_SHIELD_OVERLAY,
     BOSS_HP, BOSS_HEALTH_BAR_H, BOSS_BAR_Y_OFFSET,
+    ROCKET_DAMAGE, ROCKET_AREA_DAMAGE, ROCKET_RADIUS,
+    EXPLOSION_W, EXPLOSION_H, EXPLOSION_W_BOSS, EXPLOSION_H_BOSS,
+    EXPL_SCOUT, EXPL_KAMIKAZE, EXPL_FIGHTER, EXPL_BOSS, EXPL_PLAYER,
 )
 
 
@@ -21,9 +28,11 @@ class GameplayScene:
         self.state = "start"
         self.player = Player()
         self.bullets = pygame.sprite.Group()
+        self.rockets = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
         self.enemy_bullets = pygame.sprite.Group()
         self.powerups = pygame.sprite.Group()
+        self.explosions = pygame.sprite.Group()
         self.all_sprites = pygame.sprite.Group(self.player)
         self.spawn_system = SpawnSystem()
         self.boss = None
@@ -31,9 +40,11 @@ class GameplayScene:
     def _reset(self):
         self.player = Player()
         self.bullets = pygame.sprite.Group()
+        self.rockets = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
         self.enemy_bullets = pygame.sprite.Group()
         self.powerups = pygame.sprite.Group()
+        self.explosions = pygame.sprite.Group()
         self.all_sprites = pygame.sprite.Group(self.player)
         self.score = 0
         self.spawn_system = SpawnSystem()
@@ -47,10 +58,14 @@ class GameplayScene:
                 self._reset()
             return
         self.player.handle_keys(keys)
+        now = pygame.time.get_ticks()
         if keys[pygame.K_SPACE]:
-            for bullet in self.player.shoot(pygame.time.get_ticks()):
+            for bullet in self.player.shoot(now):
                 self.bullets.add(bullet)
                 self.all_sprites.add(bullet)
+            for rocket in self.player.shoot_rocket(now):
+                self.rockets.add(rocket)
+                self.all_sprites.add(rocket)
 
     def _maybe_drop_powerup(self, x, y):
         if random.random() < POWERUP_DROP_CHANCE:
@@ -59,12 +74,59 @@ class GameplayScene:
             self.powerups.add(pu)
             self.all_sprites.add(pu)
 
+    def _spawn_death_explosion(self, entity) -> None:
+        if isinstance(entity, Boss):
+            paths = EXPL_BOSS
+            size = (EXPLOSION_W_BOSS, EXPLOSION_H_BOSS)
+        elif isinstance(entity, Fighter):
+            paths = EXPL_FIGHTER
+            size = (EXPLOSION_W, EXPLOSION_H)
+        elif isinstance(entity, Kamikaze):
+            paths = EXPL_KAMIKAZE
+            size = (EXPLOSION_W, EXPLOSION_H)
+        else:
+            paths = EXPL_SCOUT
+            size = (EXPLOSION_W, EXPLOSION_H)
+        expl = Explosion(entity.rect.centerx, entity.rect.centery, paths, size)
+        self.explosions.add(expl)
+        self.all_sprites.add(expl)
+
+    def _handle_player_damage(self, now: int) -> None:
+        lives_before = self.player.lives
+        self.player.take_damage(now)
+        if self.player.lives < lives_before:
+            expl = Explosion(
+                self.player.rect.centerx, self.player.rect.centery, EXPL_PLAYER
+            )
+            self.explosions.add(expl)
+            self.all_sprites.add(expl)
+
+    def _explode(self, cx: int, cy: int, direct_hits: list) -> None:
+        expl = Explosion(cx, cy)
+        self.explosions.add(expl)
+        self.all_sprites.add(expl)
+        direct_set = set(direct_hits)
+        for enemy in list(self.enemies):
+            if not enemy.alive():
+                continue
+            dist = math.hypot(enemy.rect.centerx - cx, enemy.rect.centery - cy)
+            dmg = ROCKET_DAMAGE if enemy in direct_set else ROCKET_AREA_DAMAGE
+            if enemy in direct_set or dist <= ROCKET_RADIUS:
+                enemy.take_damage(dmg)
+                if not enemy.alive():
+                    self._spawn_death_explosion(enemy)
+                    self.score += enemy.points
+                    self.spawn_system.register_kill()
+                    self._maybe_drop_powerup(enemy.rect.centerx, enemy.rect.centery)
+
     def update(self, dt):
         if self.state != "playing":
             return
 
         self.player.update(dt)
         self.bullets.update(dt)
+        self.rockets.update(dt)
+        self.explosions.update(dt)
         self.enemies.update(dt)
         self.enemy_bullets.update(dt)
         self.powerups.update(dt)
@@ -89,6 +151,7 @@ class GameplayScene:
                 self.all_sprites.add(eb)
 
         if self.boss and not self.boss.alive():
+            self._spawn_death_explosion(self.boss)
             self.spawn_system.notify_boss_killed()
             self.boss = None
 
@@ -101,12 +164,13 @@ class GameplayScene:
 
         eb_hits = pygame.sprite.spritecollide(self.player, self.enemy_bullets, True)
         for _ in eb_hits:
-            self.player.take_damage(now)
+            self._handle_player_damage(now)
 
         hit_enemies = pygame.sprite.spritecollide(self.player, self.enemies, True)
         for enemy in hit_enemies:
+            self._spawn_death_explosion(enemy)
             self.score += enemy.points
-            self.player.take_damage(now)
+            self._handle_player_damage(now)
             self.spawn_system.register_kill()
             self._maybe_drop_powerup(enemy.rect.centerx, enemy.rect.centery)
 
@@ -116,9 +180,17 @@ class GameplayScene:
                 if enemy.alive():
                     enemy.take_damage(BULLET_DAMAGE)
                     if not enemy.alive():
+                        self._spawn_death_explosion(enemy)
                         self.score += enemy.points
                         self.spawn_system.register_kill()
                         self._maybe_drop_powerup(enemy.rect.centerx, enemy.rect.centery)
+
+        for rocket in list(self.rockets):
+            hit = pygame.sprite.spritecollide(rocket, self.enemies, False)
+            if hit:
+                cx, cy = rocket.rect.center
+                rocket.kill()
+                self._explode(cx, cy, hit)
 
         picked = pygame.sprite.spritecollide(self.player, self.powerups, True)
         for pu in picked:
