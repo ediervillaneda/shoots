@@ -82,3 +82,16 @@ enemy_speed = base_speed + wave * 0.2
 - v0.4: Power-ups
 - v0.5: Jefe
 - v1.0: Menús, sonido, guardado de récords
+
+## Git Workflow
+
+- `main` — releases estables, solo merges desde `develop`, taggeado (v0.1, v0.2...)
+- `develop` — integración, base para crear ramas de trabajo
+
+**Ramas de trabajo:** `v0.x/descripcion-corta` (ej: `v0.1/player-movement`)
+
+**Flujo:**
+1. `git checkout develop && git checkout -b v0.x/tema`
+2. Trabajar y commitear en la rama
+3. `git checkout develop && git merge v0.x/tema`
+4. Al cerrar versión: `git checkout main && git merge develop && git tag v0.x`
