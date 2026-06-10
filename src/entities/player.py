@@ -6,10 +6,11 @@ from src.settings import (
 )
 from src.entities.bullet import Bullet
 
-SQRT2_INV = 0.7071067811865476
+SQRT2_INV = 0.7071067811865476  # 1/sqrt(2)
 
 
 def calc_velocity(left, right, up, down):
+    """Calcula vector de velocidad normalizado a partir de teclas booleanas."""
     dx = float(right) - float(left)
     dy = float(down) - float(up)
     if dx != 0 and dy != 0:
