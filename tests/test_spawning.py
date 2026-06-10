@@ -9,7 +9,7 @@ from src.settings import (
     WAVE_SPAWN_MIN, WAVE_TIME_THRESHOLD,
     WAVE_KILL_THRESHOLD, WAVE_FIGHTER_CAP,
     WAVE_KAMIKAZE_CAP,
-    BOSS_TRIGGER_MS, BOSS_SPRITES, BOSS_SPRITES_FIXED_COUNT,
+    BOSS_WAVE_INTERVAL, BOSS_SPRITES, BOSS_SPRITES_FIXED_COUNT,
 )
 
 
@@ -106,66 +106,74 @@ def test_kamikaze_prob_capped():
     assert ss._kamikaze_prob() == WAVE_KAMIKAZE_CAP
 
 
-def test_get_boss_spawn_returns_none_before_trigger():
+def test_get_boss_spawn_returns_none_before_wave_trigger():
     ss = SpawnSystem()
-    assert ss.get_boss_spawn(BOSS_TRIGGER_MS - 1) is None
+    ss.wave = BOSS_WAVE_INTERVAL - 1
+    assert ss.get_boss_spawn() is None
 
 
-def test_get_boss_spawn_returns_boss_at_trigger():
+def test_get_boss_spawn_returns_boss_at_wave_trigger():
     ss = SpawnSystem()
-    boss = ss.get_boss_spawn(BOSS_TRIGGER_MS)
+    ss.wave = BOSS_WAVE_INTERVAL
+    boss = ss.get_boss_spawn()
     assert isinstance(boss, Boss)
 
 
 def test_get_boss_spawn_returns_none_while_boss_alive():
     ss = SpawnSystem()
-    ss.get_boss_spawn(BOSS_TRIGGER_MS)
-    assert ss.get_boss_spawn(BOSS_TRIGGER_MS) is None
+    ss.wave = BOSS_WAVE_INTERVAL
+    ss.get_boss_spawn()
+    assert ss.get_boss_spawn() is None
 
 
 def test_boss_alive_true_after_spawn():
     ss = SpawnSystem()
-    ss.get_boss_spawn(BOSS_TRIGGER_MS)
+    ss.wave = BOSS_WAVE_INTERVAL
+    ss.get_boss_spawn()
     assert ss.boss_alive is True
 
 
 def test_notify_boss_killed_clears_boss_alive():
     ss = SpawnSystem()
-    ss.get_boss_spawn(BOSS_TRIGGER_MS)
-    ss.notify_boss_killed(BOSS_TRIGGER_MS)
+    ss.wave = BOSS_WAVE_INTERVAL
+    ss.get_boss_spawn()
+    ss.notify_boss_killed()
     assert ss.boss_alive is False
 
 
-def test_next_boss_spawns_after_cooldown():
+def test_next_boss_spawns_after_next_wave_interval():
     ss = SpawnSystem()
-    ss.get_boss_spawn(BOSS_TRIGGER_MS)
-    ss.notify_boss_killed(BOSS_TRIGGER_MS)
-    assert ss.get_boss_spawn(BOSS_TRIGGER_MS * 2 - 1) is None
-    assert isinstance(ss.get_boss_spawn(BOSS_TRIGGER_MS * 2), Boss)
+    ss.wave = BOSS_WAVE_INTERVAL
+    ss.get_boss_spawn()
+    ss.notify_boss_killed()
+    ss.wave = BOSS_WAVE_INTERVAL * 2 - 1
+    assert ss.get_boss_spawn() is None
+    ss.wave = BOSS_WAVE_INTERVAL * 2
+    assert isinstance(ss.get_boss_spawn(), Boss)
 
 
 def test_update_returns_empty_while_boss_alive():
     ss = SpawnSystem()
     ss.boss_alive = True
     ss._last_spawn = 0
-    assert ss.update(BOSS_TRIGGER_MS * 2) == []
+    assert ss.update(99999) == []
 
 
 def test_first_boss_does_not_use_random_choice():
     ss = SpawnSystem()
+    ss.wave = BOSS_WAVE_INTERVAL
     with patch("src.systems.spawning.random.choice") as mock_choice:
-        ss.get_boss_spawn(BOSS_TRIGGER_MS)
+        ss.get_boss_spawn()
     mock_choice.assert_not_called()
 
 
 def test_fourth_boss_uses_random_choice():
     ss = SpawnSystem()
-    now = 0
     for _ in range(BOSS_SPRITES_FIXED_COUNT):
-        ss._boss_spawn_at = now
-        ss.get_boss_spawn(now)
-        ss.notify_boss_killed(now)
-    ss._boss_spawn_at = now
+        ss._boss_wave_at = ss.wave
+        ss.get_boss_spawn()
+        ss.notify_boss_killed()
+    ss._boss_wave_at = ss.wave
     with patch("src.systems.spawning.random.choice", return_value=BOSS_SPRITES[0]) as mock_choice:
-        ss.get_boss_spawn(now)
+        ss.get_boss_spawn()
     mock_choice.assert_called_once_with(BOSS_SPRITES)

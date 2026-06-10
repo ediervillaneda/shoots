@@ -11,7 +11,7 @@ from src.settings import (
     WAVE_FIGHTER_BASE, WAVE_FIGHTER_INC, WAVE_FIGHTER_CAP,
     WAVE_KAMIKAZE_BASE, WAVE_KAMIKAZE_INC, WAVE_KAMIKAZE_CAP,
     WAVE_SPEED_FACTOR,
-    BOSS_TRIGGER_MS, BOSS_SPRITES, BOSS_SPRITES_FIXED_COUNT,
+    BOSS_WAVE_INTERVAL, BOSS_SPRITES, BOSS_SPRITES_FIXED_COUNT,
 )
 
 
@@ -21,7 +21,7 @@ class SpawnSystem:
         self.kills = 0
         self._last_spawn = pygame.time.get_ticks()
         self._wave_start = pygame.time.get_ticks()
-        self._boss_spawn_at: int = BOSS_TRIGGER_MS
+        self._boss_wave_at: int = BOSS_WAVE_INTERVAL
         self._boss_index: int = 0
         self.boss_alive: bool = False
 
@@ -42,17 +42,17 @@ class SpawnSystem:
             return [self._make_enemy()]
         return []
 
-    def get_boss_spawn(self, now: int):
-        if self.boss_alive or now < self._boss_spawn_at:
+    def get_boss_spawn(self):
+        if self.boss_alive or self.wave < self._boss_wave_at:
             return None
         sprite = self._next_boss_sprite()
         self._boss_index += 1
         self.boss_alive = True
         return Boss(sprite)
 
-    def notify_boss_killed(self, now: int) -> None:
+    def notify_boss_killed(self) -> None:
         self.boss_alive = False
-        self._boss_spawn_at = now + BOSS_TRIGGER_MS
+        self._boss_wave_at = self.wave + BOSS_WAVE_INTERVAL
 
     def _next_boss_sprite(self) -> str:
         if self._boss_index < BOSS_SPRITES_FIXED_COUNT:

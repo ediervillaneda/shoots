@@ -86,12 +86,13 @@ PLAYER_LIVES_MAX = 5
 RAPIDFIRE_COOLDOWN_MULT = 0.4  # BULLET_COOLDOWN × 0.4 with RapidFire active
 
 # Sprites
+SPRITE_SCOUT = "enemy/Boss_1_B.png"
 SPRITE_SHIP = "ship/SpaceShip.png"
 SPRITE_PLASMA = "ship/plasm.png"
 SPRITE_ROCKET = "ship/rocket.png"
-SPRITE_FIGHTER = "ship/insect-1.png"
+SPRITE_FIGHTER = "enemy/Enemy_4_C.png"
 SPRITE_FIGHTER_BULLET = "ship/bullet-1.png"
-SPRITE_KAMIKAZE = "ship/insect-2.png"
+SPRITE_KAMIKAZE = "enemy/Enemy_1_D.png"
 SPRITE_KAMIKAZE_BULLET = "ship/bullet-2.png"
 SPRITE_SHIELD_OVERLAY = "ship/shield.png"
 SPRITE_PU_RAPID_FIRE = "ship/bonus_time.png"
@@ -127,7 +128,7 @@ BOSS_SHOOT_INTERVAL_P2 = 1000  # ms fase 2 (spread)
 BOSS_SPREAD_ANGLE = 20  # grados desde vertical
 BOSS_HEALTH_BAR_H = 12
 BOSS_BAR_Y_OFFSET = 6   # px gap between score row and boss health bar
-BOSS_TRIGGER_MS = 120_000  # ms hasta primer boss (2 min)
+BOSS_WAVE_INTERVAL = 10  # waves entre apariciones del boss
 BOSS_SPRITES = [
     "enemy/Enemy_1_A.png",
     "enemy/Enemy_2_A.png",

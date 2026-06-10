@@ -77,7 +77,7 @@ class GameplayScene:
             self.enemies.add(enemy)
             self.all_sprites.add(enemy)
 
-        b = self.spawn_system.get_boss_spawn(now)
+        b = self.spawn_system.get_boss_spawn()
         if b:
             self.boss = b
             self.enemies.add(b)
@@ -89,7 +89,7 @@ class GameplayScene:
                 self.all_sprites.add(eb)
 
         if self.boss and not self.boss.alive():
-            self.spawn_system.notify_boss_killed(now)
+            self.spawn_system.notify_boss_killed()
             self.boss = None
 
         for sprite in self.enemies:
