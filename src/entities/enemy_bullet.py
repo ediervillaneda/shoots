@@ -3,7 +3,7 @@ import pygame
 import src.assets as assets
 from src.settings import (
     ENEMY_BULLET_SPEED,
-    ENEMY_BULLET_W, ENEMY_BULLET_H, SCREEN_H, SPRITE_FIGHTER_BULLET,
+    ENEMY_BULLET_W, ENEMY_BULLET_H, SCREEN_H, SCREEN_W, SPRITE_FIGHTER_BULLET,
 )
 
 
@@ -24,5 +24,5 @@ class EnemyBullet(pygame.sprite.Sprite):
         self.y += self._vy * dt
         self.rect.x = int(self.x)
         self.rect.y = int(self.y)
-        if self.rect.top > SCREEN_H:
+        if self.rect.top > SCREEN_H or self.rect.right < 0 or self.rect.left > SCREEN_W:
             self.kill()
