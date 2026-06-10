@@ -39,19 +39,17 @@ def test_fighter_oscillates_horizontally():
     assert f.rect.x == expected_x
 
 
-def test_fighter_survives_two_hits():
+def test_fighter_survives_one_hit():
     f = Fighter(240)
     group = pygame.sprite.Group(f)
-    f.take_damage(1)
     f.take_damage(1)
     assert f.alive()
     assert f.hp == 1
 
 
-def test_fighter_killed_by_three_hits():
+def test_fighter_killed_by_two_hits():
     f = Fighter(240)
     group = pygame.sprite.Group(f)
-    f.take_damage(1)
     f.take_damage(1)
     f.take_damage(1)
     assert not f.alive()

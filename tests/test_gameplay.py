@@ -65,4 +65,4 @@ def test_bullet_damages_fighter_without_killing():
 
     assert not bullet.alive()
     assert fighter.alive()
-    assert fighter.hp == 2
+    assert fighter.hp == 1
