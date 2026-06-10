@@ -1,0 +1,4 @@
+SCREEN_W = 540
+SCREEN_H = 960
+FPS = 60
+TITLE = "Starfall"
