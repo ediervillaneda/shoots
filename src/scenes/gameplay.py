@@ -3,7 +3,7 @@ import pygame
 from src.entities.player import Player
 from src.entities.scout import Scout
 from src.entities.fighter import Fighter
-from src.settings import SCREEN_W, SCOUT_W, FIGHTER_W, SPAWN_INTERVAL
+from src.settings import SCREEN_W, SCOUT_W, FIGHTER_W, SPAWN_INTERVAL, BULLET_DAMAGE
 
 
 class GameplayScene:
@@ -44,7 +44,7 @@ class GameplayScene:
         hits = pygame.sprite.groupcollide(self.bullets, self.enemies, True, False)
         for enemies_hit in hits.values():
             for enemy in enemies_hit:
-                enemy.take_damage(1)
+                enemy.take_damage(BULLET_DAMAGE)
 
     def render(self, screen):
         screen.fill((0, 0, 0))
