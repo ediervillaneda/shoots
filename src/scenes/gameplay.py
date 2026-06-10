@@ -38,8 +38,7 @@ class GameplayScene:
             return
         self.player.handle_keys(keys)
         if keys[pygame.K_SPACE]:
-            bullet = self.player.shoot(pygame.time.get_ticks())
-            if bullet:
+            for bullet in self.player.shoot(pygame.time.get_ticks()):
                 self.bullets.add(bullet)
                 self.all_sprites.add(bullet)
 

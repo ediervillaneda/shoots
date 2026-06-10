@@ -79,7 +79,7 @@ class Player(pygame.sprite.Sprite):
             visible = (now // 100) % 2 == 0
             self.image.set_alpha(255 if visible else 0)
 
-    def shoot(self, now: int) -> list:
+    def shoot(self, now: int) -> list[Bullet]:
         cooldown = BULLET_COOLDOWN
         if "rapid_fire" in self.active_powerups:
             cooldown = int(BULLET_COOLDOWN * RAPIDFIRE_COOLDOWN_MULT)
