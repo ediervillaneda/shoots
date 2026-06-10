@@ -85,6 +85,7 @@ PLAYER_LIVES_MAX        = 5
 RAPIDFIRE_COOLDOWN_MULT = 0.4     # BULLET_COOLDOWN × 0.4 with RapidFire active
 
 # Sprites
+SPRITE_FIGHTER        = "ship/medium-A.png"
 SPRITE_KAMIKAZE       = "ship/insect-1.png"
 SPRITE_SHIELD_OVERLAY = "ship/shield.png"
 SPRITE_PU_RAPID_FIRE  = "ship/bonus_time.png"
