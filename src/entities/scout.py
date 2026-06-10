@@ -7,6 +7,6 @@ class Scout(Enemy):
         super().__init__(x, SCOUT_W, SCOUT_H, SCOUT_COLOR, SCOUT_HP, SCOUT_POINTS)
 
     def update(self, dt):
-        self.y += SCOUT_SPEED * dt
+        self.y += (SCOUT_SPEED + getattr(self, "speed_bonus", 0.0)) * dt
         self.rect.y = int(self.y)
         super().update(dt)

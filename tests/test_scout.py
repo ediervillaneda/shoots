@@ -1,3 +1,4 @@
+import pytest
 import pygame
 from src.entities.scout import Scout
 from src.settings import SCOUT_HP, SCOUT_POINTS, SCOUT_SPEED
@@ -17,7 +18,7 @@ def test_scout_moves_down():
     s = Scout(240)
     initial_y = s.y
     s.update(1.0)
-    assert s.y == initial_y + SCOUT_SPEED
+    assert s.y == pytest.approx(initial_y + SCOUT_SPEED)
 
 
 def test_scout_moves_straight_x():
@@ -37,3 +38,11 @@ def test_scout_killed_by_one_hit():
 def test_scout_spawns_above_screen():
     s = Scout(240)
     assert s.rect.bottom == 0
+
+
+def test_scout_speed_bonus():
+    s = Scout(240)
+    s.speed_bonus = 50.0
+    initial_y = s.y
+    s.update(1.0)
+    assert s.y == pytest.approx(initial_y + SCOUT_SPEED + 50.0)

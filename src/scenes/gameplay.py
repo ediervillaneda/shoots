@@ -1,10 +1,9 @@
-import random
 import pygame
 from src.entities.player import Player
-from src.entities.scout import Scout
 from src.entities.fighter import Fighter
+from src.systems.spawning import SpawnSystem
 from src.settings import (
-    SCREEN_W, SCREEN_H, SCOUT_W, FIGHTER_W, SPAWN_INTERVAL,
+    SCREEN_W, SCREEN_H,
     BULLET_DAMAGE, HUD_FONT_SIZE, HUD_COLOR, HUD_MARGIN,
 )
 
@@ -17,16 +16,18 @@ class GameplayScene:
         self.player = Player()
         self.bullets = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
+        self.enemy_bullets = pygame.sprite.Group()
         self.all_sprites = pygame.sprite.Group(self.player)
-        self.last_spawn = pygame.time.get_ticks()
+        self.spawn_system = SpawnSystem()
 
     def _reset(self):
         self.player = Player()
         self.bullets = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
+        self.enemy_bullets = pygame.sprite.Group()
         self.all_sprites = pygame.sprite.Group(self.player)
-        self.last_spawn = pygame.time.get_ticks()
         self.score = 0
+        self.spawn_system = SpawnSystem()
         self.state = "playing"
 
     def process_input(self, events):
@@ -42,14 +43,6 @@ class GameplayScene:
                 self.bullets.add(bullet)
                 self.all_sprites.add(bullet)
 
-    def spawn_enemy(self):
-        cls = random.choice([Scout, Fighter])
-        margin = max(SCOUT_W, FIGHTER_W) // 2
-        x = random.randint(margin, SCREEN_W - margin)
-        enemy = cls(x)
-        self.enemies.add(enemy)
-        self.all_sprites.add(enemy)
-
     def update(self, dt):
         if self.state != "playing":
             return
@@ -57,16 +50,30 @@ class GameplayScene:
         self.player.update(dt)
         self.bullets.update(dt)
         self.enemies.update(dt)
+        self.enemy_bullets.update(dt)
 
         now = pygame.time.get_ticks()
-        if now - self.last_spawn >= SPAWN_INTERVAL:
-            self.last_spawn = now
-            self.spawn_enemy()
+
+        for enemy in self.spawn_system.update(now):
+            self.enemies.add(enemy)
+            self.all_sprites.add(enemy)
+
+        for sprite in self.enemies:
+            if isinstance(sprite, Fighter):
+                eb = sprite.shoot(now)
+                if eb:
+                    self.enemy_bullets.add(eb)
+                    self.all_sprites.add(eb)
+
+        eb_hits = pygame.sprite.spritecollide(self.player, self.enemy_bullets, True)
+        for _ in eb_hits:
+            self.player.take_damage(now)
 
         hit_enemies = pygame.sprite.spritecollide(self.player, self.enemies, True)
         for enemy in hit_enemies:
             self.score += enemy.points
             self.player.take_damage(now)
+            self.spawn_system.register_kill()
 
         hits = pygame.sprite.groupcollide(self.bullets, self.enemies, True, False)
         for enemies_hit in hits.values():
@@ -75,6 +82,7 @@ class GameplayScene:
                     enemy.take_damage(BULLET_DAMAGE)
                     if not enemy.alive():
                         self.score += enemy.points
+                        self.spawn_system.register_kill()
 
         if self.player.lives <= 0:
             self.state = "game_over"
@@ -96,6 +104,9 @@ class GameplayScene:
 
         score_surf = self._font.render(f"SCORE: {self.score}", True, HUD_COLOR)
         screen.blit(score_surf, (HUD_MARGIN, HUD_MARGIN))
+
+        wave_surf = self._font.render(f"WAVE: {self.spawn_system.wave}", True, HUD_COLOR)
+        screen.blit(wave_surf, (SCREEN_W // 2 - wave_surf.get_width() // 2, HUD_MARGIN))
 
         lives_text = ("♥ " * self.player.lives).strip()
         lives_surf = self._font.render(lives_text, True, (220, 50, 50))
