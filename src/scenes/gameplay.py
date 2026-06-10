@@ -4,7 +4,7 @@ from src.entities.player import Player
 from src.entities.scout import Scout
 from src.entities.fighter import Fighter
 from src.settings import (
-    SCREEN_W, SCREEN_H, SCOUT_W, FIGHTER_W, SPAWN_INTERVAL,
+    SCREEN_W, SCREEN_H, SCOUT_W, FIGHTER_W,
     BULLET_DAMAGE, HUD_FONT_SIZE, HUD_COLOR, HUD_MARGIN,
 )
 
@@ -59,9 +59,11 @@ class GameplayScene:
         self.enemies.update(dt)
 
         now = pygame.time.get_ticks()
-        if now - self.last_spawn >= SPAWN_INTERVAL:
-            self.last_spawn = now
-            self.spawn_enemy()
+        # TODO v0.4: Replace with SpawnSystem.update(now) — see docs/superpowers/specs/2026-06-09-v0.4-design.md
+        # Old spawn logic removed; SPAWN_INTERVAL constant deprecated
+        # if now - self.last_spawn >= SPAWN_INTERVAL:
+        #     self.last_spawn = now
+        #     self.spawn_enemy()
 
         hit_enemies = pygame.sprite.spritecollide(self.player, self.enemies, True)
         for enemy in hit_enemies:

@@ -15,16 +15,19 @@ class SpawnSystem:
     def __init__(self):
         self.wave = 0
         self.kills = 0
+        # pygame must be initialized before constructing SpawnSystem
         self._last_spawn = pygame.time.get_ticks()
         self._wave_start = pygame.time.get_ticks()
 
     def register_kill(self):
         self.kills += 1
+        # wave advances every WAVE_KILL_THRESHOLD cumulative kills (intentional unbounded scaling)
         if self.wave >= 3 and self.kills % WAVE_KILL_THRESHOLD == 0:
             self.wave += 1
 
     def update(self, now):
-        """Returns list of new Enemy instances to add; [] if not time to spawn."""
+        """Returns list with one new Enemy if spawn interval elapsed, else [].
+        One spawn and at most one wave advance per call — by design."""
         if self.wave < 3:
             if now - self._wave_start >= WAVE_TIME_THRESHOLD:
                 self.wave += 1
