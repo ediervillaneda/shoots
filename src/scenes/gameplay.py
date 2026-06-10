@@ -12,6 +12,7 @@ from src.entities.interceptor import Interceptor
 from src.entities.boss import Boss
 from src.entities.powerup import PowerUp, POWERUP_ASSETS, POWERUP_KINDS
 from src.entities.explosion import Explosion
+from src.entities.impact_effect import ImpactEffect
 from src.systems.spawning import SpawnSystem
 from src.settings import (
     SCREEN_W, SCREEN_H,
@@ -181,7 +182,12 @@ class GameplayScene:
             self._maybe_drop_powerup(enemy.rect.centerx, enemy.rect.centery)
 
         hits = pygame.sprite.groupcollide(self.bullets, self.enemies, True, False)
-        for enemies_hit in hits.values():
+        for bullet, enemies_hit in hits.items():
+            impact = ImpactEffect(
+                bullet.rect.centerx, bullet.rect.centery,
+                bullet.impact_frames, bullet.w, bullet.h,
+            )
+            self.all_sprites.add(impact)
             for enemy in enemies_hit:
                 if enemy.alive():
                     enemy.take_damage(BULLET_DAMAGE)

@@ -15,14 +15,34 @@ SPRITE_PU_DOUBLE_SHOT = "ship/bonus_gun.png"
 SPRITE_PU_ROCKET = "ship/bonus_rocket.png"
 SPRITE_PU_EXTRA_LIFE = "ship/bonus_life.png"
 
-SPRITE_SHOT1 = "Shots/Shot1/shot1_4.png"
-SPRITE_SHOT2 = "Shots/Shot2/shot2_4.png"
-SPRITE_SHOT3 = "Shots/Shot3/shot3_asset.png"
-SPRITE_SHOT4 = "Shots/Shot4/shot4_asset.png"
-SPRITE_SHOT5 = "Shots/Shot5/shot5_asset.png"
-SPRITE_SHOT6 = "Shots/Shot6/shot6_asset.png"
-
 SHOT_LEVEL_MAX = 6
+
+SHOT1_LAUNCH_FRAMES = [f"Shots/Shot1/shot1_{i}.png" for i in range(1, 5)]
+SHOT1_TRAVEL = "Shots/Shot1/shot1_asset.png"
+SHOT1_IMPACT_FRAMES = [f"Shots/Shot1/shot1_exp{i}.png" for i in range(1, 6)]
+
+SHOT2_LAUNCH_FRAMES = [f"Shots/Shot2/shot2_{i}.png" for i in range(1, 7)]
+SHOT2_TRAVEL = "Shots/Shot2/shot2_asset.png"
+SHOT2_IMPACT_FRAMES = [f"Shots/Shot2/shot2_exp{i}.png" for i in range(1, 6)]
+
+SHOT3_LAUNCH_FRAMES = [f"Shots/Shot3/shot3_{i}.png" for i in range(1, 4)]
+SHOT3_TRAVEL = "Shots/Shot3/shot3_asset.png"
+SHOT3_IMPACT_FRAMES = [f"Shots/Shot3/shot3_exp{i}.png" for i in range(1, 5)]
+
+SHOT4_LAUNCH_FRAMES = [f"Shots/Shot4/shot4_{i}.png" for i in range(1, 6)]
+SHOT4_TRAVEL = "Shots/Shot4/shot4_asset.png"
+SHOT4_IMPACT_FRAMES = [f"Shots/Shot4/shot4_exp{i}.png" for i in range(1, 9)]
+
+SHOT5_LAUNCH_FRAMES = [f"Shots/Shot5/shot5_{i}.png" for i in range(1, 6)]
+SHOT5_TRAVEL = "Shots/Shot5/shot5_asset.png"
+SHOT5_IMPACT_FRAMES = [f"Shots/Shot5/shot5_exp{i}.png" for i in range(1, 9)]
+
+SHOT6_LAUNCH_FRAMES = [f"Shots/Shot6/shot6_{i}.png" for i in range(1, 5)]
+SHOT6_TRAVEL = "Shots/Shot6/shot6_asset.png"
+SHOT6_IMPACT_FRAMES = [f"Shots/Shot6/shot6_exp{i}.png" for i in range(1, 11)]
+
+BULLET_LAUNCH_FRAME_MS = 60
+BULLET_IMPACT_FRAME_MS = 55
 
 BULLET_W_L1 = 50
 BULLET_H_L1 = 50

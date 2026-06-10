@@ -13,12 +13,12 @@ from src.settings import (
     INVINCIBILITY_MS,
     RAPIDFIRE_COOLDOWN_MULT,
     SPRITE_SHIP,
-    SPRITE_SHOT1,
-    SPRITE_SHOT2,
-    SPRITE_SHOT3,
-    SPRITE_SHOT4,
-    SPRITE_SHOT5,
-    SPRITE_SHOT6,
+    SHOT1_LAUNCH_FRAMES, SHOT1_TRAVEL, SHOT1_IMPACT_FRAMES,
+    SHOT2_LAUNCH_FRAMES, SHOT2_TRAVEL, SHOT2_IMPACT_FRAMES,
+    SHOT3_LAUNCH_FRAMES, SHOT3_TRAVEL, SHOT3_IMPACT_FRAMES,
+    SHOT4_LAUNCH_FRAMES, SHOT4_TRAVEL, SHOT4_IMPACT_FRAMES,
+    SHOT5_LAUNCH_FRAMES, SHOT5_TRAVEL, SHOT5_IMPACT_FRAMES,
+    SHOT6_LAUNCH_FRAMES, SHOT6_TRAVEL, SHOT6_IMPACT_FRAMES,
     BULLET_W_L1,
     BULLET_H_L1,
     BULLET_W_L2,
@@ -131,38 +131,38 @@ class Player(pygame.sprite.Sprite):
         top = self.rect.top
         if self.shot_level >= 6:
             return [
-                Bullet(cx - 28, top, SPRITE_SHOT6, BULLET_W_L6, BULLET_H_L6),
-                Bullet(cx - 12, top, SPRITE_SHOT6, BULLET_W_L6, BULLET_H_L6),
-                Bullet(cx,      top, SPRITE_SHOT6, BULLET_W_L6, BULLET_H_L6),
-                Bullet(cx + 12, top, SPRITE_SHOT6, BULLET_W_L6, BULLET_H_L6),
-                Bullet(cx + 28, top, SPRITE_SHOT6, BULLET_W_L6, BULLET_H_L6),
+                Bullet(cx - 28, top, SHOT6_LAUNCH_FRAMES, SHOT6_TRAVEL, SHOT6_IMPACT_FRAMES, BULLET_W_L6, BULLET_H_L6),
+                Bullet(cx - 12, top, SHOT6_LAUNCH_FRAMES, SHOT6_TRAVEL, SHOT6_IMPACT_FRAMES, BULLET_W_L6, BULLET_H_L6),
+                Bullet(cx,      top, SHOT6_LAUNCH_FRAMES, SHOT6_TRAVEL, SHOT6_IMPACT_FRAMES, BULLET_W_L6, BULLET_H_L6),
+                Bullet(cx + 12, top, SHOT6_LAUNCH_FRAMES, SHOT6_TRAVEL, SHOT6_IMPACT_FRAMES, BULLET_W_L6, BULLET_H_L6),
+                Bullet(cx + 28, top, SHOT6_LAUNCH_FRAMES, SHOT6_TRAVEL, SHOT6_IMPACT_FRAMES, BULLET_W_L6, BULLET_H_L6),
             ]
         if self.shot_level >= 5:
             return [
-                Bullet(cx - 28, top, SPRITE_SHOT5, BULLET_W_L5, BULLET_H_L5),
-                Bullet(cx - 12, top, SPRITE_SHOT5, BULLET_W_L5, BULLET_H_L5),
-                Bullet(cx,      top, SPRITE_SHOT5, BULLET_W_L5, BULLET_H_L5),
-                Bullet(cx + 12, top, SPRITE_SHOT5, BULLET_W_L5, BULLET_H_L5),
-                Bullet(cx + 28, top, SPRITE_SHOT5, BULLET_W_L5, BULLET_H_L5),
+                Bullet(cx - 28, top, SHOT5_LAUNCH_FRAMES, SHOT5_TRAVEL, SHOT5_IMPACT_FRAMES, BULLET_W_L5, BULLET_H_L5),
+                Bullet(cx - 12, top, SHOT5_LAUNCH_FRAMES, SHOT5_TRAVEL, SHOT5_IMPACT_FRAMES, BULLET_W_L5, BULLET_H_L5),
+                Bullet(cx,      top, SHOT5_LAUNCH_FRAMES, SHOT5_TRAVEL, SHOT5_IMPACT_FRAMES, BULLET_W_L5, BULLET_H_L5),
+                Bullet(cx + 12, top, SHOT5_LAUNCH_FRAMES, SHOT5_TRAVEL, SHOT5_IMPACT_FRAMES, BULLET_W_L5, BULLET_H_L5),
+                Bullet(cx + 28, top, SHOT5_LAUNCH_FRAMES, SHOT5_TRAVEL, SHOT5_IMPACT_FRAMES, BULLET_W_L5, BULLET_H_L5),
             ]
         if self.shot_level >= 4:
             return [
-                Bullet(cx - 16, top, SPRITE_SHOT4, BULLET_W_L4, BULLET_H_L4),
-                Bullet(cx,      top, SPRITE_SHOT4, BULLET_W_L4, BULLET_H_L4),
-                Bullet(cx + 16, top, SPRITE_SHOT4, BULLET_W_L4, BULLET_H_L4),
+                Bullet(cx - 16, top, SHOT4_LAUNCH_FRAMES, SHOT4_TRAVEL, SHOT4_IMPACT_FRAMES, BULLET_W_L4, BULLET_H_L4),
+                Bullet(cx,      top, SHOT4_LAUNCH_FRAMES, SHOT4_TRAVEL, SHOT4_IMPACT_FRAMES, BULLET_W_L4, BULLET_H_L4),
+                Bullet(cx + 16, top, SHOT4_LAUNCH_FRAMES, SHOT4_TRAVEL, SHOT4_IMPACT_FRAMES, BULLET_W_L4, BULLET_H_L4),
             ]
         if self.shot_level >= 3:
             return [
-                Bullet(cx - 16, top, SPRITE_SHOT3, BULLET_W_L3, BULLET_H_L3),
-                Bullet(cx,      top, SPRITE_SHOT3, BULLET_W_L3, BULLET_H_L3),
-                Bullet(cx + 16, top, SPRITE_SHOT3, BULLET_W_L3, BULLET_H_L3),
+                Bullet(cx - 16, top, SHOT3_LAUNCH_FRAMES, SHOT3_TRAVEL, SHOT3_IMPACT_FRAMES, BULLET_W_L3, BULLET_H_L3),
+                Bullet(cx,      top, SHOT3_LAUNCH_FRAMES, SHOT3_TRAVEL, SHOT3_IMPACT_FRAMES, BULLET_W_L3, BULLET_H_L3),
+                Bullet(cx + 16, top, SHOT3_LAUNCH_FRAMES, SHOT3_TRAVEL, SHOT3_IMPACT_FRAMES, BULLET_W_L3, BULLET_H_L3),
             ]
         if self.shot_level >= 2:
             return [
-                Bullet(cx - 10, top, SPRITE_SHOT2, BULLET_W_L2, BULLET_H_L2),
-                Bullet(cx + 10, top, SPRITE_SHOT2, BULLET_W_L2, BULLET_H_L2),
+                Bullet(cx - 10, top, SHOT2_LAUNCH_FRAMES, SHOT2_TRAVEL, SHOT2_IMPACT_FRAMES, BULLET_W_L2, BULLET_H_L2),
+                Bullet(cx + 10, top, SHOT2_LAUNCH_FRAMES, SHOT2_TRAVEL, SHOT2_IMPACT_FRAMES, BULLET_W_L2, BULLET_H_L2),
             ]
-        return [Bullet(cx, top, SPRITE_SHOT1, BULLET_W_L1, BULLET_H_L1)]
+        return [Bullet(cx, top, SHOT1_LAUNCH_FRAMES, SHOT1_TRAVEL, SHOT1_IMPACT_FRAMES, BULLET_W_L1, BULLET_H_L1)]
 
     def shoot_rocket(self, now: int) -> list[Rocket]:
         if self.rocket_count == 0:
