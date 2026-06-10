@@ -5,6 +5,9 @@ from src.settings import (
     PLAYER_COLOR,
     PLAYER_W,
     PLAYER_H,
+    PLAYER_BANK_LERP,
+    PLAYER_SHADOW_OFFSET_X,
+    PLAYER_SHADOW_OFFSET_Y,
     SCREEN_W,
     SCREEN_H,
     BULLET_COOLDOWN,
@@ -12,7 +15,9 @@ from src.settings import (
     PLAYER_LIVES_MAX,
     INVINCIBILITY_MS,
     RAPIDFIRE_COOLDOWN_MULT,
-    SPRITE_SHIP,
+    SPRITE_PLAYER_L2, SPRITE_PLAYER_L1, SPRITE_PLAYER_M, SPRITE_PLAYER_R1, SPRITE_PLAYER_R2,
+    SPRITE_PLAYER_SHADOW_L2, SPRITE_PLAYER_SHADOW_L1, SPRITE_PLAYER_SHADOW_M,
+    SPRITE_PLAYER_SHADOW_R1, SPRITE_PLAYER_SHADOW_R2,
     SHOT1_LAUNCH_FRAMES, SHOT1_TRAVEL, SHOT1_IMPACT_FRAMES,
     SHOT2_LAUNCH_FRAMES, SHOT2_TRAVEL, SHOT2_IMPACT_FRAMES,
     SHOT3_LAUNCH_FRAMES, SHOT3_TRAVEL, SHOT3_IMPACT_FRAMES,
@@ -51,11 +56,29 @@ def calc_velocity(left, right, up, down):
     return dx, dy
 
 
+_POSE_KEYS = ('l2', 'l1', 'm', 'r1', 'r2')
+_POSE_THRESHOLDS = (-0.6, -0.2, 0.2, 0.6)
+
+
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        raw = assets.get(SPRITE_SHIP)
-        self.image = pygame.transform.scale(raw, (PLAYER_W, PLAYER_H))
+        self._sprites = {
+            'l2': pygame.transform.scale(assets.get(SPRITE_PLAYER_L2), (PLAYER_W, PLAYER_H)),
+            'l1': pygame.transform.scale(assets.get(SPRITE_PLAYER_L1), (PLAYER_W, PLAYER_H)),
+            'm':  pygame.transform.scale(assets.get(SPRITE_PLAYER_M),  (PLAYER_W, PLAYER_H)),
+            'r1': pygame.transform.scale(assets.get(SPRITE_PLAYER_R1), (PLAYER_W, PLAYER_H)),
+            'r2': pygame.transform.scale(assets.get(SPRITE_PLAYER_R2), (PLAYER_W, PLAYER_H)),
+        }
+        self._shadows = {
+            'l2': pygame.transform.scale(assets.get(SPRITE_PLAYER_SHADOW_L2), (PLAYER_W, PLAYER_H)),
+            'l1': pygame.transform.scale(assets.get(SPRITE_PLAYER_SHADOW_L1), (PLAYER_W, PLAYER_H)),
+            'm':  pygame.transform.scale(assets.get(SPRITE_PLAYER_SHADOW_M),  (PLAYER_W, PLAYER_H)),
+            'r1': pygame.transform.scale(assets.get(SPRITE_PLAYER_SHADOW_R1), (PLAYER_W, PLAYER_H)),
+            'r2': pygame.transform.scale(assets.get(SPRITE_PLAYER_SHADOW_R2), (PLAYER_W, PLAYER_H)),
+        }
+        self._bank = 0.0
+        self.image = self._sprites['m']
         self.rect = self.image.get_rect(
             centerx=SCREEN_W // 2,
             bottom=SCREEN_H - 80,
@@ -72,6 +95,29 @@ class Player(pygame.sprite.Sprite):
         self.shot_level: int = 1
         self.last_rocket: int = -ROCKET_COOLDOWN
         self.rocket_count: int = 0
+
+    def _pose_key(self) -> str:
+        b = self._bank
+        if b < _POSE_THRESHOLDS[0]:
+            return 'l2'
+        if b < _POSE_THRESHOLDS[1]:
+            return 'l1'
+        if b > _POSE_THRESHOLDS[3]:
+            return 'r2'
+        if b > _POSE_THRESHOLDS[2]:
+            return 'r1'
+        return 'm'
+
+    @property
+    def shadow_image(self) -> pygame.Surface:
+        return self._shadows[self._pose_key()]
+
+    @property
+    def shadow_rect(self) -> pygame.Rect:
+        return self.shadow_image.get_rect(
+            centerx=self.rect.centerx + PLAYER_SHADOW_OFFSET_X,
+            centery=self.rect.centery + PLAYER_SHADOW_OFFSET_Y,
+        )
 
     def apply_powerup(self, kind: str) -> None:
         if kind == "extra_life":
@@ -105,6 +151,9 @@ class Player(pygame.sprite.Sprite):
         )
 
     def update(self, dt):
+        self._bank += (self.vel_x - self._bank) * PLAYER_BANK_LERP * dt
+        self._bank = max(-1.0, min(1.0, self._bank))
+
         self.x += self.vel_x * PLAYER_SPEED * dt
         self.y += self.vel_y * PLAYER_SPEED * dt
         self.x = max(0.0, min(float(SCREEN_W - PLAYER_W), self.x))
@@ -112,13 +161,17 @@ class Player(pygame.sprite.Sprite):
         self.rect.x = int(self.x)
         self.rect.y = int(self.y)
 
+        self.image = self._sprites[self._pose_key()]
+
         now = pygame.time.get_ticks()
-        if self.invincible and now >= self.invincible_until:
-            self.invincible = False
+        if self.invincible:
+            if now >= self.invincible_until:
+                self.invincible = False
+                self.image.set_alpha(255)
+            else:
+                self.image.set_alpha(255 if (now // 100) % 2 == 0 else 0)
+        else:
             self.image.set_alpha(255)
-        elif self.invincible:
-            visible = (now // 100) % 2 == 0
-            self.image.set_alpha(255 if visible else 0)
 
     def shoot(self, now: int) -> list[Bullet]:
         cooldown = BULLET_COOLDOWN

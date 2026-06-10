@@ -225,6 +225,8 @@ class GameplayScene:
 
     def render(self, screen):
         screen.fill((0, 0, 0))
+        if not self.player.invincible:
+            screen.blit(self.player.shadow_image, self.player.shadow_rect)
         self.all_sprites.draw(screen)
 
         score_surf = self._font.render(f"SCORE: {self.score}", True, HUD_COLOR)

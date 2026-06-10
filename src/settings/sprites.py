@@ -1,5 +1,17 @@
 SPRITE_SCOUT = "enemy_ships/Ship1/Ship1.png"
 SPRITE_SHIP = "enemy_boss/Ship_1_D.png"
+
+SPRITE_PLAYER_L2 = "SpaceRage/Player/player_b_l2.png"
+SPRITE_PLAYER_L1 = "SpaceRage/Player/player_b_l1.png"
+SPRITE_PLAYER_M  = "SpaceRage/Player/player_b_m.png"
+SPRITE_PLAYER_R1 = "SpaceRage/Player/player_b_r1.png"
+SPRITE_PLAYER_R2 = "SpaceRage/Player/player_b_r2.png"
+
+SPRITE_PLAYER_SHADOW_L2 = "SpaceRage/Shadows/player_shadow_l2.png"
+SPRITE_PLAYER_SHADOW_L1 = "SpaceRage/Shadows/player_shadow_l1.png"
+SPRITE_PLAYER_SHADOW_M  = "SpaceRage/Shadows/player_shadow_m.png"
+SPRITE_PLAYER_SHADOW_R1 = "SpaceRage/Shadows/player_shadow_r1.png"
+SPRITE_PLAYER_SHADOW_R2 = "SpaceRage/Shadows/player_shadow_r2.png"
 SPRITE_PLASMA = "ship/plasm.png"
 SPRITE_ROCKET = "enemy_boss/Missile_A.png"
 SPRITE_FIGHTER = "enemy_ships/Ship2/Ship2.png"
