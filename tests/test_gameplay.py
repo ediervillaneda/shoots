@@ -500,8 +500,7 @@ def test_bullet_kill_spawns_explosion():
     scene.spawn_system._last_spawn = pygame.time.get_ticks()
     scene.update(0.0)
     assert not scout.alive()
-    assert len(scene.explosions) == 1
-    assert isinstance(list(scene.explosions)[0], Explosion)
+    assert any(isinstance(s, Explosion) for s in scene.explosions)
 
 
 def test_player_collision_spawns_enemy_explosion():

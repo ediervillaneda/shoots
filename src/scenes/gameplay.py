@@ -187,6 +187,7 @@ class GameplayScene:
                 bullet.rect.centerx, bullet.rect.centery,
                 bullet.impact_frames, bullet.w, bullet.h,
             )
+            self.explosions.add(impact)
             self.all_sprites.add(impact)
             for enemy in enemies_hit:
                 if enemy.alive():
