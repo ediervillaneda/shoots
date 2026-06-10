@@ -118,17 +118,18 @@ BOSS_W = 96
 BOSS_H = 80
 BOSS_HP = 30
 BOSS_POINTS = 5000
-BOSS_SPEED = 150            # px/s
-BOSS_Y_TARGET = 120         # Y donde termina entrada y empieza ping-pong
-BOSS_SHOOT_INTERVAL_P1 = 1500   # ms fase 1 (single shot)
-BOSS_SHOOT_INTERVAL_P2 = 1000   # ms fase 2 (spread)
-BOSS_SPREAD_ANGLE = 20          # grados desde vertical
+BOSS_COLOR = (180, 50, 180)  # fallback color (sprite used in production)
+BOSS_SPEED = 150  # px/s
+BOSS_Y_TARGET = 120  # Y donde termina entrada y empieza ping-pong
+BOSS_SHOOT_INTERVAL_P1 = 1500  # ms fase 1 (single shot)
+BOSS_SHOOT_INTERVAL_P2 = 1000  # ms fase 2 (spread)
+BOSS_SPREAD_ANGLE = 20  # grados desde vertical
 BOSS_HEALTH_BAR_H = 12
-BOSS_TRIGGER_MS = 120_000       # ms hasta primer boss (2 min)
+BOSS_TRIGGER_MS = 120_000  # ms hasta primer boss (2 min)
 BOSS_SPRITES = [
     "enemy/Enemy_1_A.png",
     "enemy/Enemy_2_A.png",
     "enemy/Enemy_3_A.png",
     "enemy/Enemy_4_A.png",
 ]
-BOSS_SPRITES_FIXED_COUNT = 3    # primeras 3 apariciones ordenadas, luego aleatorio
+BOSS_SPRITES_FIXED_COUNT = 3  # primeras 3 apariciones ordenadas, luego aleatorio
