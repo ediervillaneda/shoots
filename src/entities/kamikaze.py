@@ -11,6 +11,8 @@ class Kamikaze(Enemy):
         raw = assets.get("ship/insect-1.png")
         self.image = pygame.transform.scale(raw, (KAMIKAZE_W, KAMIKAZE_H))
         self.rect = self.image.get_rect(centerx=x, bottom=0)
+        self.x = float(self.rect.x)
+        self.y = float(self.rect.y)
 
     def update(self, dt):
         speed = KAMIKAZE_SPEED + getattr(self, "speed_bonus", 0.0)
