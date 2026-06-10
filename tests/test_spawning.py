@@ -107,3 +107,72 @@ def test_kamikaze_prob_capped():
     ss = SpawnSystem()
     ss.wave = 1000
     assert ss._kamikaze_prob() == WAVE_KAMIKAZE_CAP
+
+
+from src.entities.boss import Boss
+from src.settings import BOSS_TRIGGER_MS, BOSS_SPRITES, BOSS_SPRITES_FIXED_COUNT
+
+
+def test_get_boss_spawn_returns_none_before_trigger():
+    ss = SpawnSystem()
+    assert ss.get_boss_spawn(BOSS_TRIGGER_MS - 1) is None
+
+
+def test_get_boss_spawn_returns_boss_at_trigger():
+    ss = SpawnSystem()
+    boss = ss.get_boss_spawn(BOSS_TRIGGER_MS)
+    assert isinstance(boss, Boss)
+
+
+def test_get_boss_spawn_returns_none_while_boss_alive():
+    ss = SpawnSystem()
+    ss.get_boss_spawn(BOSS_TRIGGER_MS)
+    assert ss.get_boss_spawn(BOSS_TRIGGER_MS) is None
+
+
+def test_boss_alive_true_after_spawn():
+    ss = SpawnSystem()
+    ss.get_boss_spawn(BOSS_TRIGGER_MS)
+    assert ss.boss_alive is True
+
+
+def test_notify_boss_killed_clears_boss_alive():
+    ss = SpawnSystem()
+    ss.get_boss_spawn(BOSS_TRIGGER_MS)
+    ss.notify_boss_killed(BOSS_TRIGGER_MS)
+    assert ss.boss_alive is False
+
+
+def test_next_boss_spawns_after_cooldown():
+    ss = SpawnSystem()
+    ss.get_boss_spawn(BOSS_TRIGGER_MS)
+    ss.notify_boss_killed(BOSS_TRIGGER_MS)
+    assert ss.get_boss_spawn(BOSS_TRIGGER_MS * 2 - 1) is None
+    assert isinstance(ss.get_boss_spawn(BOSS_TRIGGER_MS * 2), Boss)
+
+
+def test_update_returns_empty_while_boss_alive():
+    ss = SpawnSystem()
+    ss.boss_alive = True
+    ss._last_spawn = 0
+    assert ss.update(BOSS_TRIGGER_MS * 2) == []
+
+
+def test_first_boss_does_not_use_random_choice():
+    ss = SpawnSystem()
+    with patch("src.systems.spawning.random.choice") as mock_choice:
+        ss.get_boss_spawn(BOSS_TRIGGER_MS)
+    mock_choice.assert_not_called()
+
+
+def test_fourth_boss_uses_random_choice():
+    ss = SpawnSystem()
+    now = 0
+    for _ in range(BOSS_SPRITES_FIXED_COUNT):
+        ss._boss_spawn_at = now
+        ss.get_boss_spawn(now)
+        ss.notify_boss_killed(now)
+    ss._boss_spawn_at = now
+    with patch("src.systems.spawning.random.choice", return_value=BOSS_SPRITES[0]) as mock_choice:
+        ss.get_boss_spawn(now)
+    mock_choice.assert_called_once_with(BOSS_SPRITES)
