@@ -389,3 +389,91 @@ def test_boss_none_after_reset():
     scene.boss = Boss(BOSS_SPRITES[0])
     scene._reset()
     assert scene.boss is None
+
+
+# --- v0.7: rocket + explosion ---
+
+from src.entities.rocket import Rocket
+from src.entities.explosion import Explosion
+from src.entities.scout import Scout as _Scout
+from src.settings import ROCKET_COOLDOWN
+
+
+def test_rocket_added_to_group_on_shoot():
+    scene = GameplayScene()
+    scene._reset()
+    scene.player.apply_powerup("rocket")
+    scene.spawn_system._last_spawn = pygame.time.get_ticks()
+    with patch("pygame.key.get_pressed", return_value={pygame.K_SPACE: True, **{k: False for k in range(512)}}):
+        pass
+    rocket = Rocket(scene.player.rect.centerx, scene.player.rect.top)
+    scene.rockets.add(rocket)
+    scene.all_sprites.add(rocket)
+    assert len(scene.rockets) == 1
+
+
+def test_rocket_hit_spawns_explosion():
+    scene = GameplayScene()
+    scene._reset()
+    scout = _Scout(270)
+    scout.rect.center = (270, 300)
+    scout.x = float(scout.rect.x)
+    scout.y = float(scout.rect.y)
+    scene.enemies.add(scout)
+    scene.all_sprites.add(scout)
+    rocket = Rocket(270, 300)
+    rocket.rect.center = (270, 300)
+    scene.rockets.add(rocket)
+    scene.all_sprites.add(rocket)
+    scene.spawn_system._last_spawn = pygame.time.get_ticks()
+    scene.update(0.0)
+    assert len(scene.explosions) == 1
+    assert isinstance(list(scene.explosions)[0], Explosion)
+
+
+def test_rocket_hit_kills_direct_enemy():
+    scene = GameplayScene()
+    scene._reset()
+    scout = _Scout(270)
+    scout.rect.center = (270, 300)
+    scout.x = float(scout.rect.x)
+    scout.y = float(scout.rect.y)
+    scene.enemies.add(scout)
+    scene.all_sprites.add(scout)
+    rocket = Rocket(270, 300)
+    rocket.rect.center = (270, 300)
+    scene.rockets.add(rocket)
+    scene.all_sprites.add(rocket)
+    scene.spawn_system._last_spawn = pygame.time.get_ticks()
+    scene.update(0.0)
+    assert not scout.alive()
+
+
+def test_rocket_area_damage_hits_nearby_enemy():
+    from src.settings import ROCKET_RADIUS, ROCKET_AREA_DAMAGE
+    scene = GameplayScene()
+    scene._reset()
+    # Direct hit target
+    scout1 = _Scout(270)
+    scout1.rect.center = (270, 300)
+    scout1.x = float(scout1.rect.x)
+    scout1.y = float(scout1.rect.y)
+    # Nearby target (within radius)
+    from src.entities.fighter import Fighter
+    fighter = Fighter(270)
+    fighter.rect.center = (270 + ROCKET_RADIUS - 10, 300)
+    fighter.x = float(fighter.rect.x)
+    fighter.y = float(fighter.rect.y)
+    fighter.origin_x = float(fighter.rect.x)
+    fighter_initial_hp = fighter.hp
+    scene.enemies.add(scout1)
+    scene.enemies.add(fighter)
+    scene.all_sprites.add(scout1)
+    scene.all_sprites.add(fighter)
+    rocket = Rocket(270, 300)
+    rocket.rect.center = (270, 300)
+    scene.rockets.add(rocket)
+    scene.all_sprites.add(rocket)
+    scene.spawn_system._last_spawn = pygame.time.get_ticks()
+    scene.update(0.0)
+    assert fighter.hp == fighter_initial_hp - ROCKET_AREA_DAMAGE
