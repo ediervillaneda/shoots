@@ -7,6 +7,7 @@ from src.settings import (
     FIGHTER_SPEED, FIGHTER_COLOR, FIGHTER_W, FIGHTER_H,
     FIGHTER_HP, FIGHTER_POINTS, FIGHTER_AMPLITUDE, FIGHTER_FREQUENCY,
     FIGHTER_SHOOT_INTERVAL, SPRITE_FIGHTER,
+    ENEMY_PROJ_PLASMA, ENEMY_PROJ_PLASMA_W, ENEMY_PROJ_PLASMA_H,
 )
 
 
@@ -26,7 +27,8 @@ class Fighter(Enemy):
     def shoot(self, now) -> list:
         if now - self.last_shot >= FIGHTER_SHOOT_INTERVAL:
             self.last_shot = now
-            return [EnemyBullet(self.rect.centerx, self.rect.bottom)]
+            return [EnemyBullet(self.rect.centerx, self.rect.bottom, 0,
+                                ENEMY_PROJ_PLASMA, ENEMY_PROJ_PLASMA_W, ENEMY_PROJ_PLASMA_H)]
         return []
 
     def update(self, dt):

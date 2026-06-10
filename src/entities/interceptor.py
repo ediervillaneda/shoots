@@ -7,6 +7,7 @@ from src.settings import (
     INTERCEPTOR_SPEED, INTERCEPTOR_W, INTERCEPTOR_H, INTERCEPTOR_HP, INTERCEPTOR_POINTS,
     INTERCEPTOR_SHOOT_INTERVAL, INTERCEPTOR_Y_TARGET, INTERCEPTOR_PATROL_SPEED,
     SCREEN_W, SPRITE_INTERCEPTOR,
+    ENEMY_PROJ_PLASMA, ENEMY_PROJ_PLASMA_W, ENEMY_PROJ_PLASMA_H,
 )
 
 
@@ -40,7 +41,7 @@ class Interceptor(Enemy):
             angle = math.degrees(math.atan2(dx, max(1, dy)))
         else:
             angle = 0
-        return [EnemyBullet(cx, bottom, angle)]
+        return [EnemyBullet(cx, bottom, angle, ENEMY_PROJ_PLASMA, ENEMY_PROJ_PLASMA_W, ENEMY_PROJ_PLASMA_H)]
 
     def update(self, dt: float) -> None:
         speed = INTERCEPTOR_SPEED + getattr(self, "speed_bonus", 0.0)

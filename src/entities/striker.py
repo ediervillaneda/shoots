@@ -6,6 +6,7 @@ from src.entities.enemy_bullet import EnemyBullet
 from src.settings import (
     STRIKER_SPEED, STRIKER_W, STRIKER_H, STRIKER_HP, STRIKER_POINTS,
     STRIKER_SHOOT_INTERVAL, STRIKER_ENTRY_Y, SCREEN_W, SPRITE_STRIKER,
+    ENEMY_PROJ_PROTON, ENEMY_PROJ_PROTON_W, ENEMY_PROJ_PROTON_H,
 )
 
 
@@ -37,8 +38,8 @@ class Striker(Enemy):
         else:
             angle = 0
         return [
-            EnemyBullet(cx, bottom, angle - 10),
-            EnemyBullet(cx, bottom, angle + 10),
+            EnemyBullet(cx, bottom, angle - 10, ENEMY_PROJ_PROTON, ENEMY_PROJ_PROTON_W, ENEMY_PROJ_PROTON_H),
+            EnemyBullet(cx, bottom, angle + 10, ENEMY_PROJ_PROTON, ENEMY_PROJ_PROTON_W, ENEMY_PROJ_PROTON_H),
         ]
 
     def update(self, dt: float) -> None:

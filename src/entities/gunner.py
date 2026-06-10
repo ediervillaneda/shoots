@@ -5,6 +5,7 @@ from src.entities.enemy_bullet import EnemyBullet
 from src.settings import (
     GUNNER_SPEED, GUNNER_W, GUNNER_H, GUNNER_HP, GUNNER_POINTS,
     GUNNER_SHOOT_INTERVAL, GUNNER_SPREAD_ANGLE, SPRITE_GUNNER,
+    ENEMY_PROJ_VULCAN, ENEMY_PROJ_VULCAN_W, ENEMY_PROJ_VULCAN_H,
 )
 
 
@@ -26,9 +27,9 @@ class Gunner(Enemy):
         cx = self.rect.centerx
         bottom = self.rect.bottom
         return [
-            EnemyBullet(cx, bottom, -GUNNER_SPREAD_ANGLE),
-            EnemyBullet(cx, bottom, 0),
-            EnemyBullet(cx, bottom, GUNNER_SPREAD_ANGLE),
+            EnemyBullet(cx, bottom, -GUNNER_SPREAD_ANGLE, ENEMY_PROJ_VULCAN, ENEMY_PROJ_VULCAN_W, ENEMY_PROJ_VULCAN_H),
+            EnemyBullet(cx, bottom, 0,                    ENEMY_PROJ_VULCAN, ENEMY_PROJ_VULCAN_W, ENEMY_PROJ_VULCAN_H),
+            EnemyBullet(cx, bottom, GUNNER_SPREAD_ANGLE,  ENEMY_PROJ_VULCAN, ENEMY_PROJ_VULCAN_W, ENEMY_PROJ_VULCAN_H),
         ]
 
     def update(self, dt: float) -> None:

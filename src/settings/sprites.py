@@ -17,6 +17,17 @@ SPRITE_PU_EXTRA_LIFE = "ship/bonus_life.png"
 
 SHOT_LEVEL_MAX = 6
 
+# Enemy projectile animation frames (SpaceRage/FX)
+ENEMY_PROJ_PLASMA = ["SpaceRage/FX/plasma_1.png", "SpaceRage/FX/plasma_2.png"]
+ENEMY_PROJ_PROTON = [f"SpaceRage/FX/proton_0{i}.png" for i in range(1, 4)]
+ENEMY_PROJ_VULCAN = [f"SpaceRage/FX/vulcan_{i}.png" for i in range(1, 4)]
+
+ENEMY_PROJ_PLASMA_W, ENEMY_PROJ_PLASMA_H = 12, 42
+ENEMY_PROJ_PROTON_W, ENEMY_PROJ_PROTON_H = 22, 22
+ENEMY_PROJ_VULCAN_W, ENEMY_PROJ_VULCAN_H = 16, 44
+
+ENEMY_PROJ_FRAME_MS = 80
+
 SHOT1_LAUNCH_FRAMES = [f"Shots/Shot1/shot1_{i}.png" for i in range(1, 5)]
 SHOT1_TRAVEL = "Shots/Shot1/shot1_asset.png"
 SHOT1_IMPACT_FRAMES = [f"Shots/Shot1/shot1_exp{i}.png" for i in range(1, 6)]

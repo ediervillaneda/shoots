@@ -7,6 +7,8 @@ from src.settings import (
     BOSS_W, BOSS_H, BOSS_HP, BOSS_POINTS, BOSS_SPEED, BOSS_COLOR,
     BOSS_Y_TARGET, BOSS_SHOOT_INTERVAL_P1, BOSS_SHOOT_INTERVAL_P2,
     BOSS_SPREAD_ANGLE,
+    ENEMY_PROJ_PROTON, ENEMY_PROJ_PROTON_W, ENEMY_PROJ_PROTON_H,
+    ENEMY_PROJ_PLASMA, ENEMY_PROJ_PLASMA_W, ENEMY_PROJ_PLASMA_H,
 )
 
 
@@ -31,11 +33,11 @@ class Boss(Enemy):
         cx = self.rect.centerx
         bottom = self.rect.bottom
         if self.phase == 1:
-            return [EnemyBullet(cx, bottom)]
+            return [EnemyBullet(cx, bottom, 0, ENEMY_PROJ_PROTON, ENEMY_PROJ_PROTON_W, ENEMY_PROJ_PROTON_H)]
         return [
-            EnemyBullet(cx, bottom, -BOSS_SPREAD_ANGLE),
-            EnemyBullet(cx, bottom, 0),
-            EnemyBullet(cx, bottom, +BOSS_SPREAD_ANGLE),
+            EnemyBullet(cx, bottom, -BOSS_SPREAD_ANGLE, ENEMY_PROJ_PLASMA, ENEMY_PROJ_PLASMA_W, ENEMY_PROJ_PLASMA_H),
+            EnemyBullet(cx, bottom, 0,                  ENEMY_PROJ_PLASMA, ENEMY_PROJ_PLASMA_W, ENEMY_PROJ_PLASMA_H),
+            EnemyBullet(cx, bottom, +BOSS_SPREAD_ANGLE, ENEMY_PROJ_PLASMA, ENEMY_PROJ_PLASMA_W, ENEMY_PROJ_PLASMA_H),
         ]
 
     def update(self, dt: float) -> None:
