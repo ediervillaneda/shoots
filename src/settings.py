@@ -86,13 +86,13 @@ PLAYER_LIVES_MAX = 5
 RAPIDFIRE_COOLDOWN_MULT = 0.4  # BULLET_COOLDOWN × 0.4 with RapidFire active
 
 # Sprites
-SPRITE_SCOUT = "enemy/Boss_1_B.png"
-SPRITE_SHIP = "enemy/Ship_1_D.png"
+SPRITE_SCOUT = "enemy_boss/Boss_1_B.png"
+SPRITE_SHIP = "enemy_boss/Ship_1_D.png"
 SPRITE_PLASMA = "ship/plasm.png"
-SPRITE_ROCKET = "enemy/Missile_A.png"
-SPRITE_FIGHTER = "enemy/Enemy_4_C.png"
+SPRITE_ROCKET = "enemy_boss/Missile_A.png"
+SPRITE_FIGHTER = "enemy_boss/Enemy_4_C.png"
 SPRITE_FIGHTER_BULLET = "ship/bullet-1.png"
-SPRITE_KAMIKAZE = "enemy/Enemy_1_D.png"
+SPRITE_KAMIKAZE = "enemy_boss/Enemy_1_D.png"
 SPRITE_KAMIKAZE_BULLET = "ship/bullet-2.png"
 SPRITE_SHIELD_OVERLAY = "ship/shield.png"
 SPRITE_PU_RAPID_FIRE = "ship/bonus_time.png"
@@ -141,10 +141,10 @@ BOSS_HEALTH_BAR_H = 12
 BOSS_BAR_Y_OFFSET = 6  # px gap between score row and boss health bar
 BOSS_WAVE_INTERVAL = 10  # waves entre apariciones del boss
 BOSS_SPRITES = [
-    "enemy/Enemy_1_A.png",
-    "enemy/Enemy_2_A.png",
-    "enemy/Enemy_3_A.png",
-    "enemy/Enemy_4_A.png",
+    "enemy_boss/Enemy_1_A.png",
+    "enemy_boss/Enemy_2_A.png",
+    "enemy_boss/Enemy_3_A.png",
+    "enemy_boss/Enemy_4_A.png",
 ]
 BOSS_SPRITES_FIXED_COUNT = 3  # primeras 3 apariciones ordenadas, luego aleatorio
 
