@@ -12,10 +12,10 @@ BOSS_HEALTH_BAR_H = 12
 BOSS_BAR_Y_OFFSET = 6
 BOSS_WAVE_INTERVAL = 10
 BOSS_SPRITES = [
-    "enemy_boss/Enemy_1_A.png",
-    "enemy_boss/Enemy_2_A.png",
-    "enemy_boss/Enemy_3_A.png",
-    "enemy_boss/Enemy_4_A.png",
+    "enemies/boss1.png",
+    "enemies/boss2.png",
+    "enemies/boss3.png",
+    "enemies/boss4.png",
 ]
 BOSS_SPRITES_FIXED_COUNT = 3
 
