@@ -83,3 +83,12 @@ POWERUP_H               = 32
 POWERUP_DROP_CHANCE     = 0.20    # 20% per kill
 PLAYER_LIVES_MAX        = 5
 RAPIDFIRE_COOLDOWN_MULT = 0.4     # BULLET_COOLDOWN × 0.4 with RapidFire active
+
+# Sprites
+SPRITE_KAMIKAZE       = "ship/insect-1.png"
+SPRITE_SHIELD_OVERLAY = "ship/shield.png"
+SPRITE_PU_RAPID_FIRE  = "ship/bonus_time.png"
+SPRITE_PU_SHIELD      = "ship/bonus_shield.png"
+SPRITE_PU_DOUBLE_SHOT = "ship/laser-2.png"
+SPRITE_PU_TRIPLE_SHOT = "ship/laser-3.png"
+SPRITE_PU_EXTRA_LIFE  = "ship/bonus_life.png"

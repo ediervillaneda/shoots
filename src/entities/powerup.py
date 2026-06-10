@@ -1,13 +1,17 @@
 import pygame
 import src.assets as assets
-from src.settings import POWERUP_SPEED, POWERUP_W, POWERUP_H, SCREEN_H
+from src.settings import (
+    POWERUP_SPEED, POWERUP_W, POWERUP_H, SCREEN_H,
+    SPRITE_PU_RAPID_FIRE, SPRITE_PU_SHIELD, SPRITE_PU_DOUBLE_SHOT,
+    SPRITE_PU_TRIPLE_SHOT, SPRITE_PU_EXTRA_LIFE,
+)
 
 POWERUP_ASSETS = {
-    "rapid_fire":  "ship/bonus_time.png",
-    "shield":      "ship/bonus_shield.png",
-    "double_shot": "ship/laser-2.png",
-    "triple_shot": "ship/laser-3.png",
-    "extra_life":  "ship/bonus_life.png",
+    "rapid_fire":  SPRITE_PU_RAPID_FIRE,
+    "shield":      SPRITE_PU_SHIELD,
+    "double_shot": SPRITE_PU_DOUBLE_SHOT,
+    "triple_shot": SPRITE_PU_TRIPLE_SHOT,
+    "extra_life":  SPRITE_PU_EXTRA_LIFE,
 }
 
 POWERUP_KINDS = list(POWERUP_ASSETS)

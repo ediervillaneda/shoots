@@ -9,7 +9,7 @@ from src.systems.spawning import SpawnSystem
 from src.settings import (
     SCREEN_W, SCREEN_H,
     BULLET_DAMAGE, HUD_FONT_SIZE, HUD_COLOR, HUD_MARGIN,
-    POWERUP_DROP_CHANCE, PLAYER_W, PLAYER_H,
+    POWERUP_DROP_CHANCE, PLAYER_W, PLAYER_H, SPRITE_SHIELD_OVERLAY,
 )
 
 
@@ -135,7 +135,7 @@ class GameplayScene:
         screen.blit(lives_surf, (SCREEN_W - lives_surf.get_width() - HUD_MARGIN, HUD_MARGIN))
 
         if "shield" in self.player.active_powerups:
-            sh = assets.get("ship/shield.png")
+            sh = assets.get(SPRITE_SHIELD_OVERLAY)
             sh_scaled = pygame.transform.scale(sh, (PLAYER_W + 20, PLAYER_H + 20))
             screen.blit(sh_scaled, (
                 self.player.rect.centerx - sh_scaled.get_width() // 2,

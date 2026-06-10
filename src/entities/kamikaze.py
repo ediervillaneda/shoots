@@ -2,13 +2,13 @@ import math
 import pygame
 import src.assets as assets
 from src.entities.enemy import Enemy
-from src.settings import KAMIKAZE_SPEED, KAMIKAZE_W, KAMIKAZE_H, KAMIKAZE_HP, KAMIKAZE_POINTS
+from src.settings import KAMIKAZE_SPEED, KAMIKAZE_W, KAMIKAZE_H, KAMIKAZE_HP, KAMIKAZE_POINTS, SPRITE_KAMIKAZE
 
 
 class Kamikaze(Enemy):
     def __init__(self, x):
         super().__init__(x, KAMIKAZE_W, KAMIKAZE_H, (180, 50, 220), KAMIKAZE_HP, KAMIKAZE_POINTS)
-        raw = assets.get("ship/insect-1.png")
+        raw = assets.get(SPRITE_KAMIKAZE)
         self.image = pygame.transform.scale(raw, (KAMIKAZE_W, KAMIKAZE_H))
         self.rect = self.image.get_rect(centerx=x, bottom=0)
         self.x = float(self.rect.x)
