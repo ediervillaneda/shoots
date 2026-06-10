@@ -10,7 +10,7 @@ from src.settings import (
     SCREEN_W, SCREEN_H,
     BULLET_DAMAGE, HUD_FONT_SIZE, HUD_COLOR, HUD_MARGIN,
     POWERUP_DROP_CHANCE, PLAYER_W, PLAYER_H, SPRITE_SHIELD_OVERLAY,
-    BOSS_HP, BOSS_HEALTH_BAR_H,
+    BOSS_HP, BOSS_HEALTH_BAR_H, BOSS_BAR_Y_OFFSET,
 )
 
 
@@ -169,7 +169,7 @@ class GameplayScene:
         if self.boss and self.boss.alive():
             bar_w = SCREEN_W - 2 * HUD_MARGIN
             filled = int(bar_w * self.boss.hp / BOSS_HP)
-            y = HUD_MARGIN + HUD_FONT_SIZE + 6
+            y = HUD_MARGIN + HUD_FONT_SIZE + BOSS_BAR_Y_OFFSET
             pygame.draw.rect(screen, (80, 0, 0),      (HUD_MARGIN, y, bar_w, BOSS_HEALTH_BAR_H))
             pygame.draw.rect(screen, (220, 30, 30),   (HUD_MARGIN, y, filled, BOSS_HEALTH_BAR_H))
             pygame.draw.rect(screen, (255, 255, 255), (HUD_MARGIN, y, bar_w, BOSS_HEALTH_BAR_H), 1)

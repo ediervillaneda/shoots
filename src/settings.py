@@ -126,6 +126,7 @@ BOSS_SHOOT_INTERVAL_P1 = 1500  # ms fase 1 (single shot)
 BOSS_SHOOT_INTERVAL_P2 = 1000  # ms fase 2 (spread)
 BOSS_SPREAD_ANGLE = 20  # grados desde vertical
 BOSS_HEALTH_BAR_H = 12
+BOSS_BAR_Y_OFFSET = 6   # px gap between score row and boss health bar
 BOSS_TRIGGER_MS = 120_000  # ms hasta primer boss (2 min)
 BOSS_SPRITES = [
     "enemy/Enemy_1_A.png",

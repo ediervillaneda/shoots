@@ -7,7 +7,8 @@ from src.entities.bullet import Bullet
 from src.entities.enemy_bullet import EnemyBullet
 from src.entities.powerup import PowerUp
 from src.entities.kamikaze import Kamikaze
-from src.settings import SCOUT_POINTS, PLAYER_LIVES, SCREEN_H, WAVE_SPAWN_MIN, FIGHTER_HP, BULLET_DAMAGE
+from src.entities.boss import Boss
+from src.settings import SCOUT_POINTS, PLAYER_LIVES, SCREEN_H, WAVE_SPAWN_MIN, FIGHTER_HP, BULLET_DAMAGE, BOSS_SPRITES, BOSS_SHOOT_INTERVAL_P1
 
 
 # --- tests de estado y reset ---
@@ -318,10 +319,6 @@ def test_kamikaze_gets_target_on_spawn():
     kamikazes = [e for e in scene.enemies if isinstance(e, Kamikaze)]
     assert len(kamikazes) == 1
     assert kamikazes[0].target is scene.player
-
-
-from src.entities.boss import Boss
-from src.settings import BOSS_SPRITES, BOSS_SHOOT_INTERVAL_P1
 
 
 def test_boss_added_to_enemies_on_spawn():
