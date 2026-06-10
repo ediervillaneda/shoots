@@ -42,6 +42,7 @@ class Boss(Enemy):
         if not self._entry_done:
             self.y += BOSS_SPEED * dt
             if self.y >= BOSS_Y_TARGET:
+                self.y = float(BOSS_Y_TARGET)
                 self._entry_done = True
         else:
             self.x += BOSS_SPEED * self.dir * dt
