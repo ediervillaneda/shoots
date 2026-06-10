@@ -24,7 +24,7 @@ def test_enemy_bullet_speed():
 
 
 def test_enemy_bullet_killed_off_screen():
-    eb = EnemyBullet(270, SCREEN_H - 1)
+    eb = EnemyBullet(270, SCREEN_H)
     group = pygame.sprite.Group(eb)
     eb.update(1.0)
     assert not eb.alive()

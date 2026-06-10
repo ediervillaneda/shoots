@@ -10,7 +10,7 @@ class EnemyBullet(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.Surface((ENEMY_BULLET_W, ENEMY_BULLET_H))
         self.image.fill(ENEMY_BULLET_COLOR)
-        self.rect = self.image.get_rect(centerx=x, top=y)
+        self.rect = self.image.get_rect(centerx=x, top=y)  # top anchored so bullet tip starts at muzzle
         self.y = float(self.rect.y)
 
     def update(self, dt):
