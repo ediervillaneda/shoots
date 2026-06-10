@@ -4,7 +4,7 @@ from src.entities.enemy import Enemy
 from src.entities.enemy_bullet import EnemyBullet
 from src.settings import (
     SCREEN_W,
-    BOSS_W, BOSS_H, BOSS_HP, BOSS_POINTS, BOSS_SPEED,
+    BOSS_W, BOSS_H, BOSS_HP, BOSS_POINTS, BOSS_SPEED, BOSS_COLOR,
     BOSS_Y_TARGET, BOSS_SHOOT_INTERVAL_P1, BOSS_SHOOT_INTERVAL_P2,
     BOSS_SPREAD_ANGLE,
 )
@@ -12,7 +12,7 @@ from src.settings import (
 
 class Boss(Enemy):
     def __init__(self, sprite_path: str):
-        super().__init__(SCREEN_W // 2, BOSS_W, BOSS_H, (0, 0, 0), BOSS_HP, BOSS_POINTS)
+        super().__init__(SCREEN_W // 2, BOSS_W, BOSS_H, BOSS_COLOR, BOSS_HP, BOSS_POINTS)
         raw = assets.get(sprite_path)
         self.image = pygame.transform.scale(raw, (BOSS_W, BOSS_H))
         self.rect = self.image.get_rect(centerx=SCREEN_W // 2, bottom=0)

@@ -81,8 +81,7 @@ def test_boss_shoot_phase1_returns_one_bullet():
 def test_boss_shoot_phase2_returns_three_bullets():
     boss = Boss(SPRITE)
     boss.phase = 2
-    boss.last_shot = -BOSS_SHOOT_INTERVAL_P2
-    bullets = boss.shoot(0)
+    bullets = boss.shoot(BOSS_SHOOT_INTERVAL_P2)
     assert len(bullets) == 3
     assert all(isinstance(b, EnemyBullet) for b in bullets)
 
