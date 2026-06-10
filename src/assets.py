@@ -1,7 +1,16 @@
+import sys
 import pygame
 from pathlib import Path
 
-_BASE = Path(__file__).parent.parent / "assets"
+
+def _base_dir() -> Path:
+    # sys._MEIPASS is set by PyInstaller at runtime
+    if getattr(sys, "frozen", False):
+        return Path(sys._MEIPASS)  # type: ignore[attr-defined]
+    return Path(__file__).parent.parent
+
+
+_BASE = _base_dir() / "assets"
 _cache: dict[str, pygame.Surface] = {}
 
 
