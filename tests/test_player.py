@@ -69,3 +69,21 @@ def test_player_bullet_spawns_at_player_top():
     bullet = player.shoot(BULLET_COOLDOWN + 1)
     assert bullet.rect.centerx == player.rect.centerx
     assert bullet.rect.bottom == player.rect.top
+
+def test_player_clamped_to_screen_bottom():
+    player = Player()
+    player.rect.y = SCREEN_H + 100
+    player.y = float(player.rect.y)
+    player.vel_x = 0.0
+    player.vel_y = 0.0
+    player.update(0.016)
+    assert player.rect.bottom <= SCREEN_H
+
+def test_player_clamped_to_screen_top():
+    player = Player()
+    player.rect.y = -200
+    player.y = float(player.rect.y)
+    player.vel_x = 0.0
+    player.vel_y = 0.0
+    player.update(0.016)
+    assert player.rect.top >= 0
