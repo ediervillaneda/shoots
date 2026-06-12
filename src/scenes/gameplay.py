@@ -18,7 +18,7 @@ from src.systems.spawning import SpawnSystem
 from src.settings import (
     SCREEN_W, SCREEN_H,
     BULLET_DAMAGE, HUD_FONT_SIZE, HUD_COLOR, HUD_MARGIN,
-    POWERUP_DROP_CHANCE, PLAYER_W, PLAYER_H, SPRITE_SHIELD_OVERLAY,
+    POWERUP_DROP_CHANCE, PLAYER_W, PLAYER_H, SPRITE_HEART, SPRITE_SHIELD_OVERLAY,
     BOSS_HP, BOSS_HEALTH_BAR_H, BOSS_BAR_Y_OFFSET,
     ROCKET_DAMAGE, ROCKET_AREA_DAMAGE, ROCKET_RADIUS,
     EXPLOSION_W, EXPLOSION_H, EXPLOSION_W_BOSS, EXPLOSION_H_BOSS,
@@ -86,7 +86,8 @@ class GameplayScene:
         if isinstance(entity, Boss):
             paths, size = EXPL_BOSS, (EXPLOSION_W_BOSS, EXPLOSION_H_BOSS)
         elif isinstance(entity, Interceptor):
-            paths, size = EXPL_INTERCEPTOR, (EXPLOSION_W_BOSS, EXPLOSION_H_BOSS)
+            paths, size = EXPL_INTERCEPTOR, (EXPLOSION_W_BOSS,
+                                             EXPLOSION_H_BOSS)
         elif isinstance(entity, Striker):
             paths, size = EXPL_STRIKER, (EXPLOSION_W, EXPLOSION_H)
         elif isinstance(entity, Gunner):
@@ -127,7 +128,8 @@ class GameplayScene:
                     self._spawn_death_explosion(enemy)
                     self.score += enemy.points
                     self.spawn_system.register_kill()
-                    self._maybe_drop_powerup(enemy.rect.centerx, enemy.rect.centery)
+                    self._maybe_drop_powerup(
+                        enemy.rect.centerx, enemy.rect.centery)
 
     def update(self, dt):
         self._bg.update(dt)
@@ -172,11 +174,13 @@ class GameplayScene:
                     self.enemy_bullets.add(eb)
                     self.all_sprites.add(eb)
 
-        eb_hits = pygame.sprite.spritecollide(self.player, self.enemy_bullets, True)
+        eb_hits = pygame.sprite.spritecollide(
+            self.player, self.enemy_bullets, True)
         for _ in eb_hits:
             self._handle_player_damage(now)
 
-        hit_enemies = pygame.sprite.spritecollide(self.player, self.enemies, True)
+        hit_enemies = pygame.sprite.spritecollide(
+            self.player, self.enemies, True)
         for enemy in hit_enemies:
             self._spawn_death_explosion(enemy)
             self.score += enemy.points
@@ -184,7 +188,8 @@ class GameplayScene:
             self.spawn_system.register_kill()
             self._maybe_drop_powerup(enemy.rect.centerx, enemy.rect.centery)
 
-        hits = pygame.sprite.groupcollide(self.bullets, self.enemies, True, False)
+        hits = pygame.sprite.groupcollide(
+            self.bullets, self.enemies, True, False)
         for bullet, enemies_hit in hits.items():
             impact = ImpactEffect(
                 bullet.rect.centerx, bullet.rect.centery,
@@ -199,7 +204,8 @@ class GameplayScene:
                         self._spawn_death_explosion(enemy)
                         self.score += enemy.points
                         self.spawn_system.register_kill()
-                        self._maybe_drop_powerup(enemy.rect.centerx, enemy.rect.centery)
+                        self._maybe_drop_powerup(
+                            enemy.rect.centerx, enemy.rect.centery)
 
         for rocket in list(self.rockets):
             hit = pygame.sprite.spritecollide(rocket, self.enemies, False)
@@ -235,16 +241,20 @@ class GameplayScene:
         score_surf = self._font.render(f"SCORE: {self.score}", True, HUD_COLOR)
         screen.blit(score_surf, (HUD_MARGIN, HUD_MARGIN))
 
-        wave_surf = self._font.render(f"WAVE: {self.spawn_system.wave}", True, HUD_COLOR)
-        screen.blit(wave_surf, (SCREEN_W // 2 - wave_surf.get_width() // 2, HUD_MARGIN))
+        wave_surf = self._font.render(
+            f"WAVE: {self.spawn_system.wave}", True, HUD_COLOR)
+        screen.blit(wave_surf, (SCREEN_W // 2 -
+                    wave_surf.get_width() // 2, HUD_MARGIN))
 
-        lives_text = ("♥ " * self.player.lives).strip()
-        lives_surf = self._font.render(lives_text, True, (220, 50, 50))
-        screen.blit(lives_surf, (SCREEN_W - lives_surf.get_width() - HUD_MARGIN, HUD_MARGIN))
+        heart = pygame.transform.scale(assets.get(SPRITE_HEART), (20, 20))
+        for i in range(self.player.lives):
+            screen.blit(heart, (SCREEN_W - (i + 1) *
+                        26 - HUD_MARGIN, HUD_MARGIN))
 
         if "shield" in self.player.active_powerups:
             sh = assets.get(SPRITE_SHIELD_OVERLAY)
-            sh_scaled = pygame.transform.scale(sh, (PLAYER_W + 20, PLAYER_H + 20))
+            sh_scaled = pygame.transform.scale(
+                sh, (PLAYER_W + 20, PLAYER_H + 20))
             screen.blit(sh_scaled, (
                 self.player.rect.centerx - sh_scaled.get_width() // 2,
                 self.player.rect.top - sh_scaled.get_height(),
@@ -252,11 +262,13 @@ class GameplayScene:
 
         x = HUD_MARGIN
         for kind in sorted(self.player.active_powerups):
-            icon = pygame.transform.scale(assets.get(POWERUP_ASSETS[kind]), (24, 24))
+            icon = pygame.transform.scale(
+                assets.get(POWERUP_ASSETS[kind]), (24, 24))
             screen.blit(icon, (x, SCREEN_H - 24 - HUD_MARGIN))
             x += 28
         if self.player.rocket_count > 0:
-            rocket_icon = pygame.transform.scale(assets.get(POWERUP_ASSETS["rocket"]), (24, 24))
+            rocket_icon = pygame.transform.scale(
+                assets.get(POWERUP_ASSETS["rocket"]), (24, 24))
             for _ in range(self.player.rocket_count):
                 screen.blit(rocket_icon, (x, SCREEN_H - 24 - HUD_MARGIN))
                 x += 28
@@ -265,9 +277,12 @@ class GameplayScene:
             bar_w = SCREEN_W - 2 * HUD_MARGIN
             filled = int(bar_w * self.boss.hp / BOSS_HP)
             y = HUD_MARGIN + HUD_FONT_SIZE + BOSS_BAR_Y_OFFSET
-            pygame.draw.rect(screen, (80, 0, 0),      (HUD_MARGIN, y, bar_w, BOSS_HEALTH_BAR_H))
-            pygame.draw.rect(screen, (220, 30, 30),   (HUD_MARGIN, y, filled, BOSS_HEALTH_BAR_H))
-            pygame.draw.rect(screen, (255, 255, 255), (HUD_MARGIN, y, bar_w, BOSS_HEALTH_BAR_H), 1)
+            pygame.draw.rect(screen, (80, 0, 0),
+                             (HUD_MARGIN, y, bar_w, BOSS_HEALTH_BAR_H))
+            pygame.draw.rect(screen, (220, 30, 30),
+                             (HUD_MARGIN, y, filled, BOSS_HEALTH_BAR_H))
+            pygame.draw.rect(screen, (255, 255, 255),
+                             (HUD_MARGIN, y, bar_w, BOSS_HEALTH_BAR_H), 1)
 
         if self.state == "start":
             self._draw_overlay(screen, "STARFALL", "PRESS SPACE TO PLAY")
