@@ -2,8 +2,8 @@ name: Release
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - 'v*'
 
 jobs:
   test:
@@ -86,16 +86,10 @@ jobs:
       - name: Set permissions on Linux binary
         run: chmod +x artifacts/linux/Starfall
 
-      - name: Create tag from short SHA
-        id: tag
-        run: echo "tag=build-$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.tag.outputs.tag }}
-          name: Build ${{ steps.tag.outputs.tag }}
           files: |
             artifacts/windows/Starfall.exe
             artifacts/linux/Starfall
-          generate_release_notes: false
+          generate_release_notes: true
