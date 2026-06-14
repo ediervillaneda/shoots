@@ -122,7 +122,9 @@ class SpawnSystem:
             return e
         # Raider: desde wave WAVE_RAIDER_MIN, 15% prob
         if self.wave >= WAVE_RAIDER_MIN and random.randint(1, 100) <= 15:
-            return Raider()
+            r = Raider()
+            r.speed_bonus = speed_bonus
+            return r
         # Flanker: desde wave WAVE_FLANKER_MIN, 15% prob
         if self.wave >= WAVE_FLANKER_MIN and random.randint(1, 100) <= 15:
             from_left = random.random() < 0.5

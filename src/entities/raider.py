@@ -10,7 +10,6 @@ from src.settings import (
     SCREEN_W, SCREEN_H, SPRITE_RAIDER,
     GUNNER_SHOOT_INTERVAL, GUNNER_SPREAD_ANGLE,
     ENEMY_PROJ_VULCAN, ENEMY_PROJ_VULCAN_W, ENEMY_PROJ_VULCAN_H,
-    ENEMY_FLASH_MS, ENEMY_FLASH_ALPHA,
 )
 
 
@@ -20,7 +19,6 @@ class Raider(Enemy):
         super().__init__(x, RAIDER_W, RAIDER_H, RAIDER_COLOR, RAIDER_HP, RAIDER_POINTS)
         raw = assets.get(SPRITE_RAIDER)
         self.image = pygame.transform.scale(raw, (RAIDER_W, RAIDER_H))
-        # NO flip vertical — entra desde abajo mirando hacia arriba (imagen ya orientada)
         self.rect = self.image.get_rect(centerx=x, top=SCREEN_H)
         self.x = float(self.rect.x)
         self.y = float(self.rect.y)
@@ -36,7 +34,7 @@ class Raider(Enemy):
             return []
         self.last_shot = now
         cx = self.rect.centerx
-        top = self.rect.top  # dispara hacia arriba (hacia el player)
+        top = self.rect.top
         return [
             EnemyBullet(cx, top, 180 - GUNNER_SPREAD_ANGLE, ENEMY_PROJ_VULCAN, ENEMY_PROJ_VULCAN_W, ENEMY_PROJ_VULCAN_H),
             EnemyBullet(cx, top, 180,                        ENEMY_PROJ_VULCAN, ENEMY_PROJ_VULCAN_W, ENEMY_PROJ_VULCAN_H),
@@ -46,35 +44,25 @@ class Raider(Enemy):
     def update(self, dt: float) -> None:
         speed = RAIDER_SPEED + getattr(self, "speed_bonus", 0.0)
         if self._state == "entering":
-            self.y -= speed * dt  # sube
+            self.y -= speed * dt
             if self.y <= RAIDER_PATROL_Y:
                 self.y = float(RAIDER_PATROL_Y)
                 self._state = "patrolling"
         elif self._state == "patrolling":
             self._patrol_timer += dt * 1000
             self.x += RAIDER_PATROL_SPEED * self._dir_x * dt
-            if self.rect.right >= SCREEN_W:
+            # fix: usar self.x directamente para evitar rect desactualizado
+            if self.x + RAIDER_W >= SCREEN_W:
                 self._dir_x = -1.0
-                self.rect.right = SCREEN_W
-                self.x = float(self.rect.x)
-            elif self.rect.left <= 0:
+                self.x = float(SCREEN_W - RAIDER_W)
+            elif self.x <= 0:
                 self._dir_x = 1.0
-                self.rect.left = 0
-                self.x = float(self.rect.x)
+                self.x = 0.0
             if self._patrol_timer >= RAIDER_PATROL_MS:
                 self._state = "leaving"
         else:  # leaving
             self.y += speed * dt
-            if self.rect.top >= SCREEN_H:
-                self.kill()
         self.rect.x = int(self.x)
         self.rect.y = int(self.y)
-        # Manejo de flash (sin llamar super().update porque empieza debajo de SCREEN_H)
-        if self._flash_ms > 0 and self._base_image is not None:
-            self._flash_ms -= dt * 1000
-            flash = self._base_image.copy()
-            flash.fill((255, 255, 255, ENEMY_FLASH_ALPHA), special_flags=pygame.BLEND_RGBA_ADD)
-            self.image = flash
-        elif self._base_image is not None and self._flash_ms <= 0:
-            self.image = self._base_image
-            self._base_image = None
+        # rect.top = SCREEN_H (no >) al inicio: super().update() no mata prematuramente
+        super().update(dt)  # flash + kill cuando rect.top > SCREEN_H
