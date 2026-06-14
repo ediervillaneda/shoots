@@ -441,7 +441,7 @@ class GameplayScene:
         _SHOT_TRAVELS = (None, SHOT1_TRAVEL, SHOT2_TRAVEL, SHOT3_TRAVEL,
                          SHOT4_TRAVEL, SHOT5_TRAVEL, SHOT6_TRAVEL)
         travel = _SHOT_TRAVELS[self.player.shot_level]
-        gun_icon = pygame.transform.scale(assets.get(travel[0]), (36, 36))
+        gun_icon = pygame.transform.scale(assets.get(travel), (36, 36))
         _surf.blit(gun_icon, (SCREEN_W // 2 - 18, SCREEN_H - 36 - HUD_MARGIN))
 
         if self.state == "paused":
