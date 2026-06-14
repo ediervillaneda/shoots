@@ -4,6 +4,17 @@ All notable changes to Starfall are documented here.
 
 ---
 
+## [1.7.0] — Nuevos enemigos: Flanker, Raider, formaciones
+
+### 1.7.1
+- `Flanker`: entra lateral (izq o der), cruza horizontal a target_x aleatorio (SCREEN_W/4–3/4), luego baja; 400 pts, 3 HP
+- `Raider`: entra desde abajo, patrulla ping-pong en RAIDER_PATROL_Y 2.5s, dispara vulcan 3 vías hacia arriba, luego sale; 450 pts, 4 HP
+- `SpawnSystem._make_formation()`: 3-5 Scouts centrados con FORMATION_SPACING; 20% prob desde wave 5
+- Flanker spawnable desde wave 4 (15%), Raider desde wave 7 (15%)
+- 33 tests nuevos (`test_flanker.py`, `test_raider.py`, `test_formacion.py`) — total 307 tests
+
+---
+
 ## [1.6.0] — Game feel: screen shake, combo multiplier, flash de daño
 
 ### 1.6.2
