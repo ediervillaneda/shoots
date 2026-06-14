@@ -1,4 +1,5 @@
-SPRITE_BG = "bg/bg.png"
+SPRITE_BG    = "bg/bg.png"
+SPRITE_HEART = "powerups/extra_life.png"
 
 SPRITE_PLAYER_L2 = "player/l2.png"
 SPRITE_PLAYER_L1 = "player/l1.png"
