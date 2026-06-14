@@ -85,7 +85,7 @@ class GameplayScene:
                     elif event.key in (pygame.K_p, pygame.K_RETURN, pygame.K_SPACE):
                         self.state = "playing"
         if self.state == "game_over":
-            if keys[pygame.K_SPACE]:
+            if keys[pygame.K_SPACE] or keys[pygame.K_RETURN]:
                 self._reset()
             return
         if self.state == "paused":

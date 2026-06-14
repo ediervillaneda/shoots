@@ -6,6 +6,10 @@ All notable changes to Starfall are documented here.
 
 ## [v1.3] — Disparos avanzados: base técnica
 
+### v1.3.4
+- Flechas del teclado (↑↓←→) como alternativa a WASD en gameplay
+- ENTER como alternativa a SPACE en game over (fallback headless)
+
 ### v1.3.3
 - `GameplayScene`: colisiones de bala usan `bullet.damage` en lugar de constante global `BULLET_DAMAGE`
 
