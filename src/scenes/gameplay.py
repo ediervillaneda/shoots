@@ -158,6 +158,11 @@ class GameplayScene:
         self.explosions.add(expl)
         self.all_sprites.add(expl)
         audio.play_sfx(SFX_EXPLOSION)
+        # v1.8: death_burst para Gunner y Striker
+        if isinstance(entity, (Gunner, Striker)):
+            for eb in entity.death_burst():
+                self.enemy_bullets.add(eb)
+                self.all_sprites.add(eb)
 
     def _handle_player_damage(self, now: int) -> None:
         lives_before = self.player.lives
