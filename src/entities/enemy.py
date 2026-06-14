@@ -34,3 +34,17 @@ class Enemy(pygame.sprite.Sprite):
             self._base_image = None
         if self.rect.top > SCREEN_H:
             self.kill()
+
+    def death_burst(self, count: int = None) -> list:
+        """Retorna `count` EnemyBullet en 360° desde la posición actual."""
+        from src.entities.enemy_bullet import EnemyBullet
+        from src.settings import DEATH_BURST_COUNT
+        if count is None:
+            count = DEATH_BURST_COUNT
+        cx = self.rect.centerx
+        cy = self.rect.centery
+        bullets = []
+        for i in range(count):
+            angle = 360.0 * i / count
+            bullets.append(EnemyBullet(cx, cy, angle))
+        return bullets

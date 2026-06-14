@@ -4,8 +4,9 @@ from src.entities.enemy import Enemy
 from src.entities.enemy_bullet import EnemyBullet
 from src.settings import (
     GUNNER_SPEED, GUNNER_W, GUNNER_H, GUNNER_HP, GUNNER_POINTS,
-    GUNNER_SHOOT_INTERVAL, GUNNER_SPREAD_ANGLE, SPRITE_GUNNER,
+    GUNNER_SPREAD_ANGLE, SPRITE_GUNNER,
     ENEMY_PROJ_VULCAN, ENEMY_PROJ_VULCAN_W, ENEMY_PROJ_VULCAN_H,
+    BURST_COUNT, BURST_INTERVAL_MS, BURST_PAUSE_MS,
 )
 
 
@@ -18,19 +19,26 @@ class Gunner(Enemy):
         self.rect = self.image.get_rect(centerx=x, bottom=0)
         self.x = float(self.rect.x)
         self.y = float(self.rect.y)
-        self.last_shot: int = -GUNNER_SHOOT_INTERVAL
+        self._burst_idx: int = 0        # cuántas balas de la ráfaga se han disparado
+        self._next_burst_ms: int = 0    # pygame.time.get_ticks() del próximo disparo
 
     def shoot(self, now: int) -> list:
-        if now - self.last_shot < GUNNER_SHOOT_INTERVAL:
+        if now < self._next_burst_ms:
             return []
-        self.last_shot = now
         cx = self.rect.centerx
         bottom = self.rect.bottom
-        return [
+        bullets = [
             EnemyBullet(cx, bottom, -GUNNER_SPREAD_ANGLE, ENEMY_PROJ_VULCAN, ENEMY_PROJ_VULCAN_W, ENEMY_PROJ_VULCAN_H),
             EnemyBullet(cx, bottom, 0,                    ENEMY_PROJ_VULCAN, ENEMY_PROJ_VULCAN_W, ENEMY_PROJ_VULCAN_H),
-            EnemyBullet(cx, bottom, GUNNER_SPREAD_ANGLE,  ENEMY_PROJ_VULCAN, ENEMY_PROJ_VULCAN_W, ENEMY_PROJ_VULCAN_H),
+            EnemyBullet(cx, bottom,  GUNNER_SPREAD_ANGLE, ENEMY_PROJ_VULCAN, ENEMY_PROJ_VULCAN_W, ENEMY_PROJ_VULCAN_H),
         ]
+        self._burst_idx += 1
+        if self._burst_idx >= BURST_COUNT:
+            self._burst_idx = 0
+            self._next_burst_ms = now + BURST_PAUSE_MS
+        else:
+            self._next_burst_ms = now + BURST_INTERVAL_MS
+        return bullets
 
     def update(self, dt: float) -> None:
         self.y += (GUNNER_SPEED + getattr(self, "speed_bonus", 0.0)) * dt
