@@ -6,6 +6,11 @@ All notable changes to Starfall are documented here.
 
 ## [1.7.0] — Nuevos enemigos: Flanker, Raider, formaciones
 
+### 1.7.2
+- `Raider.update()` llama `super().update(dt)` en lugar de duplicar lógica de flash — fix: mantenibilidad
+- Boundary patrol usa `self.x` directamente en lugar de `self.rect` desactualizado — fix: jitter de posición
+- `Raider` recibe `speed_bonus` en `SpawnSystem._make_enemy()` — fix: consistencia con el resto de enemigos
+
 ### 1.7.1
 - `Flanker`: entra lateral (izq o der), cruza horizontal a target_x aleatorio (SCREEN_W/4–3/4), luego baja; 400 pts, 3 HP
 - `Raider`: entra desde abajo, patrulla ping-pong en RAIDER_PATROL_Y 2.5s, dispara vulcan 3 vías hacia arriba, luego sale; 450 pts, 4 HP
