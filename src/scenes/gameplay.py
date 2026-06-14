@@ -2,6 +2,7 @@ import math
 import random
 import pygame
 import src.assets as assets
+import src.systems.audio as audio
 from src.entities.player import Player
 from src.entities.scout import Scout
 from src.entities.fighter import Fighter
@@ -18,13 +19,18 @@ from src.systems.spawning import SpawnSystem
 from src.settings import (
     SCREEN_W, SCREEN_H,
     BULLET_DAMAGE, HUD_FONT_SIZE, HUD_COLOR, HUD_MARGIN,
-    POWERUP_DROP_CHANCE, PLAYER_W, PLAYER_H, SPRITE_SHIELD_OVERLAY,
+    POWERUP_DROP_CHANCE, PLAYER_W, PLAYER_H, SPRITE_HEART, SPRITE_SHIELD_OVERLAY,
     BOSS_HP, BOSS_HEALTH_BAR_H, BOSS_BAR_Y_OFFSET,
     ROCKET_DAMAGE, ROCKET_AREA_DAMAGE, ROCKET_RADIUS,
     EXPLOSION_W, EXPLOSION_H, EXPLOSION_W_BOSS, EXPLOSION_H_BOSS,
     EXPL_SCOUT, EXPL_KAMIKAZE, EXPL_FIGHTER,
     EXPL_GUNNER, EXPL_STRIKER, EXPL_INTERCEPTOR,
     EXPL_BOSS, EXPL_PLAYER,
+)
+from src.settings.audio import (
+    MUSIC_GAMEPLAY,
+    SFX_SHOOT, SFX_IMPACT, SFX_EXPLOSION,
+    SFX_POWERUP, SFX_PLAYER_HIT, SFX_GAME_OVER, SFX_BOSS_HIT,
 )
 
 
@@ -44,6 +50,8 @@ class GameplayScene:
         self.all_sprites = pygame.sprite.Group(self.player)
         self.spawn_system = SpawnSystem()
         self.boss = None
+        self._game_over_played = False
+        audio.play_music(MUSIC_GAMEPLAY)
 
     def _reset(self):
         self.player = Player()
@@ -58,9 +66,13 @@ class GameplayScene:
         self.spawn_system = SpawnSystem()
         self.state = "playing"
         self.boss = None
+        self._game_over_played = False
 
     def process_input(self, events):
         keys = pygame.key.get_pressed()
+        for event in events:
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_m:
+                audio.toggle_mute()
         if self.state in ("start", "game_over"):
             if keys[pygame.K_SPACE]:
                 self._reset()
@@ -68,9 +80,12 @@ class GameplayScene:
         self.player.handle_keys(keys)
         now = pygame.time.get_ticks()
         if keys[pygame.K_SPACE]:
-            for bullet in self.player.shoot(now):
+            bullets_fired = self.player.shoot(now)
+            for bullet in bullets_fired:
                 self.bullets.add(bullet)
                 self.all_sprites.add(bullet)
+            if bullets_fired:
+                audio.play_sfx(SFX_SHOOT)
             for rocket in self.player.shoot_rocket(now):
                 self.rockets.add(rocket)
                 self.all_sprites.add(rocket)
@@ -86,7 +101,8 @@ class GameplayScene:
         if isinstance(entity, Boss):
             paths, size = EXPL_BOSS, (EXPLOSION_W_BOSS, EXPLOSION_H_BOSS)
         elif isinstance(entity, Interceptor):
-            paths, size = EXPL_INTERCEPTOR, (EXPLOSION_W_BOSS, EXPLOSION_H_BOSS)
+            paths, size = EXPL_INTERCEPTOR, (EXPLOSION_W_BOSS,
+                                             EXPLOSION_H_BOSS)
         elif isinstance(entity, Striker):
             paths, size = EXPL_STRIKER, (EXPLOSION_W, EXPLOSION_H)
         elif isinstance(entity, Gunner):
@@ -100,6 +116,7 @@ class GameplayScene:
         expl = Explosion(entity.rect.centerx, entity.rect.centery, paths, size)
         self.explosions.add(expl)
         self.all_sprites.add(expl)
+        audio.play_sfx(SFX_EXPLOSION)
 
     def _handle_player_damage(self, now: int) -> None:
         lives_before = self.player.lives
@@ -110,6 +127,7 @@ class GameplayScene:
             )
             self.explosions.add(expl)
             self.all_sprites.add(expl)
+            audio.play_sfx(SFX_PLAYER_HIT)
 
     def _explode(self, cx: int, cy: int, direct_hits: list) -> None:
         expl = Explosion(cx, cy)
@@ -127,7 +145,8 @@ class GameplayScene:
                     self._spawn_death_explosion(enemy)
                     self.score += enemy.points
                     self.spawn_system.register_kill()
-                    self._maybe_drop_powerup(enemy.rect.centerx, enemy.rect.centery)
+                    self._maybe_drop_powerup(
+                        enemy.rect.centerx, enemy.rect.centery)
 
     def update(self, dt):
         self._bg.update(dt)
@@ -172,11 +191,13 @@ class GameplayScene:
                     self.enemy_bullets.add(eb)
                     self.all_sprites.add(eb)
 
-        eb_hits = pygame.sprite.spritecollide(self.player, self.enemy_bullets, True)
+        eb_hits = pygame.sprite.spritecollide(
+            self.player, self.enemy_bullets, True)
         for _ in eb_hits:
             self._handle_player_damage(now)
 
-        hit_enemies = pygame.sprite.spritecollide(self.player, self.enemies, True)
+        hit_enemies = pygame.sprite.spritecollide(
+            self.player, self.enemies, True)
         for enemy in hit_enemies:
             self._spawn_death_explosion(enemy)
             self.score += enemy.points
@@ -184,7 +205,8 @@ class GameplayScene:
             self.spawn_system.register_kill()
             self._maybe_drop_powerup(enemy.rect.centerx, enemy.rect.centery)
 
-        hits = pygame.sprite.groupcollide(self.bullets, self.enemies, True, False)
+        hits = pygame.sprite.groupcollide(
+            self.bullets, self.enemies, True, False)
         for bullet, enemies_hit in hits.items():
             impact = ImpactEffect(
                 bullet.rect.centerx, bullet.rect.centery,
@@ -192,14 +214,19 @@ class GameplayScene:
             )
             self.explosions.add(impact)
             self.all_sprites.add(impact)
+            audio.play_sfx(SFX_IMPACT)
             for enemy in enemies_hit:
                 if enemy.alive():
+                    is_boss = isinstance(enemy, Boss)
                     enemy.take_damage(BULLET_DAMAGE)
                     if not enemy.alive():
                         self._spawn_death_explosion(enemy)
                         self.score += enemy.points
                         self.spawn_system.register_kill()
-                        self._maybe_drop_powerup(enemy.rect.centerx, enemy.rect.centery)
+                        self._maybe_drop_powerup(
+                            enemy.rect.centerx, enemy.rect.centery)
+                    elif is_boss:
+                        audio.play_sfx(SFX_BOSS_HIT)
 
         for rocket in list(self.rockets):
             hit = pygame.sprite.spritecollide(rocket, self.enemies, False)
@@ -211,9 +238,13 @@ class GameplayScene:
         picked = pygame.sprite.spritecollide(self.player, self.powerups, True)
         for pu in picked:
             self.player.apply_powerup(pu.kind)
+            audio.play_sfx(SFX_POWERUP)
 
         if self.player.lives <= 0:
             self.state = "game_over"
+            if not self._game_over_played:
+                audio.play_sfx(SFX_GAME_OVER)
+                self._game_over_played = True
 
     def _draw_overlay(self, screen, title, subtitle):
         overlay = pygame.Surface((SCREEN_W, SCREEN_H), pygame.SRCALPHA)
@@ -235,16 +266,20 @@ class GameplayScene:
         score_surf = self._font.render(f"SCORE: {self.score}", True, HUD_COLOR)
         screen.blit(score_surf, (HUD_MARGIN, HUD_MARGIN))
 
-        wave_surf = self._font.render(f"WAVE: {self.spawn_system.wave}", True, HUD_COLOR)
-        screen.blit(wave_surf, (SCREEN_W // 2 - wave_surf.get_width() // 2, HUD_MARGIN))
+        wave_surf = self._font.render(
+            f"WAVE: {self.spawn_system.wave}", True, HUD_COLOR)
+        screen.blit(wave_surf, (SCREEN_W // 2 -
+                    wave_surf.get_width() // 2, HUD_MARGIN))
 
-        lives_text = ("♥ " * self.player.lives).strip()
-        lives_surf = self._font.render(lives_text, True, (220, 50, 50))
-        screen.blit(lives_surf, (SCREEN_W - lives_surf.get_width() - HUD_MARGIN, HUD_MARGIN))
+        heart = pygame.transform.scale(assets.get(SPRITE_HEART), (20, 20))
+        for i in range(self.player.lives):
+            screen.blit(heart, (SCREEN_W - (i + 1) *
+                        26 - HUD_MARGIN, HUD_MARGIN))
 
         if "shield" in self.player.active_powerups:
             sh = assets.get(SPRITE_SHIELD_OVERLAY)
-            sh_scaled = pygame.transform.scale(sh, (PLAYER_W + 20, PLAYER_H + 20))
+            sh_scaled = pygame.transform.scale(
+                sh, (PLAYER_W + 20, PLAYER_H + 20))
             screen.blit(sh_scaled, (
                 self.player.rect.centerx - sh_scaled.get_width() // 2,
                 self.player.rect.top - sh_scaled.get_height(),
@@ -252,11 +287,13 @@ class GameplayScene:
 
         x = HUD_MARGIN
         for kind in sorted(self.player.active_powerups):
-            icon = pygame.transform.scale(assets.get(POWERUP_ASSETS[kind]), (24, 24))
+            icon = pygame.transform.scale(
+                assets.get(POWERUP_ASSETS[kind]), (24, 24))
             screen.blit(icon, (x, SCREEN_H - 24 - HUD_MARGIN))
             x += 28
         if self.player.rocket_count > 0:
-            rocket_icon = pygame.transform.scale(assets.get(POWERUP_ASSETS["rocket"]), (24, 24))
+            rocket_icon = pygame.transform.scale(
+                assets.get(POWERUP_ASSETS["rocket"]), (24, 24))
             for _ in range(self.player.rocket_count):
                 screen.blit(rocket_icon, (x, SCREEN_H - 24 - HUD_MARGIN))
                 x += 28
@@ -265,9 +302,12 @@ class GameplayScene:
             bar_w = SCREEN_W - 2 * HUD_MARGIN
             filled = int(bar_w * self.boss.hp / BOSS_HP)
             y = HUD_MARGIN + HUD_FONT_SIZE + BOSS_BAR_Y_OFFSET
-            pygame.draw.rect(screen, (80, 0, 0),      (HUD_MARGIN, y, bar_w, BOSS_HEALTH_BAR_H))
-            pygame.draw.rect(screen, (220, 30, 30),   (HUD_MARGIN, y, filled, BOSS_HEALTH_BAR_H))
-            pygame.draw.rect(screen, (255, 255, 255), (HUD_MARGIN, y, bar_w, BOSS_HEALTH_BAR_H), 1)
+            pygame.draw.rect(screen, (80, 0, 0),
+                             (HUD_MARGIN, y, bar_w, BOSS_HEALTH_BAR_H))
+            pygame.draw.rect(screen, (220, 30, 30),
+                             (HUD_MARGIN, y, filled, BOSS_HEALTH_BAR_H))
+            pygame.draw.rect(screen, (255, 255, 255),
+                             (HUD_MARGIN, y, bar_w, BOSS_HEALTH_BAR_H), 1)
 
         if self.state == "start":
             self._draw_overlay(screen, "STARFALL", "PRESS SPACE TO PLAY")

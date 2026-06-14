@@ -1,4 +1,5 @@
 import pygame
+import src.systems.audio as audio
 from src.settings import SCREEN_W, SCREEN_H, FPS, TITLE
 from src.scenes.gameplay import GameplayScene
 
@@ -6,6 +7,7 @@ from src.scenes.gameplay import GameplayScene
 class Game:
     def __init__(self):
         pygame.init()
+        audio.init()
         self.screen = pygame.display.set_mode((SCREEN_W, SCREEN_H))
         pygame.display.set_caption(TITLE)
         self.clock = pygame.time.Clock()
