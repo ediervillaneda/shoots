@@ -6,6 +6,9 @@ All notable changes to Starfall are documented here.
 
 ## [v1.3] — Disparos avanzados: base técnica
 
+### v1.3.3
+- `GameplayScene`: colisiones de bala usan `bullet.damage` en lugar de constante global `BULLET_DAMAGE`
+
 ### v1.3.2
 - `Player.shoot()` pasa `damage` y `tint` a cada `Bullet` según powerups activos
 - `rapid_fire`: damage = max(1, DEFAULT * 0.5), tint azul neón
