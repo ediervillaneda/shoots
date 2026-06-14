@@ -6,6 +6,11 @@ All notable changes to Starfall are documented here.
 
 ## [1.6.0] — Game feel: screen shake, combo multiplier, flash de daño
 
+### 1.6.2
+- `Enemy._base_image` capturado lazy en `take_damage()` (no en `__init__`) — fix: subclases actualizan `self.image` después del super().__init__; ahora el sprite real es el que se flashea
+- `_combo_timer` se resetea a 0 tras timeout — fix: el combo podía reconstruirse correctamente tras la primera expiración
+- `ENEMY_FLASH_ALPHA = 80` extraído a settings (sin magic number en entity)
+
 ### 1.6.1
 - `src/settings/gameplay.py`: constantes `SHAKE_DURATION_MS`, `SHAKE_INTENSITY`, `COMBO_MULTIPLIERS`, `COMBO_TIMEOUT_MS`, `ENEMY_FLASH_MS`
 - `Enemy.take_damage()`: activa `_flash_ms = ENEMY_FLASH_MS` al sobrevivir; `update()` tinta blanco 80ms con `BLEND_RGBA_ADD`
