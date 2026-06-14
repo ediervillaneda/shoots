@@ -140,6 +140,31 @@ from src.settings import SCREEN_W, FPS
 - **Mocking**: `unittest.mock.patch` para controlar `random` (`side_effect`), `pygame.time.get_ticks()` en tests de Boss.
 - **Aislamiento**: entidades frescas por test. `pygame.sprite.Group(entity)` al testear `kill()`.
 
+## Roadmap
+
+| Version | Estado | Scope |
+|---------|--------|-------|
+| v0.1 | DONE | Ventana 540x960, Player, movimiento WASD, disparo, game loop |
+| v0.2 | DONE | Scout, Fighter, colisiones, SpawnSystem basico |
+| v0.3 | DONE | Score, 3 vidas, HUD, estados start/playing/game_over |
+| v0.4 | DONE | EnemyBullet, Fighter.shoot(), oleadas con escalado de velocidad e intervalo |
+| v0.5 | DONE | Kamikaze, PowerUp (5 tipos), apply_powerup(), cache lazy de assets |
+| v0.6 | DONE | Boss (2 fases), barra HP, ping-pong horizontal, 4 sprites rotativos por oleadas |
+| v0.7 | DONE | Boss cada BOSS_WAVE_INTERVAL oleadas; explosiones de muerte por tipo de entidad |
+| v0.8 | DONE | Rocket (2 angulados, dano en area), 6 niveles de disparo con sprites por nivel |
+| v0.9 | DONE | Bullets animados 3 fases, EnemyBullet animado, Interceptor, dificultad escalada |
+| v1.0 | DONE | Sprites SpaceRage (5 poses banked + shadows), ScrollingBG, shield_overlay |
+| v1.1 | DONE | AudioSystem singleton, SFX en 7 eventos, musica en loop, mute tecla M -- 235 tests |
+| v1.2 | TODO | Stack de escenas; MenuScene; GameplayScene con pausa; GameOverScene con entrada de iniciales; ScoresScene; scores.py persistencia JSON local |
+| v1.3 | TODO | Bullet con angle_deg y damage por instancia; tinting de balas segun power-up activo |
+| v1.4 | TODO | gun_upgrade dispara con divergencia lateral; shield activo muestra halo blanco-azul en balas; rapid_fire tint azul + damage reducido |
+| v1.5 | TODO | Nuevos power-ups: spread (5 balas +/-30 grados), plasma (Shot6 lento damage 5), laser (entidad rayo de area activo 3s) |
+| v1.6 | TODO | Screen shake al morir/boss; combo multiplier x1-x8 en HUD; flash blanco 80ms en enemigos al recibir dano |
+| v1.7 | TODO | Flanker (entrada lateral, disparo hacia el centro); Raider (sube desde abajo); formaciones cunia de Scouts desde oleada 5 |
+| v1.8 | TODO | Gunner dispara burst de 3; 8 balas 360 grados al morir; HomingBullet para Interceptor; lead shot para Striker |
+| v1.9 | TODO | Modos Endless / Survival / Daily (seed diaria) con scores separados; nuevo enemigo Orbiter con orbita circular (oleada 12+) |
+| v2.0 | TODO | Boss fase 3 (patron frenesi + espiral 16 balas); slow motion 0.3x al matar boss; disparo auto toggle; balance general; release final |
+
 ## Git workflow
 
 - `main` -- releases estables, merges desde `develop`, taggeado (`v1.x`).

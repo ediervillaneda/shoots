@@ -136,11 +136,26 @@ Modulo singleton. Carga lazy, tolerante a archivos faltantes.
 
 | Version | Estado | Contenido |
 |---------|--------|-----------|
-| v0.1-v0.9 | DONE | Ventana, player, enemigos, colisiones, puntuacion, power-ups, jefe, sprites, animaciones |
-| v1.1 | DONE | AudioSystem: SFX + musica de fondo + mute (235 tests) |
-| v1.2 | TODO | Menu principal |
-| v1.3 | TODO | Guardado de records |
-| v1.4+ | TODO | Balance, pulido, extras |
+| v0.1 | DONE | Ventana 540x960, Player, movimiento WASD, disparo, game loop |
+| v0.2 | DONE | Scout, Fighter, colisiones, SpawnSystem basico |
+| v0.3 | DONE | Score, 3 vidas, HUD, estados start/playing/game_over |
+| v0.4 | DONE | EnemyBullet, Fighter.shoot(), oleadas con escalado de velocidad e intervalo |
+| v0.5 | DONE | Kamikaze, PowerUp (5 tipos), apply_powerup(), cache lazy de assets |
+| v0.6 | DONE | Boss (2 fases), barra HP, ping-pong horizontal, 4 sprites rotativos por oleadas |
+| v0.7 | DONE | Boss cada BOSS_WAVE_INTERVAL oleadas; explosiones de muerte por tipo de entidad |
+| v0.8 | DONE | Rocket (2 angulados, dano en area), 6 niveles de disparo con sprites por nivel |
+| v0.9 | DONE | Bullets animados 3 fases, EnemyBullet animado, Interceptor, dificultad escalada |
+| v1.0 | DONE | Sprites SpaceRage (5 poses banked + shadows), ScrollingBG, shield_overlay |
+| v1.1 | DONE | AudioSystem: SFX + musica en loop + mute tecla M -- 235 tests |
+| v1.2 | TODO | Stack de escenas, MenuScene, pausa, GameOverScene con iniciales, records JSON local |
+| v1.3 | TODO | Bullet con angle_deg y damage por instancia, tinting de balas |
+| v1.4 | TODO | gun_upgrade divergencia lateral; shield halo en balas; rapid_fire tint azul + damage reducido |
+| v1.5 | TODO | Nuevos power-ups: spread 5 balas, plasma Shot6 lento, laser de area 3s |
+| v1.6 | TODO | Game feel: screen shake, combo multiplier x1-x8 en HUD, flash blanco en enemigos 80ms |
+| v1.7 | TODO | Nuevos enemigos: Flanker (lateral), Raider (desde abajo), formaciones cunia de Scouts |
+| v1.8 | TODO | Disparos avanzados: burst Gunner, 8 balas circular al morir, HomingBullet, lead shot Striker |
+| v1.9 | TODO | Modos: Endless, Survival, Daily (seed diaria); nuevo enemigo Orbiter (wave 12+) |
+| v2.0 | TODO | Boss fase 3 (frenesi + espiral), slow motion al matar boss, disparo auto toggle, release final |
 
 ## Git Workflow
 
