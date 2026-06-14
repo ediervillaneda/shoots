@@ -18,7 +18,7 @@ from src.entities.scrolling_bg import ScrollingBG
 from src.systems.spawning import SpawnSystem
 from src.settings import (
     SCREEN_W, SCREEN_H,
-    BULLET_DAMAGE, HUD_FONT_SIZE, HUD_COLOR, HUD_MARGIN,
+    HUD_FONT_SIZE, HUD_COLOR, HUD_MARGIN,
     POWERUP_DROP_CHANCE, PLAYER_W, PLAYER_H, SPRITE_HEART, SPRITE_SHIELD_OVERLAY,
     BOSS_HP, BOSS_HEALTH_BAR_H, BOSS_BAR_Y_OFFSET,
     ROCKET_DAMAGE, ROCKET_AREA_DAMAGE, ROCKET_RADIUS,
@@ -231,7 +231,7 @@ class GameplayScene:
             for enemy in enemies_hit:
                 if enemy.alive():
                     is_boss = isinstance(enemy, Boss)
-                    enemy.take_damage(BULLET_DAMAGE)
+                    enemy.take_damage(bullet.damage)
                     if not enemy.alive():
                         self._spawn_death_explosion(enemy)
                         self.score += enemy.points
