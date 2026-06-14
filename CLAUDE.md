@@ -147,7 +147,7 @@ Modulo singleton. Carga lazy, tolerante a archivos faltantes.
 | v0.9 | DONE | Bullets animados 3 fases, EnemyBullet animado, Interceptor, dificultad escalada |
 | v1.0 | DONE | Sprites SpaceRage (5 poses banked + shadows), ScrollingBG, shield_overlay |
 | v1.1 | DONE | AudioSystem: SFX + musica en loop + mute tecla M -- 235 tests |
-| v1.2 | TODO | Stack de escenas, MenuScene, pausa, GameOverScene con iniciales, records JSON local |
+| v1.2 | DONE | Stack de escenas, MenuScene, pausa, GameOverScene con iniciales, records JSON local -- 247 tests |
 | v1.3 | TODO | Bullet con angle_deg y damage por instancia, tinting de balas |
 | v1.4 | TODO | gun_upgrade divergencia lateral; shield halo en balas; rapid_fire tint azul + damage reducido |
 | v1.5 | TODO | Nuevos power-ups: spread 5 balas, plasma Shot6 lento, laser de area 3s |
