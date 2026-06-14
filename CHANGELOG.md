@@ -4,7 +4,53 @@ All notable changes to Starfall are documented here.
 
 ---
 
-## [Unreleased] — v1.0 dev
+## [v1.3] — Disparos avanzados: base técnica
+
+### v1.3.1
+- `Bullet` acepta `angle_deg` (movimiento diagonal), `damage` por instancia, `tint` RGBA, `speed_mult`
+- Helper `_apply_tint()` aplica tint a todos los frames via `BLEND_RGBA_MULT`
+- Kill check extendido a bordes izquierdo/derecho de pantalla
+- 6 tests nuevos en `test_bullet.py` (total 253 tests)
+
+---
+
+## [v1.2] — Menus, pausa, records locales
+
+### Added
+- `MenuScene` con 3 opciones navegables (JUGAR / RECORDS / SALIR), flechas o W/S, ENTER/SPACE
+- `GameOverScene` con entrada de iniciales (hasta 3 chars) si entra en top 10
+- `ScoresScene` — tabla top 10 con posición, iniciales y score
+- `src/systems/scores.py` — `load()`, `save()`, `qualifies()`, JSON en `~/.starfall/scores.json`
+- Pausa en gameplay con `P` o `ESC`; segundo `ESC` vuelve al menú
+- Stack de escenas en `Game`: `push_scene()` / `pop_scene()` / `replace_scene()`
+- `src/settings/scores.py` — `MAX_SCORE_ENTRIES`, `SCORES_FILE`
+- 12 tests nuevos (`test_scores.py`, `test_menu.py`) — total 247 tests
+
+### Changed
+- `Game` ahora gestiona `_stack: list` en lugar de `self.scene` único
+- `GameplayScene.__init__` acepta `game=None` para integración con stack
+- Estado inicial de gameplay cambia de `"start"` a `"playing"` (el menú ocupa ese rol)
+- Al morir el player, transiciona a `GameOverScene` en lugar de quedarse en gameplay
+
+### chore
+- Archivos de audio SFX y música de gameplay agregados al repo (`assets/audio/`)
+
+---
+
+## [v1.1] — AudioSystem
+
+### Added
+- `AudioSystem` singleton (`src/systems/audio.py`): `init()`, `play_sfx()`, `play_music()`, `toggle_mute()`
+- Música de gameplay en loop (`assets/audio/music/gameplay.ogg`)
+- SFX para disparo, impacto, explosión, powerup, daño al player, game over, boss hit
+- Tecla `M` silencia/restaura todo el audio en tiempo real
+- Carga lazy: no-op tolerante si el archivo no existe
+- `src/settings/audio.py` con rutas y volúmenes configurables
+- 12 tests en `test_audio.py` — total 235 tests
+
+---
+
+## [v1.0 dev] — SpaceRage sprites + ScrollingBG
 
 ### Added
 - Player SpaceRage sprites with 5-pose directional banking animation (l2/l1/m/r1/r2)
