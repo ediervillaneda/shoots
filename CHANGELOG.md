@@ -4,6 +4,17 @@ All notable changes to Starfall are documented here.
 
 ---
 
+## [1.6.0] — Game feel: screen shake, combo multiplier, flash de daño
+
+### 1.6.1
+- `src/settings/gameplay.py`: constantes `SHAKE_DURATION_MS`, `SHAKE_INTENSITY`, `COMBO_MULTIPLIERS`, `COMBO_TIMEOUT_MS`, `ENEMY_FLASH_MS`
+- `Enemy.take_damage()`: activa `_flash_ms = ENEMY_FLASH_MS` al sobrevivir; `update()` tinta blanco 80ms con `BLEND_RGBA_ADD`
+- `GameplayScene._start_shake()`: screen shake 400ms con offset random; se activa al perder vida y al matar boss (intensidad doble)
+- `GameplayScene`: combo multiplier x1-x8 en score; reset tras 3s sin kills o al recibir daño; HUD en amarillo si > x1
+- 8 tests nuevos (`test_gameplay_v16.py`, `test_enemy_flash.py`) — total 274 tests
+
+---
+
 ## [1.5.0] — Nuevos power-ups: spread, plasma, laser
 
 ### 1.5.2
