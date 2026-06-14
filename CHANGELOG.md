@@ -6,6 +6,11 @@ All notable changes to Starfall are documented here.
 
 ## [1.8.0] — Disparos avanzados: burst Gunner, death_burst, HomingBullet, lead shot
 
+### 1.8.2
+- Eliminado flash blanco en enemigos al recibir daño — solo se muestran explosiones al morir
+- Removidos `ENEMY_FLASH_MS`, `ENEMY_FLASH_ALPHA` de settings; `_flash_ms`, `_base_image` de `Enemy`
+- 325 tests (−4 tests de flash eliminados)
+
 ### 1.8.1
 - Gunner: ráfaga de 3 balas con 80ms entre disparos, pausa 2.2s (`_burst_idx`, `_next_burst_ms`)
 - `Enemy.death_burst()`: 8 EnemyBullet en 360° desde posición actual; llamado al morir Gunner o Striker
