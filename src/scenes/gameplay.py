@@ -203,6 +203,7 @@ class GameplayScene:
         self._combo_timer += dt * 1000
         if self._combo_timer > COMBO_TIMEOUT_MS:
             self._combo = 0
+            self._combo_timer = 0.0
 
         self.player.update(dt)
         self.bullets.update(dt)
