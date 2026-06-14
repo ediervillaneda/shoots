@@ -6,6 +6,10 @@ All notable changes to Starfall are documented here.
 
 ## [1.9.0] — Modos de juego: Endless, Survival, Daily; nuevo enemigo Orbiter
 
+### 1.9.2
+- Escudo multi-nivel (1–3): cada pickup shield suma +1 nivel; cada hit resta 1; overlay más ancho/alto por nivel
+- HUD: icono del nivel de armamento actual (Shot1–Shot6) centrado en la parte inferior
+
 ### 1.9.1
 - `ModeSelectScene`: pantalla de selección de modo (ENDLESS / SURVIVAL / DAILY) accesible desde menú
 - `GameplayScene(mode=...)`: soporte de modos — survival timer 3 min con HUD M:SS, daily seed del día

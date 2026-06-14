@@ -101,6 +101,7 @@ class Player(pygame.sprite.Sprite):
         self.shot_level: int = 1
         self.last_rocket: int = -ROCKET_COOLDOWN
         self.rocket_count: int = 0
+        self.shield_level: int = 0
 
     def _pose_key(self) -> str:
         b = self._bank
@@ -132,17 +133,20 @@ class Player(pygame.sprite.Sprite):
             self.shot_level = min(SHOT_LEVEL_MAX, self.shot_level + 1)
         elif kind == "rocket":
             self.rocket_count = min(ROCKET_MAX_COUNT, self.rocket_count + 1)
+        elif kind == "shield":
+            self.shield_level = min(3, self.shield_level + 1)
         else:
             self.active_powerups.add(kind)
 
     def take_damage(self, now: int) -> None:
         if self.invincible:
             return
-        if "shield" in self.active_powerups:
-            self.active_powerups.discard("shield")
+        if self.shield_level > 0:
+            self.shield_level -= 1
             return
         self.lives = max(0, self.lives - 1)
         self.active_powerups.clear()
+        self.shield_level = 0
         self.shot_level = 1
         self.rocket_count = 0
         self.invincible = True
@@ -193,7 +197,7 @@ class Player(pygame.sprite.Sprite):
         if "rapid_fire" in self.active_powerups:
             damage = max(1, int(BULLET_DAMAGE_DEFAULT * 0.5))
             tint = BULLET_TINT_RAPIDFIRE
-        if "shield" in self.active_powerups:
+        if self.shield_level > 0:
             tint = BULLET_TINT_SHIELD
         # spread: 5 balas en abanico — tiene precedencia sobre gun_upgrade
         if "spread" in self.active_powerups:
