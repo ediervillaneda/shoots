@@ -6,6 +6,11 @@ All notable changes to Starfall are documented here.
 
 ## [v1.3] — Disparos avanzados: base técnica
 
+### v1.3.2
+- `Player.shoot()` pasa `damage` y `tint` a cada `Bullet` según powerups activos
+- `rapid_fire`: damage = max(1, DEFAULT * 0.5), tint azul neón
+- `shield`: tint blanco-azul (sin cambio de damage)
+
 ### v1.3.1
 - `Bullet` acepta `angle_deg` (movimiento diagonal), `damage` por instancia, `tint` RGBA, `speed_mult`
 - Helper `_apply_tint()` aplica tint a todos los frames via `BLEND_RGBA_MULT`
