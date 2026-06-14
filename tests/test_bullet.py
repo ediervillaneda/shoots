@@ -23,3 +23,39 @@ def test_bullet_killed_when_off_screen():
 def test_bullet_rect_x_matches_spawn():
     bullet = Bullet(100, 300)
     assert bullet.rect.centerx == 100
+
+
+def test_bullet_default_moves_straight_up():
+    b = Bullet(270, 500)
+    b.update(1.0)
+    assert b.rect.y < 500
+
+
+def test_bullet_angle_moves_right_when_positive():
+    b = Bullet(270, 500, angle_deg=30.0)
+    b.update(1.0)
+    assert b.rect.x > 270 - b.w // 2
+
+
+def test_bullet_damage_default():
+    b = Bullet(270, 500)
+    assert b.damage == 1
+
+
+def test_bullet_custom_damage():
+    b = Bullet(270, 500, damage=5)
+    assert b.damage == 5
+
+
+def test_bullet_tint_does_not_crash():
+    b = Bullet(270, 500, tint=(80, 160, 255, 255))
+    assert b.image is not None
+
+
+def test_bullet_speed_mult_zero_stays_put():
+    b = Bullet(270, 500, speed_mult=0.0)
+    orig_x = b.rect.x
+    orig_y = b.rect.y
+    b.update(1.0)
+    assert b.rect.x == orig_x
+    assert b.rect.y == orig_y
