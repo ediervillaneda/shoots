@@ -2,6 +2,7 @@ import math
 import random
 import pygame
 import src.assets as assets
+import src.systems.audio as audio
 from src.entities.player import Player
 from src.entities.scout import Scout
 from src.entities.fighter import Fighter
@@ -26,13 +27,19 @@ from src.settings import (
     EXPL_GUNNER, EXPL_STRIKER, EXPL_INTERCEPTOR,
     EXPL_BOSS, EXPL_PLAYER,
 )
+from src.settings.audio import (
+    MUSIC_GAMEPLAY,
+    SFX_SHOOT, SFX_IMPACT, SFX_EXPLOSION,
+    SFX_POWERUP, SFX_PLAYER_HIT, SFX_GAME_OVER, SFX_BOSS_HIT,
+)
 
 
 class GameplayScene:
-    def __init__(self):
+    def __init__(self, game=None):
+        self._game = game
         self._font = pygame.font.SysFont(None, HUD_FONT_SIZE)
         self.score = 0
-        self.state = "start"
+        self.state = "playing"
         self._bg = ScrollingBG()
         self.player = Player()
         self.bullets = pygame.sprite.Group()
@@ -44,6 +51,8 @@ class GameplayScene:
         self.all_sprites = pygame.sprite.Group(self.player)
         self.spawn_system = SpawnSystem()
         self.boss = None
+        self._game_over_played = False
+        audio.play_music(MUSIC_GAMEPLAY)
 
     def _reset(self):
         self.player = Player()
@@ -58,19 +67,38 @@ class GameplayScene:
         self.spawn_system = SpawnSystem()
         self.state = "playing"
         self.boss = None
+        self._game_over_played = False
 
     def process_input(self, events):
         keys = pygame.key.get_pressed()
-        if self.state in ("start", "game_over"):
+        for event in events:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_m:
+                    audio.toggle_mute()
+                elif event.key in (pygame.K_p, pygame.K_ESCAPE) and self.state == "playing":
+                    self.state = "paused"
+                elif self.state == "paused":
+                    if event.key == pygame.K_ESCAPE:
+                        if self._game:
+                            from src.scenes.menu import MenuScene
+                            self._game.replace_scene(MenuScene(self._game))
+                    elif event.key in (pygame.K_p, pygame.K_RETURN, pygame.K_SPACE):
+                        self.state = "playing"
+        if self.state == "game_over":
             if keys[pygame.K_SPACE]:
                 self._reset()
+            return
+        if self.state == "paused":
             return
         self.player.handle_keys(keys)
         now = pygame.time.get_ticks()
         if keys[pygame.K_SPACE]:
-            for bullet in self.player.shoot(now):
+            bullets_fired = self.player.shoot(now)
+            for bullet in bullets_fired:
                 self.bullets.add(bullet)
                 self.all_sprites.add(bullet)
+            if bullets_fired:
+                audio.play_sfx(SFX_SHOOT)
             for rocket in self.player.shoot_rocket(now):
                 self.rockets.add(rocket)
                 self.all_sprites.add(rocket)
@@ -101,6 +129,7 @@ class GameplayScene:
         expl = Explosion(entity.rect.centerx, entity.rect.centery, paths, size)
         self.explosions.add(expl)
         self.all_sprites.add(expl)
+        audio.play_sfx(SFX_EXPLOSION)
 
     def _handle_player_damage(self, now: int) -> None:
         lives_before = self.player.lives
@@ -111,6 +140,7 @@ class GameplayScene:
             )
             self.explosions.add(expl)
             self.all_sprites.add(expl)
+            audio.play_sfx(SFX_PLAYER_HIT)
 
     def _explode(self, cx: int, cy: int, direct_hits: list) -> None:
         expl = Explosion(cx, cy)
@@ -197,8 +227,10 @@ class GameplayScene:
             )
             self.explosions.add(impact)
             self.all_sprites.add(impact)
+            audio.play_sfx(SFX_IMPACT)
             for enemy in enemies_hit:
                 if enemy.alive():
+                    is_boss = isinstance(enemy, Boss)
                     enemy.take_damage(BULLET_DAMAGE)
                     if not enemy.alive():
                         self._spawn_death_explosion(enemy)
@@ -206,6 +238,8 @@ class GameplayScene:
                         self.spawn_system.register_kill()
                         self._maybe_drop_powerup(
                             enemy.rect.centerx, enemy.rect.centery)
+                    elif is_boss:
+                        audio.play_sfx(SFX_BOSS_HIT)
 
         for rocket in list(self.rockets):
             hit = pygame.sprite.spritecollide(rocket, self.enemies, False)
@@ -217,9 +251,17 @@ class GameplayScene:
         picked = pygame.sprite.spritecollide(self.player, self.powerups, True)
         for pu in picked:
             self.player.apply_powerup(pu.kind)
+            audio.play_sfx(SFX_POWERUP)
 
         if self.player.lives <= 0:
-            self.state = "game_over"
+            if not self._game_over_played:
+                audio.play_sfx(SFX_GAME_OVER)
+                self._game_over_played = True
+                if self._game:
+                    from src.scenes.game_over import GameOverScene
+                    self._game.replace_scene(GameOverScene(self._game, self.score))
+                else:
+                    self.state = "game_over"
 
     def _draw_overlay(self, screen, title, subtitle):
         overlay = pygame.Surface((SCREEN_W, SCREEN_H), pygame.SRCALPHA)
@@ -284,7 +326,7 @@ class GameplayScene:
             pygame.draw.rect(screen, (255, 255, 255),
                              (HUD_MARGIN, y, bar_w, BOSS_HEALTH_BAR_H), 1)
 
-        if self.state == "start":
-            self._draw_overlay(screen, "STARFALL", "PRESS SPACE TO PLAY")
+        if self.state == "paused":
+            self._draw_overlay(screen, "PAUSED", "P/ENTER/SPACE: RESUME  ESC: MENU")
         elif self.state == "game_over":
             self._draw_overlay(screen, "GAME OVER", "PRESS SPACE TO RESTART")

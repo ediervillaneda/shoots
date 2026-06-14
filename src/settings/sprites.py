@@ -1,33 +1,33 @@
-SPRITE_BG = "bg/bg.png"
-SPRITE_HEART = "hud/heart.png"
+SPRITE_BG    = "bg/bg.png"
+SPRITE_HEART = "powerups/extra_life.png"
 
 SPRITE_PLAYER_L2 = "player/l2.png"
 SPRITE_PLAYER_L1 = "player/l1.png"
-SPRITE_PLAYER_M = "player/m.png"
+SPRITE_PLAYER_M  = "player/m.png"
 SPRITE_PLAYER_R1 = "player/r1.png"
 SPRITE_PLAYER_R2 = "player/r2.png"
 
 SPRITE_PLAYER_SHADOW_L2 = "player/shadow_l2.png"
 SPRITE_PLAYER_SHADOW_L1 = "player/shadow_l1.png"
-SPRITE_PLAYER_SHADOW_M = "player/shadow_m.png"
+SPRITE_PLAYER_SHADOW_M  = "player/shadow_m.png"
 SPRITE_PLAYER_SHADOW_R1 = "player/shadow_r1.png"
 SPRITE_PLAYER_SHADOW_R2 = "player/shadow_r2.png"
 
 SPRITE_SHIELD_OVERLAY = "player/shield_overlay.png"
 
-SPRITE_SCOUT = "enemies/scout.png"
-SPRITE_FIGHTER = "enemies/fighter.png"
-SPRITE_KAMIKAZE = "enemies/kamikaze.png"
-SPRITE_GUNNER = "enemies/gunner.png"
-SPRITE_STRIKER = "enemies/striker.png"
+SPRITE_SCOUT       = "enemies/scout.png"
+SPRITE_FIGHTER     = "enemies/fighter.png"
+SPRITE_KAMIKAZE    = "enemies/kamikaze.png"
+SPRITE_GUNNER      = "enemies/gunner.png"
+SPRITE_STRIKER     = "enemies/striker.png"
 SPRITE_INTERCEPTOR = "enemies/interceptor.png"
-SPRITE_ROCKET = "enemies/missile.png"
+SPRITE_ROCKET      = "enemies/missile.png"
 
-SPRITE_PU_RAPID_FIRE = "powerups/rapid_fire.png"
-SPRITE_PU_SHIELD = "powerups/shield.png"
+SPRITE_PU_RAPID_FIRE  = "powerups/rapid_fire.png"
+SPRITE_PU_SHIELD      = "powerups/shield.png"
 SPRITE_PU_DOUBLE_SHOT = "powerups/gun_upgrade.png"
-SPRITE_PU_ROCKET = "powerups/rocket.png"
-SPRITE_PU_EXTRA_LIFE = "powerups/extra_life.png"
+SPRITE_PU_ROCKET      = "powerups/rocket.png"
+SPRITE_PU_EXTRA_LIFE  = "powerups/extra_life.png"
 
 SHOT_LEVEL_MAX = 6
 
