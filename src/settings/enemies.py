@@ -97,3 +97,13 @@ HOMING_BULLET_SPEED = 220
 
 # Lead shot Striker
 LEAD_TIME_S = 0.5
+
+# Orbiter — orbita punto central, dispara al player, wave 12+
+ORBITER_SPEED = 90.0        # grados por segundo (velocidad angular)
+ORBITER_RADIUS = 140        # radio de órbita en px
+ORBITER_W = 46
+ORBITER_H = 46
+ORBITER_HP = 10
+ORBITER_POINTS = 800
+ORBITER_SHOOT_INTERVAL = 1800
+WAVE_ORBITER_MIN = 12

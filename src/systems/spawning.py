@@ -8,6 +8,7 @@ from src.entities.striker import Striker
 from src.entities.interceptor import Interceptor
 from src.entities.flanker import Flanker
 from src.entities.raider import Raider
+from src.entities.orbiter import Orbiter
 from src.entities.boss import Boss
 from src.settings import (
     SCREEN_W, SCOUT_W, FIGHTER_W,
@@ -21,6 +22,7 @@ from src.settings import (
     WAVE_SPEED_FACTOR,
     BOSS_WAVE_INTERVAL, BOSS_SPRITES, BOSS_SPRITES_FIXED_COUNT,
     WAVE_FORMATION_MIN, WAVE_FLANKER_MIN, WAVE_RAIDER_MIN, FORMATION_SPACING,
+    WAVE_ORBITER_MIN,
 )
 
 
@@ -108,6 +110,14 @@ class SpawnSystem:
         margin = max(SCOUT_W, FIGHTER_W) // 2
         x = random.randint(margin, SCREEN_W - margin)
         speed_bonus = self.wave * WAVE_SPEED_FACTOR
+        if self.wave >= WAVE_ORBITER_MIN and random.randint(1, 100) <= 20:
+            import math
+            cx = random.randint(SCREEN_W // 4, SCREEN_W * 3 // 4)
+            cy = random.randint(150, 300)
+            start_angle = random.uniform(0, 2 * math.pi)
+            o = Orbiter(cx, cy, start_angle)
+            o.speed_bonus = speed_bonus
+            return o
         if self.wave >= WAVE_INTERCEPTOR_MIN_WAVE and random.randint(1, 100) <= self._interceptor_prob():
             e = Interceptor(x)
             e.speed_bonus = speed_bonus
