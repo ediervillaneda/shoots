@@ -44,6 +44,8 @@ from src.settings import (
     BULLET_TINT_RAPIDFIRE,
     BULLET_TINT_SHIELD,
     GUN_UPGRADE_DIVERGE_DEG,
+    SPREAD_ANGLES, SPREAD_DAMAGE,
+    PLASMA_SPEED_MULT, PLASMA_DAMAGE, PLASMA_TINT,
 )
 from src.entities.bullet import Bullet
 from src.entities.rocket import Rocket
@@ -193,6 +195,23 @@ class Player(pygame.sprite.Sprite):
             tint = BULLET_TINT_RAPIDFIRE
         if "shield" in self.active_powerups:
             tint = BULLET_TINT_SHIELD
+        # spread: 5 balas en abanico — tiene precedencia sobre gun_upgrade
+        if "spread" in self.active_powerups:
+            return [
+                Bullet(cx, top, SHOT2_LAUNCH_FRAMES, SHOT2_TRAVEL, SHOT2_IMPACT_FRAMES,
+                       BULLET_W_L2, BULLET_H_L2,
+                       angle_deg=a, damage=SPREAD_DAMAGE, tint=tint)
+                for a in SPREAD_ANGLES
+            ]
+
+        # plasma: 1 bala Shot6 lenta, daño alto
+        if "plasma" in self.active_powerups:
+            return [
+                Bullet(cx, top, SHOT6_LAUNCH_FRAMES, SHOT6_TRAVEL, SHOT6_IMPACT_FRAMES,
+                       BULLET_W_L6, BULLET_H_L6,
+                       speed_mult=PLASMA_SPEED_MULT, damage=PLASMA_DAMAGE, tint=PLASMA_TINT)
+            ]
+
         if self.shot_level >= 6:
             d = GUN_UPGRADE_DIVERGE_DEG
             return [
