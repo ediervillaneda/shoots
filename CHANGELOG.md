@@ -4,6 +4,22 @@ All notable changes to Starfall are documented here.
 
 ---
 
+## [v1.4] — Power-ups con identidad visual
+
+### v1.4.2
+- `MenuScene`: hover con ratón resalta opción, click izquierdo activa
+
+### v1.4.1
+- `Bullet` guarda `self.tint` para introspección en tests
+- `GUN_UPGRADE_DIVERGE_DEG = 8.0` en settings
+- `Player.shoot()`: balas laterales con `angle_deg` proporcional por nivel (±4°, ±8°, ±16°)
+- `shield` activo: todas las balas con tint blanco-azul
+- `rapid_fire` activo: tint azul neón + damage reducido al 50%
+- Ambos powerups activos: sin crash, shield sobreescribe tint, damage de rapidfire se mantiene
+- 6 tests nuevos en `test_player.py`
+
+---
+
 ## [v1.3] — Disparos avanzados: base técnica
 
 ### v1.3.4
