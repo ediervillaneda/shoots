@@ -15,19 +15,28 @@ class MenuScene:
         self._font_title = pygame.font.SysFont(None, 80)
         self._font = pygame.font.SysFont(None, 48)
         self._selected = 0
+        self._option_rects: list[pygame.Rect] = []
 
     def process_input(self, events):
         for event in events:
-            if event.type != pygame.KEYDOWN:
-                continue
-            if event.key in (pygame.K_UP, pygame.K_w):
-                self._selected = (self._selected - 1) % len(_OPTIONS)
-            elif event.key in (pygame.K_DOWN, pygame.K_s):
-                self._selected = (self._selected + 1) % len(_OPTIONS)
-            elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
-                self._activate()
-            elif event.key == pygame.K_ESCAPE:
-                self._game.pop_scene()
+            if event.type == pygame.KEYDOWN:
+                if event.key in (pygame.K_UP, pygame.K_w):
+                    self._selected = (self._selected - 1) % len(_OPTIONS)
+                elif event.key in (pygame.K_DOWN, pygame.K_s):
+                    self._selected = (self._selected + 1) % len(_OPTIONS)
+                elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
+                    self._activate()
+                elif event.key == pygame.K_ESCAPE:
+                    self._game.pop_scene()
+            elif event.type == pygame.MOUSEMOTION:
+                for i, rect in enumerate(self._option_rects):
+                    if rect.collidepoint(event.pos):
+                        self._selected = i
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                for i, rect in enumerate(self._option_rects):
+                    if rect.collidepoint(event.pos):
+                        self._selected = i
+                        self._activate()
 
     def _activate(self):
         if self._selected == 0:   # JUGAR
@@ -54,7 +63,11 @@ class MenuScene:
             "SHOOT 'EM UP", True, (150, 150, 150))
         screen.blit(subtitle, (cx - subtitle.get_width() // 2, cy - 140))
 
+        self._option_rects = []
         for i, option in enumerate(_OPTIONS):
             color = _SELECTED_COLOR if i == self._selected else _OPTION_COLOR
             surf = self._font.render(option, True, color)
-            screen.blit(surf, (cx - surf.get_width() // 2, cy - 40 + i * 70))
+            x = cx - surf.get_width() // 2
+            y = cy - 40 + i * 70
+            screen.blit(surf, (x, y))
+            self._option_rects.append(pygame.Rect(x - 20, y - 5, surf.get_width() + 40, surf.get_height() + 10))

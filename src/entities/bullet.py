@@ -41,6 +41,7 @@ class Bullet(pygame.sprite.Sprite):
         self.w = w
         self.h = h
         self.damage = damage
+        self.tint = tint
         self.impact_frames = impact_frames
 
         rad = math.radians(angle_deg)
