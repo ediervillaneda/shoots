@@ -8,3 +8,4 @@ from src.settings.boss import *
 from src.settings.explosions import *
 from src.settings.scores import *
 from src.settings.gameplay import *
+from src.settings.modes import *
