@@ -421,3 +421,62 @@ def test_shoot_level_six_returns_five_bullets():
         player.apply_powerup("gun_upgrade")
     bullets = player.shoot(0)
     assert len(bullets) == 5
+
+
+# --- v1.4: gun_upgrade divergencia lateral + tint por powerup activo ---
+
+def test_gun_upgrade_lvl2_balas_divergen():
+    p = Player()
+    p.shot_level = 2
+    balas = p.shoot(0)
+    assert len(balas) == 2
+    assert balas[0]._vx < 0   # izquierda va hacia la izq
+    assert balas[1]._vx > 0   # derecha va hacia la der
+
+
+def test_gun_upgrade_lvl3_balas_divergen():
+    p = Player()
+    p.shot_level = 3
+    balas = p.shoot(0)
+    assert len(balas) == 3
+    assert balas[0]._vx < 0
+    assert abs(balas[1]._vx) < 0.001   # centro recto
+    assert balas[2]._vx > 0
+
+
+def test_gun_upgrade_lvl5_balas_divergen():
+    p = Player()
+    p.shot_level = 5
+    balas = p.shoot(0)
+    assert len(balas) == 5
+    assert balas[0]._vx < balas[1]._vx < 0   # -2x < -1x < 0
+    assert abs(balas[2]._vx) < 0.001
+    assert balas[3]._vx > 0
+    assert balas[4]._vx > balas[3]._vx   # +2x > +1x
+
+
+def test_shield_activo_tint_en_balas():
+    from src.settings import BULLET_TINT_SHIELD
+    p = Player()
+    p.active_powerups.add("shield")
+    balas = p.shoot(0)
+    assert balas[0].tint == BULLET_TINT_SHIELD
+
+
+def test_rapidfire_activo_damage_reducido():
+    from src.settings import BULLET_DAMAGE_DEFAULT
+    p = Player()
+    p.active_powerups.add("rapid_fire")
+    p.last_shot = -9999
+    balas = p.shoot(0)
+    expected = max(1, int(BULLET_DAMAGE_DEFAULT * 0.5))
+    assert balas[0].damage == expected
+
+
+def test_ambos_powerups_no_crash():
+    p = Player()
+    p.active_powerups.add("rapid_fire")
+    p.active_powerups.add("shield")
+    p.last_shot = -9999
+    balas = p.shoot(0)
+    assert len(balas) >= 1

@@ -43,6 +43,7 @@ from src.settings import (
     BULLET_DAMAGE_DEFAULT,
     BULLET_TINT_RAPIDFIRE,
     BULLET_TINT_SHIELD,
+    GUN_UPGRADE_DIVERGE_DEG,
 )
 from src.entities.bullet import Bullet
 from src.entities.rocket import Rocket
@@ -193,37 +194,42 @@ class Player(pygame.sprite.Sprite):
         if "shield" in self.active_powerups:
             tint = BULLET_TINT_SHIELD
         if self.shot_level >= 6:
+            d = GUN_UPGRADE_DIVERGE_DEG
             return [
-                Bullet(cx - 28, top, SHOT6_LAUNCH_FRAMES, SHOT6_TRAVEL, SHOT6_IMPACT_FRAMES, BULLET_W_L6, BULLET_H_L6, damage=damage, tint=tint),
-                Bullet(cx - 12, top, SHOT6_LAUNCH_FRAMES, SHOT6_TRAVEL, SHOT6_IMPACT_FRAMES, BULLET_W_L6, BULLET_H_L6, damage=damage, tint=tint),
-                Bullet(cx,      top, SHOT6_LAUNCH_FRAMES, SHOT6_TRAVEL, SHOT6_IMPACT_FRAMES, BULLET_W_L6, BULLET_H_L6, damage=damage, tint=tint),
-                Bullet(cx + 12, top, SHOT6_LAUNCH_FRAMES, SHOT6_TRAVEL, SHOT6_IMPACT_FRAMES, BULLET_W_L6, BULLET_H_L6, damage=damage, tint=tint),
-                Bullet(cx + 28, top, SHOT6_LAUNCH_FRAMES, SHOT6_TRAVEL, SHOT6_IMPACT_FRAMES, BULLET_W_L6, BULLET_H_L6, damage=damage, tint=tint),
+                Bullet(cx - 28, top, SHOT6_LAUNCH_FRAMES, SHOT6_TRAVEL, SHOT6_IMPACT_FRAMES, BULLET_W_L6, BULLET_H_L6, angle_deg=-2*d, damage=damage, tint=tint),
+                Bullet(cx - 12, top, SHOT6_LAUNCH_FRAMES, SHOT6_TRAVEL, SHOT6_IMPACT_FRAMES, BULLET_W_L6, BULLET_H_L6, angle_deg=-d,   damage=damage, tint=tint),
+                Bullet(cx,      top, SHOT6_LAUNCH_FRAMES, SHOT6_TRAVEL, SHOT6_IMPACT_FRAMES, BULLET_W_L6, BULLET_H_L6, angle_deg=0.0,  damage=damage, tint=tint),
+                Bullet(cx + 12, top, SHOT6_LAUNCH_FRAMES, SHOT6_TRAVEL, SHOT6_IMPACT_FRAMES, BULLET_W_L6, BULLET_H_L6, angle_deg=+d,   damage=damage, tint=tint),
+                Bullet(cx + 28, top, SHOT6_LAUNCH_FRAMES, SHOT6_TRAVEL, SHOT6_IMPACT_FRAMES, BULLET_W_L6, BULLET_H_L6, angle_deg=+2*d, damage=damage, tint=tint),
             ]
         if self.shot_level >= 5:
+            d = GUN_UPGRADE_DIVERGE_DEG
             return [
-                Bullet(cx - 28, top, SHOT5_LAUNCH_FRAMES, SHOT5_TRAVEL, SHOT5_IMPACT_FRAMES, BULLET_W_L5, BULLET_H_L5, damage=damage, tint=tint),
-                Bullet(cx - 12, top, SHOT5_LAUNCH_FRAMES, SHOT5_TRAVEL, SHOT5_IMPACT_FRAMES, BULLET_W_L5, BULLET_H_L5, damage=damage, tint=tint),
-                Bullet(cx,      top, SHOT5_LAUNCH_FRAMES, SHOT5_TRAVEL, SHOT5_IMPACT_FRAMES, BULLET_W_L5, BULLET_H_L5, damage=damage, tint=tint),
-                Bullet(cx + 12, top, SHOT5_LAUNCH_FRAMES, SHOT5_TRAVEL, SHOT5_IMPACT_FRAMES, BULLET_W_L5, BULLET_H_L5, damage=damage, tint=tint),
-                Bullet(cx + 28, top, SHOT5_LAUNCH_FRAMES, SHOT5_TRAVEL, SHOT5_IMPACT_FRAMES, BULLET_W_L5, BULLET_H_L5, damage=damage, tint=tint),
+                Bullet(cx - 28, top, SHOT5_LAUNCH_FRAMES, SHOT5_TRAVEL, SHOT5_IMPACT_FRAMES, BULLET_W_L5, BULLET_H_L5, angle_deg=-2*d, damage=damage, tint=tint),
+                Bullet(cx - 12, top, SHOT5_LAUNCH_FRAMES, SHOT5_TRAVEL, SHOT5_IMPACT_FRAMES, BULLET_W_L5, BULLET_H_L5, angle_deg=-d,   damage=damage, tint=tint),
+                Bullet(cx,      top, SHOT5_LAUNCH_FRAMES, SHOT5_TRAVEL, SHOT5_IMPACT_FRAMES, BULLET_W_L5, BULLET_H_L5, angle_deg=0.0,  damage=damage, tint=tint),
+                Bullet(cx + 12, top, SHOT5_LAUNCH_FRAMES, SHOT5_TRAVEL, SHOT5_IMPACT_FRAMES, BULLET_W_L5, BULLET_H_L5, angle_deg=+d,   damage=damage, tint=tint),
+                Bullet(cx + 28, top, SHOT5_LAUNCH_FRAMES, SHOT5_TRAVEL, SHOT5_IMPACT_FRAMES, BULLET_W_L5, BULLET_H_L5, angle_deg=+2*d, damage=damage, tint=tint),
             ]
         if self.shot_level >= 4:
+            d = GUN_UPGRADE_DIVERGE_DEG
             return [
-                Bullet(cx - 16, top, SHOT4_LAUNCH_FRAMES, SHOT4_TRAVEL, SHOT4_IMPACT_FRAMES, BULLET_W_L4, BULLET_H_L4, damage=damage, tint=tint),
-                Bullet(cx,      top, SHOT4_LAUNCH_FRAMES, SHOT4_TRAVEL, SHOT4_IMPACT_FRAMES, BULLET_W_L4, BULLET_H_L4, damage=damage, tint=tint),
-                Bullet(cx + 16, top, SHOT4_LAUNCH_FRAMES, SHOT4_TRAVEL, SHOT4_IMPACT_FRAMES, BULLET_W_L4, BULLET_H_L4, damage=damage, tint=tint),
+                Bullet(cx - 16, top, SHOT4_LAUNCH_FRAMES, SHOT4_TRAVEL, SHOT4_IMPACT_FRAMES, BULLET_W_L4, BULLET_H_L4, angle_deg=-d,  damage=damage, tint=tint),
+                Bullet(cx,      top, SHOT4_LAUNCH_FRAMES, SHOT4_TRAVEL, SHOT4_IMPACT_FRAMES, BULLET_W_L4, BULLET_H_L4, angle_deg=0.0, damage=damage, tint=tint),
+                Bullet(cx + 16, top, SHOT4_LAUNCH_FRAMES, SHOT4_TRAVEL, SHOT4_IMPACT_FRAMES, BULLET_W_L4, BULLET_H_L4, angle_deg=+d,  damage=damage, tint=tint),
             ]
         if self.shot_level >= 3:
+            d = GUN_UPGRADE_DIVERGE_DEG
             return [
-                Bullet(cx - 16, top, SHOT3_LAUNCH_FRAMES, SHOT3_TRAVEL, SHOT3_IMPACT_FRAMES, BULLET_W_L3, BULLET_H_L3, damage=damage, tint=tint),
-                Bullet(cx,      top, SHOT3_LAUNCH_FRAMES, SHOT3_TRAVEL, SHOT3_IMPACT_FRAMES, BULLET_W_L3, BULLET_H_L3, damage=damage, tint=tint),
-                Bullet(cx + 16, top, SHOT3_LAUNCH_FRAMES, SHOT3_TRAVEL, SHOT3_IMPACT_FRAMES, BULLET_W_L3, BULLET_H_L3, damage=damage, tint=tint),
+                Bullet(cx - 16, top, SHOT3_LAUNCH_FRAMES, SHOT3_TRAVEL, SHOT3_IMPACT_FRAMES, BULLET_W_L3, BULLET_H_L3, angle_deg=-d,  damage=damage, tint=tint),
+                Bullet(cx,      top, SHOT3_LAUNCH_FRAMES, SHOT3_TRAVEL, SHOT3_IMPACT_FRAMES, BULLET_W_L3, BULLET_H_L3, angle_deg=0.0, damage=damage, tint=tint),
+                Bullet(cx + 16, top, SHOT3_LAUNCH_FRAMES, SHOT3_TRAVEL, SHOT3_IMPACT_FRAMES, BULLET_W_L3, BULLET_H_L3, angle_deg=+d,  damage=damage, tint=tint),
             ]
         if self.shot_level >= 2:
+            d = GUN_UPGRADE_DIVERGE_DEG * 0.5
             return [
-                Bullet(cx - 10, top, SHOT2_LAUNCH_FRAMES, SHOT2_TRAVEL, SHOT2_IMPACT_FRAMES, BULLET_W_L2, BULLET_H_L2, damage=damage, tint=tint),
-                Bullet(cx + 10, top, SHOT2_LAUNCH_FRAMES, SHOT2_TRAVEL, SHOT2_IMPACT_FRAMES, BULLET_W_L2, BULLET_H_L2, damage=damage, tint=tint),
+                Bullet(cx - 10, top, SHOT2_LAUNCH_FRAMES, SHOT2_TRAVEL, SHOT2_IMPACT_FRAMES, BULLET_W_L2, BULLET_H_L2, angle_deg=-d, damage=damage, tint=tint),
+                Bullet(cx + 10, top, SHOT2_LAUNCH_FRAMES, SHOT2_TRAVEL, SHOT2_IMPACT_FRAMES, BULLET_W_L2, BULLET_H_L2, angle_deg=+d, damage=damage, tint=tint),
             ]
         return [Bullet(cx, top, SHOT1_LAUNCH_FRAMES, SHOT1_TRAVEL, SHOT1_IMPACT_FRAMES, BULLET_W_L1, BULLET_H_L1, damage=damage, tint=tint)]
 
