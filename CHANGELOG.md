@@ -4,6 +4,20 @@ All notable changes to Starfall are documented here.
 
 ---
 
+## [1.5.0] — Nuevos power-ups: spread, plasma, laser
+
+### 1.5.2
+- `Player.shoot()`: spread (5 balas abanico ±30°) y plasma (Shot6 lento, 5 daño) con precedencia sobre gun_upgrade
+- `GameplayScene`: grupo `lasers`, activación con Space, daño continuo LASER_DAMAGE_PER_S×dt
+- 7 tests nuevos (`test_laser.py` + `test_player.py`)
+
+### 1.5.1
+- Constantes `SPREAD_ANGLES`, `SPREAD_DAMAGE`, `PLASMA_SPEED_MULT`, `PLASMA_DAMAGE`, `PLASMA_TINT`, `LASER_*` en settings
+- Entidad `Laser`: rayo de área 8px, dura 3s, daña 10 HP/s a enemigos en columna, se autodestruye
+- `PowerUp` acepta 3 nuevos tipos: `spread`, `plasma`, `laser` (sprites placeholder)
+
+---
+
 ## [v1.4] — Power-ups con identidad visual
 
 ### v1.4.2

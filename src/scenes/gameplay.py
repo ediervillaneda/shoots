@@ -14,6 +14,7 @@ from src.entities.boss import Boss
 from src.entities.powerup import PowerUp, POWERUP_ASSETS, POWERUP_KINDS
 from src.entities.explosion import Explosion
 from src.entities.impact_effect import ImpactEffect
+from src.entities.laser import Laser
 from src.entities.scrolling_bg import ScrollingBG
 from src.systems.spawning import SpawnSystem
 from src.settings import (
@@ -26,6 +27,7 @@ from src.settings import (
     EXPL_SCOUT, EXPL_KAMIKAZE, EXPL_FIGHTER,
     EXPL_GUNNER, EXPL_STRIKER, EXPL_INTERCEPTOR,
     EXPL_BOSS, EXPL_PLAYER,
+    LASER_DAMAGE_PER_S,
 )
 from src.settings.audio import (
     MUSIC_GAMEPLAY,
@@ -48,6 +50,8 @@ class GameplayScene:
         self.enemy_bullets = pygame.sprite.Group()
         self.powerups = pygame.sprite.Group()
         self.explosions = pygame.sprite.Group()
+        self.lasers = pygame.sprite.Group()
+        self._laser_active: "Laser | None" = None
         self.all_sprites = pygame.sprite.Group(self.player)
         self.spawn_system = SpawnSystem()
         self.boss = None
@@ -62,6 +66,8 @@ class GameplayScene:
         self.enemy_bullets = pygame.sprite.Group()
         self.powerups = pygame.sprite.Group()
         self.explosions = pygame.sprite.Group()
+        self.lasers = pygame.sprite.Group()
+        self._laser_active = None
         self.all_sprites = pygame.sprite.Group(self.player)
         self.score = 0
         self.spawn_system = SpawnSystem()
@@ -93,6 +99,11 @@ class GameplayScene:
         self.player.handle_keys(keys)
         now = pygame.time.get_ticks()
         if keys[pygame.K_SPACE]:
+            if "laser" in self.player.active_powerups:
+                if self._laser_active is None or not self._laser_active.alive():
+                    self._laser_active = Laser(self.player)
+                    self.lasers.add(self._laser_active)
+                    self.all_sprites.add(self._laser_active)
             bullets_fired = self.player.shoot(now)
             for bullet in bullets_fired:
                 self.bullets.add(bullet)
@@ -170,6 +181,17 @@ class GameplayScene:
         self.bullets.update(dt)
         self.rockets.update(dt)
         self.explosions.update(dt)
+        self.lasers.update(dt)
+        if self._laser_active and self._laser_active.alive():
+            for enemy in list(self.enemies):
+                if pygame.sprite.collide_rect(self._laser_active, enemy):
+                    enemy.take_damage(LASER_DAMAGE_PER_S * dt)
+                    if not enemy.alive():
+                        self._spawn_death_explosion(enemy)
+                        self.score += enemy.points
+                        self.spawn_system.register_kill()
+                        self._maybe_drop_powerup(
+                            enemy.rect.centerx, enemy.rect.centery)
         self.enemies.update(dt)
         self.enemy_bullets.update(dt)
         self.powerups.update(dt)

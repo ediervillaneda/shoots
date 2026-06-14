@@ -12,6 +12,9 @@ POWERUP_ASSETS = {
     "gun_upgrade": SPRITE_PU_DOUBLE_SHOT,
     "extra_life":  SPRITE_PU_EXTRA_LIFE,
     "rocket":      SPRITE_PU_ROCKET,
+    "spread":      SPRITE_PU_DOUBLE_SHOT,
+    "plasma":      SPRITE_PU_RAPID_FIRE,
+    "laser":       SPRITE_PU_SHIELD,
 }
 
 POWERUP_KINDS = list(POWERUP_ASSETS)
