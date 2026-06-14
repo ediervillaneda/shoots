@@ -152,7 +152,7 @@ Modulo singleton. Carga lazy, tolerante a archivos faltantes.
 | v1.4 | DONE | gun_upgrade divergencia lateral; shield halo en balas; rapid_fire tint azul; mouse en menu -- 259 tests |
 | 1.5.0 | DONE | Nuevos power-ups: spread 5 balas, plasma Shot6 lento, laser de area 3s -- 266 tests |
 | 1.6.0 | DONE | Game feel: screen shake, combo multiplier x1-x8 en HUD, flash blanco en enemigos 80ms -- 274 tests |
-| 1.7.0 | TODO | Nuevos enemigos: Flanker (lateral), Raider (desde abajo), formaciones cunia de Scouts |
+| 1.7.0 | DONE | Nuevos enemigos: Flanker (lateral), Raider (desde abajo), formaciones cunia de Scouts -- 307 tests |
 | 1.8.0 | TODO | Disparos avanzados: burst Gunner, 8 balas circular al morir, HomingBullet, lead shot Striker |
 | 1.9.0 | TODO | Modos: Endless, Survival, Daily (seed diaria); nuevo enemigo Orbiter (wave 12+) |
 | 2.0.0 | TODO | Boss fase 3 (frenesi + espiral), slow motion al matar boss, disparo auto toggle, release final |
