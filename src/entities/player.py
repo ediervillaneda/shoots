@@ -40,6 +40,9 @@ from src.settings import (
     ROCKET_COOLDOWN,
     ROCKET_ANGLE_DEG,
     ROCKET_MAX_COUNT,
+    BULLET_DAMAGE_DEFAULT,
+    BULLET_TINT_RAPIDFIRE,
+    BULLET_TINT_SHIELD,
 )
 from src.entities.bullet import Bullet
 from src.entities.rocket import Rocket
@@ -182,40 +185,47 @@ class Player(pygame.sprite.Sprite):
         self.last_shot = now
         cx = self.rect.centerx
         top = self.rect.top
+        damage = BULLET_DAMAGE_DEFAULT
+        tint = None
+        if "rapid_fire" in self.active_powerups:
+            damage = max(1, int(BULLET_DAMAGE_DEFAULT * 0.5))
+            tint = BULLET_TINT_RAPIDFIRE
+        if "shield" in self.active_powerups:
+            tint = BULLET_TINT_SHIELD
         if self.shot_level >= 6:
             return [
-                Bullet(cx - 28, top, SHOT6_LAUNCH_FRAMES, SHOT6_TRAVEL, SHOT6_IMPACT_FRAMES, BULLET_W_L6, BULLET_H_L6),
-                Bullet(cx - 12, top, SHOT6_LAUNCH_FRAMES, SHOT6_TRAVEL, SHOT6_IMPACT_FRAMES, BULLET_W_L6, BULLET_H_L6),
-                Bullet(cx,      top, SHOT6_LAUNCH_FRAMES, SHOT6_TRAVEL, SHOT6_IMPACT_FRAMES, BULLET_W_L6, BULLET_H_L6),
-                Bullet(cx + 12, top, SHOT6_LAUNCH_FRAMES, SHOT6_TRAVEL, SHOT6_IMPACT_FRAMES, BULLET_W_L6, BULLET_H_L6),
-                Bullet(cx + 28, top, SHOT6_LAUNCH_FRAMES, SHOT6_TRAVEL, SHOT6_IMPACT_FRAMES, BULLET_W_L6, BULLET_H_L6),
+                Bullet(cx - 28, top, SHOT6_LAUNCH_FRAMES, SHOT6_TRAVEL, SHOT6_IMPACT_FRAMES, BULLET_W_L6, BULLET_H_L6, damage=damage, tint=tint),
+                Bullet(cx - 12, top, SHOT6_LAUNCH_FRAMES, SHOT6_TRAVEL, SHOT6_IMPACT_FRAMES, BULLET_W_L6, BULLET_H_L6, damage=damage, tint=tint),
+                Bullet(cx,      top, SHOT6_LAUNCH_FRAMES, SHOT6_TRAVEL, SHOT6_IMPACT_FRAMES, BULLET_W_L6, BULLET_H_L6, damage=damage, tint=tint),
+                Bullet(cx + 12, top, SHOT6_LAUNCH_FRAMES, SHOT6_TRAVEL, SHOT6_IMPACT_FRAMES, BULLET_W_L6, BULLET_H_L6, damage=damage, tint=tint),
+                Bullet(cx + 28, top, SHOT6_LAUNCH_FRAMES, SHOT6_TRAVEL, SHOT6_IMPACT_FRAMES, BULLET_W_L6, BULLET_H_L6, damage=damage, tint=tint),
             ]
         if self.shot_level >= 5:
             return [
-                Bullet(cx - 28, top, SHOT5_LAUNCH_FRAMES, SHOT5_TRAVEL, SHOT5_IMPACT_FRAMES, BULLET_W_L5, BULLET_H_L5),
-                Bullet(cx - 12, top, SHOT5_LAUNCH_FRAMES, SHOT5_TRAVEL, SHOT5_IMPACT_FRAMES, BULLET_W_L5, BULLET_H_L5),
-                Bullet(cx,      top, SHOT5_LAUNCH_FRAMES, SHOT5_TRAVEL, SHOT5_IMPACT_FRAMES, BULLET_W_L5, BULLET_H_L5),
-                Bullet(cx + 12, top, SHOT5_LAUNCH_FRAMES, SHOT5_TRAVEL, SHOT5_IMPACT_FRAMES, BULLET_W_L5, BULLET_H_L5),
-                Bullet(cx + 28, top, SHOT5_LAUNCH_FRAMES, SHOT5_TRAVEL, SHOT5_IMPACT_FRAMES, BULLET_W_L5, BULLET_H_L5),
+                Bullet(cx - 28, top, SHOT5_LAUNCH_FRAMES, SHOT5_TRAVEL, SHOT5_IMPACT_FRAMES, BULLET_W_L5, BULLET_H_L5, damage=damage, tint=tint),
+                Bullet(cx - 12, top, SHOT5_LAUNCH_FRAMES, SHOT5_TRAVEL, SHOT5_IMPACT_FRAMES, BULLET_W_L5, BULLET_H_L5, damage=damage, tint=tint),
+                Bullet(cx,      top, SHOT5_LAUNCH_FRAMES, SHOT5_TRAVEL, SHOT5_IMPACT_FRAMES, BULLET_W_L5, BULLET_H_L5, damage=damage, tint=tint),
+                Bullet(cx + 12, top, SHOT5_LAUNCH_FRAMES, SHOT5_TRAVEL, SHOT5_IMPACT_FRAMES, BULLET_W_L5, BULLET_H_L5, damage=damage, tint=tint),
+                Bullet(cx + 28, top, SHOT5_LAUNCH_FRAMES, SHOT5_TRAVEL, SHOT5_IMPACT_FRAMES, BULLET_W_L5, BULLET_H_L5, damage=damage, tint=tint),
             ]
         if self.shot_level >= 4:
             return [
-                Bullet(cx - 16, top, SHOT4_LAUNCH_FRAMES, SHOT4_TRAVEL, SHOT4_IMPACT_FRAMES, BULLET_W_L4, BULLET_H_L4),
-                Bullet(cx,      top, SHOT4_LAUNCH_FRAMES, SHOT4_TRAVEL, SHOT4_IMPACT_FRAMES, BULLET_W_L4, BULLET_H_L4),
-                Bullet(cx + 16, top, SHOT4_LAUNCH_FRAMES, SHOT4_TRAVEL, SHOT4_IMPACT_FRAMES, BULLET_W_L4, BULLET_H_L4),
+                Bullet(cx - 16, top, SHOT4_LAUNCH_FRAMES, SHOT4_TRAVEL, SHOT4_IMPACT_FRAMES, BULLET_W_L4, BULLET_H_L4, damage=damage, tint=tint),
+                Bullet(cx,      top, SHOT4_LAUNCH_FRAMES, SHOT4_TRAVEL, SHOT4_IMPACT_FRAMES, BULLET_W_L4, BULLET_H_L4, damage=damage, tint=tint),
+                Bullet(cx + 16, top, SHOT4_LAUNCH_FRAMES, SHOT4_TRAVEL, SHOT4_IMPACT_FRAMES, BULLET_W_L4, BULLET_H_L4, damage=damage, tint=tint),
             ]
         if self.shot_level >= 3:
             return [
-                Bullet(cx - 16, top, SHOT3_LAUNCH_FRAMES, SHOT3_TRAVEL, SHOT3_IMPACT_FRAMES, BULLET_W_L3, BULLET_H_L3),
-                Bullet(cx,      top, SHOT3_LAUNCH_FRAMES, SHOT3_TRAVEL, SHOT3_IMPACT_FRAMES, BULLET_W_L3, BULLET_H_L3),
-                Bullet(cx + 16, top, SHOT3_LAUNCH_FRAMES, SHOT3_TRAVEL, SHOT3_IMPACT_FRAMES, BULLET_W_L3, BULLET_H_L3),
+                Bullet(cx - 16, top, SHOT3_LAUNCH_FRAMES, SHOT3_TRAVEL, SHOT3_IMPACT_FRAMES, BULLET_W_L3, BULLET_H_L3, damage=damage, tint=tint),
+                Bullet(cx,      top, SHOT3_LAUNCH_FRAMES, SHOT3_TRAVEL, SHOT3_IMPACT_FRAMES, BULLET_W_L3, BULLET_H_L3, damage=damage, tint=tint),
+                Bullet(cx + 16, top, SHOT3_LAUNCH_FRAMES, SHOT3_TRAVEL, SHOT3_IMPACT_FRAMES, BULLET_W_L3, BULLET_H_L3, damage=damage, tint=tint),
             ]
         if self.shot_level >= 2:
             return [
-                Bullet(cx - 10, top, SHOT2_LAUNCH_FRAMES, SHOT2_TRAVEL, SHOT2_IMPACT_FRAMES, BULLET_W_L2, BULLET_H_L2),
-                Bullet(cx + 10, top, SHOT2_LAUNCH_FRAMES, SHOT2_TRAVEL, SHOT2_IMPACT_FRAMES, BULLET_W_L2, BULLET_H_L2),
+                Bullet(cx - 10, top, SHOT2_LAUNCH_FRAMES, SHOT2_TRAVEL, SHOT2_IMPACT_FRAMES, BULLET_W_L2, BULLET_H_L2, damage=damage, tint=tint),
+                Bullet(cx + 10, top, SHOT2_LAUNCH_FRAMES, SHOT2_TRAVEL, SHOT2_IMPACT_FRAMES, BULLET_W_L2, BULLET_H_L2, damage=damage, tint=tint),
             ]
-        return [Bullet(cx, top, SHOT1_LAUNCH_FRAMES, SHOT1_TRAVEL, SHOT1_IMPACT_FRAMES, BULLET_W_L1, BULLET_H_L1)]
+        return [Bullet(cx, top, SHOT1_LAUNCH_FRAMES, SHOT1_TRAVEL, SHOT1_IMPACT_FRAMES, BULLET_W_L1, BULLET_H_L1, damage=damage, tint=tint)]
 
     def shoot_rocket(self, now: int) -> list[Rocket]:
         if self.rocket_count == 0:
