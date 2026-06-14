@@ -35,10 +35,11 @@ from src.settings.audio import (
 
 
 class GameplayScene:
-    def __init__(self):
+    def __init__(self, game=None):
+        self._game = game
         self._font = pygame.font.SysFont(None, HUD_FONT_SIZE)
         self.score = 0
-        self.state = "start"
+        self.state = "playing"
         self._bg = ScrollingBG()
         self.player = Player()
         self.bullets = pygame.sprite.Group()
@@ -71,11 +72,23 @@ class GameplayScene:
     def process_input(self, events):
         keys = pygame.key.get_pressed()
         for event in events:
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_m:
-                audio.toggle_mute()
-        if self.state in ("start", "game_over"):
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_m:
+                    audio.toggle_mute()
+                elif event.key in (pygame.K_p, pygame.K_ESCAPE) and self.state == "playing":
+                    self.state = "paused"
+                elif self.state == "paused":
+                    if event.key == pygame.K_ESCAPE:
+                        if self._game:
+                            from src.scenes.menu import MenuScene
+                            self._game.replace_scene(MenuScene(self._game))
+                    elif event.key in (pygame.K_p, pygame.K_RETURN, pygame.K_SPACE):
+                        self.state = "playing"
+        if self.state == "game_over":
             if keys[pygame.K_SPACE]:
                 self._reset()
+            return
+        if self.state == "paused":
             return
         self.player.handle_keys(keys)
         now = pygame.time.get_ticks()
@@ -241,10 +254,14 @@ class GameplayScene:
             audio.play_sfx(SFX_POWERUP)
 
         if self.player.lives <= 0:
-            self.state = "game_over"
             if not self._game_over_played:
                 audio.play_sfx(SFX_GAME_OVER)
                 self._game_over_played = True
+                if self._game:
+                    from src.scenes.game_over import GameOverScene
+                    self._game.replace_scene(GameOverScene(self._game, self.score))
+                else:
+                    self.state = "game_over"
 
     def _draw_overlay(self, screen, title, subtitle):
         overlay = pygame.Surface((SCREEN_W, SCREEN_H), pygame.SRCALPHA)
@@ -309,7 +326,7 @@ class GameplayScene:
             pygame.draw.rect(screen, (255, 255, 255),
                              (HUD_MARGIN, y, bar_w, BOSS_HEALTH_BAR_H), 1)
 
-        if self.state == "start":
-            self._draw_overlay(screen, "STARFALL", "PRESS SPACE TO PLAY")
+        if self.state == "paused":
+            self._draw_overlay(screen, "PAUSED", "P/ENTER/SPACE: RESUME  ESC: MENU")
         elif self.state == "game_over":
             self._draw_overlay(screen, "GAME OVER", "PRESS SPACE TO RESTART")
