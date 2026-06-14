@@ -480,3 +480,27 @@ def test_ambos_powerups_no_crash():
     p.last_shot = -9999
     balas = p.shoot(0)
     assert len(balas) >= 1
+
+
+def test_spread_dispara_5_balas():
+    p = Player()
+    p.active_powerups.add("spread")
+    balas = p.shoot(0)
+    assert len(balas) == 5
+
+
+def test_spread_balas_tienen_angulos_distintos():
+    p = Player()
+    p.active_powerups.add("spread")
+    balas = p.shoot(0)
+    vx_values = [b._vx for b in balas]
+    assert len(set(round(v, 4) for v in vx_values)) == 5
+
+
+def test_plasma_dispara_1_bala_danio_alto():
+    from src.settings import PLASMA_DAMAGE
+    p = Player()
+    p.active_powerups.add("plasma")
+    balas = p.shoot(0)
+    assert len(balas) == 1
+    assert balas[0].damage == PLASMA_DAMAGE
