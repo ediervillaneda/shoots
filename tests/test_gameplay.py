@@ -13,9 +13,9 @@ from src.settings import SCOUT_POINTS, PLAYER_LIVES, SCREEN_H, WAVE_SPAWN_MIN, F
 
 # --- tests de estado y reset ---
 
-def test_initial_state_is_start():
+def test_initial_state_is_playing():
     scene = GameplayScene()
-    assert scene.state == "start"
+    assert scene.state == "playing"
 
 
 def test_reset_sets_state_playing():
@@ -53,7 +53,8 @@ def test_spawn_system_created_on_reset():
 # --- test noop cuando no está playing ---
 
 def test_update_noop_when_not_playing():
-    scene = GameplayScene()              # state="start"
+    scene = GameplayScene()
+    scene.state = "paused"              # force non-playing state
     scout = Scout(270)
     scout.rect.top = SCREEN_H + 10
     scout.x = float(scout.rect.x)
