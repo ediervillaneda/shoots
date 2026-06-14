@@ -147,10 +147,10 @@ class Player(pygame.sprite.Sprite):
 
     def handle_keys(self, keys):
         self.vel_x, self.vel_y = calc_velocity(
-            left=bool(keys[pygame.K_a]),
-            right=bool(keys[pygame.K_d]),
-            up=bool(keys[pygame.K_w]),
-            down=bool(keys[pygame.K_s]),
+            left=bool(keys[pygame.K_a]) or bool(keys[pygame.K_LEFT]),
+            right=bool(keys[pygame.K_d]) or bool(keys[pygame.K_RIGHT]),
+            up=bool(keys[pygame.K_w]) or bool(keys[pygame.K_UP]),
+            down=bool(keys[pygame.K_s]) or bool(keys[pygame.K_DOWN]),
         )
 
     def update(self, dt):
