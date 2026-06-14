@@ -6,6 +6,9 @@ All notable changes to Starfall are documented here.
 
 ## [v1.4] — Power-ups con identidad visual
 
+### v1.4.2
+- `MenuScene`: hover con ratón resalta opción, click izquierdo activa
+
 ### v1.4.1
 - `Bullet` guarda `self.tint` para introspección en tests
 - `GUN_UPGRADE_DIVERGE_DEG = 8.0` en settings
