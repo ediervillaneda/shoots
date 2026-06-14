@@ -150,7 +150,7 @@ Modulo singleton. Carga lazy, tolerante a archivos faltantes.
 | v1.2 | DONE | Stack de escenas, MenuScene, pausa, GameOverScene con iniciales, records JSON local -- 247 tests |
 | v1.3 | DONE | Bullet con angle_deg y damage por instancia, tinting de balas -- 253 tests |
 | v1.4 | DONE | gun_upgrade divergencia lateral; shield halo en balas; rapid_fire tint azul; mouse en menu -- 259 tests |
-| 1.5.0 | TODO | Nuevos power-ups: spread 5 balas, plasma Shot6 lento, laser de area 3s |
+| 1.5.0 | DONE | Nuevos power-ups: spread 5 balas, plasma Shot6 lento, laser de area 3s -- 266 tests |
 | 1.6.0 | TODO | Game feel: screen shake, combo multiplier x1-x8 en HUD, flash blanco en enemigos 80ms |
 | 1.7.0 | TODO | Nuevos enemigos: Flanker (lateral), Raider (desde abajo), formaciones cunia de Scouts |
 | 1.8.0 | TODO | Disparos avanzados: burst Gunner, 8 balas circular al morir, HomingBullet, lead shot Striker |
