@@ -29,6 +29,7 @@ from src.settings import (
     EXPL_BOSS, EXPL_PLAYER,
     LASER_DAMAGE_PER_S,
     SHAKE_DURATION_MS, SHAKE_INTENSITY,
+    COMBO_MULTIPLIERS, COMBO_TIMEOUT_MS,
 )
 from src.settings.audio import (
     MUSIC_GAMEPLAY,
@@ -59,6 +60,8 @@ class GameplayScene:
         self._game_over_played = False
         self._shake_ms = 0.0
         self._shake_intensity = 0
+        self._combo = 0
+        self._combo_timer = 0.0
         audio.play_music(MUSIC_GAMEPLAY)
 
     def _reset(self):
@@ -79,10 +82,15 @@ class GameplayScene:
         self._game_over_played = False
         self._shake_ms = 0.0
         self._shake_intensity = 0
+        self._combo = 0
+        self._combo_timer = 0.0
 
     def _start_shake(self, intensity: int) -> None:
         self._shake_ms = SHAKE_DURATION_MS
         self._shake_intensity = intensity
+
+    def _get_multiplier(self) -> int:
+        return COMBO_MULTIPLIERS[min(self._combo, len(COMBO_MULTIPLIERS) - 1)]
 
     def process_input(self, events):
         keys = pygame.key.get_pressed()
@@ -155,6 +163,8 @@ class GameplayScene:
         lives_before = self.player.lives
         self.player.take_damage(now)
         if self.player.lives < lives_before:
+            self._combo = 0
+            self._combo_timer = 0.0
             expl = Explosion(
                 self.player.rect.centerx, self.player.rect.centery, EXPL_PLAYER
             )
@@ -177,7 +187,9 @@ class GameplayScene:
                 enemy.take_damage(dmg)
                 if not enemy.alive():
                     self._spawn_death_explosion(enemy)
-                    self.score += enemy.points
+                    self.score += enemy.points * self._get_multiplier()
+                    self._combo = min(self._combo + 1, len(COMBO_MULTIPLIERS) - 1)
+                    self._combo_timer = 0.0
                     self.spawn_system.register_kill()
                     self._maybe_drop_powerup(
                         enemy.rect.centerx, enemy.rect.centery)
@@ -187,6 +199,10 @@ class GameplayScene:
         self._shake_ms = max(0.0, self._shake_ms - dt * 1000)
         if self.state != "playing":
             return
+
+        self._combo_timer += dt * 1000
+        if self._combo_timer > COMBO_TIMEOUT_MS:
+            self._combo = 0
 
         self.player.update(dt)
         self.bullets.update(dt)
@@ -199,7 +215,9 @@ class GameplayScene:
                     enemy.take_damage(LASER_DAMAGE_PER_S * dt)
                     if not enemy.alive():
                         self._spawn_death_explosion(enemy)
-                        self.score += enemy.points
+                        self.score += enemy.points * self._get_multiplier()
+                        self._combo = min(self._combo + 1, len(COMBO_MULTIPLIERS) - 1)
+                        self._combo_timer = 0.0
                         self.spawn_system.register_kill()
                         self._maybe_drop_powerup(
                             enemy.rect.centerx, enemy.rect.centery)
@@ -247,7 +265,9 @@ class GameplayScene:
             self.player, self.enemies, True)
         for enemy in hit_enemies:
             self._spawn_death_explosion(enemy)
-            self.score += enemy.points
+            self.score += enemy.points * self._get_multiplier()
+            self._combo = min(self._combo + 1, len(COMBO_MULTIPLIERS) - 1)
+            self._combo_timer = 0.0
             self._handle_player_damage(now)
             self.spawn_system.register_kill()
             self._maybe_drop_powerup(enemy.rect.centerx, enemy.rect.centery)
@@ -268,7 +288,9 @@ class GameplayScene:
                     enemy.take_damage(bullet.damage)
                     if not enemy.alive():
                         self._spawn_death_explosion(enemy)
-                        self.score += enemy.points
+                        self.score += enemy.points * self._get_multiplier()
+                        self._combo = min(self._combo + 1, len(COMBO_MULTIPLIERS) - 1)
+                        self._combo_timer = 0.0
                         self.spawn_system.register_kill()
                         self._maybe_drop_powerup(
                             enemy.rect.centerx, enemy.rect.centery)
@@ -321,6 +343,11 @@ class GameplayScene:
 
         score_surf = self._font.render(f"SCORE: {self.score}", True, HUD_COLOR)
         _surf.blit(score_surf, (HUD_MARGIN, HUD_MARGIN))
+
+        mult = self._get_multiplier()
+        if mult > 1:
+            combo_surf = self._font.render(f"x{mult}", True, (255, 220, 0))
+            _surf.blit(combo_surf, (HUD_MARGIN, HUD_MARGIN + HUD_FONT_SIZE + 4))
 
         wave_surf = self._font.render(
             f"WAVE: {self.spawn_system.wave}", True, HUD_COLOR)
