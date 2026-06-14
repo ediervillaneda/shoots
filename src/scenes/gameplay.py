@@ -10,6 +10,7 @@ from src.entities.kamikaze import Kamikaze
 from src.entities.gunner import Gunner
 from src.entities.striker import Striker
 from src.entities.interceptor import Interceptor
+from src.entities.orbiter import Orbiter
 from src.entities.boss import Boss
 from src.entities.powerup import PowerUp, POWERUP_ASSETS, POWERUP_KINDS
 from src.entities.explosion import Explosion
@@ -39,8 +40,16 @@ from src.settings.audio import (
 
 
 class GameplayScene:
-    def __init__(self, game=None):
+    def __init__(self, game=None, mode: str = "endless"):
         self._game = game
+        self._mode = mode
+        self._time_left_ms: float = 0.0
+        if mode == "daily":
+            import random, datetime
+            random.seed(datetime.date.today().toordinal())
+        if mode == "survival":
+            from src.settings import SURVIVAL_TIME_MS
+            self._time_left_ms = float(SURVIVAL_TIME_MS)
         self._font = pygame.font.SysFont(None, HUD_FONT_SIZE)
         self.score = 0
         self.state = "playing"
@@ -84,6 +93,11 @@ class GameplayScene:
         self._shake_intensity = 0
         self._combo = 0
         self._combo_timer = 0.0
+        self._mode = getattr(self, "_mode", "endless")
+        self._time_left_ms = 0.0
+        if self._mode == "survival":
+            from src.settings import SURVIVAL_TIME_MS
+            self._time_left_ms = float(SURVIVAL_TIME_MS)
 
     def _start_shake(self, intensity: int) -> None:
         self._shake_ms = SHAKE_DURATION_MS
@@ -210,6 +224,19 @@ class GameplayScene:
             self._combo = 0
             self._combo_timer = 0.0
 
+        if self._mode == "survival":
+            self._time_left_ms -= dt * 1000
+            if self._time_left_ms <= 0:
+                self._time_left_ms = 0.0
+                if not self._game_over_played:
+                    self._game_over_played = True
+                    audio.play_sfx(SFX_GAME_OVER)
+                    if self._game:
+                        from src.scenes.game_over import GameOverScene
+                        self._game.replace_scene(GameOverScene(self._game, self.score))
+                    else:
+                        self.state = "game_over"
+
         self.player.update(dt)
         self.bullets.update(dt)
         self.rockets.update(dt)
@@ -234,7 +261,7 @@ class GameplayScene:
         now = pygame.time.get_ticks()
 
         for enemy in self.spawn_system.update(now):
-            if isinstance(enemy, (Kamikaze, Striker, Interceptor)):
+            if isinstance(enemy, (Kamikaze, Striker, Interceptor, Orbiter)):
                 enemy.target = self.player
             self.enemies.add(enemy)
             self.all_sprites.add(enemy)
@@ -359,6 +386,14 @@ class GameplayScene:
             f"WAVE: {self.spawn_system.wave}", True, HUD_COLOR)
         _surf.blit(wave_surf, (SCREEN_W // 2 -
                     wave_surf.get_width() // 2, HUD_MARGIN))
+
+        if self._mode == "survival" and self._time_left_ms > 0:
+            secs = int(self._time_left_ms / 1000)
+            timer_surf = self._font.render(f"{secs // 60}:{secs % 60:02d}", True, (255, 100, 100))
+            _surf.blit(timer_surf, (SCREEN_W - timer_surf.get_width() - HUD_MARGIN, HUD_MARGIN))
+        elif self._mode == "daily":
+            label = self._font.render("DAILY", True, (100, 200, 255))
+            _surf.blit(label, (SCREEN_W - label.get_width() - HUD_MARGIN, HUD_MARGIN))
 
         heart = pygame.transform.scale(assets.get(SPRITE_HEART), (20, 20))
         for i in range(self.player.lives):
