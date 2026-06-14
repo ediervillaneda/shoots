@@ -31,6 +31,8 @@ from src.settings import (
     LASER_DAMAGE_PER_S,
     SHAKE_DURATION_MS, SHAKE_INTENSITY,
     COMBO_MULTIPLIERS, COMBO_TIMEOUT_MS,
+    SHOT1_TRAVEL, SHOT2_TRAVEL, SHOT3_TRAVEL,
+    SHOT4_TRAVEL, SHOT5_TRAVEL, SHOT6_TRAVEL,
 )
 from src.settings.audio import (
     MUSIC_GAMEPLAY,
@@ -400,13 +402,15 @@ class GameplayScene:
             _surf.blit(heart, (SCREEN_W - (i + 1) *
                         26 - HUD_MARGIN, HUD_MARGIN))
 
-        if "shield" in self.player.active_powerups:
+        if self.player.shield_level > 0:
+            bonus = (0, 20, 36, 52)[self.player.shield_level]
             sh = assets.get(SPRITE_SHIELD_OVERLAY)
-            sh_scaled = pygame.transform.scale(
-                sh, (PLAYER_W + 20, PLAYER_H + 20))
+            sh_w = PLAYER_W + bonus
+            sh_h = PLAYER_H + bonus
+            sh_scaled = pygame.transform.scale(sh, (sh_w, sh_h))
             _surf.blit(sh_scaled, (
-                self.player.rect.centerx - sh_scaled.get_width() // 2,
-                self.player.rect.top - sh_scaled.get_height(),
+                self.player.rect.centerx - sh_w // 2,
+                self.player.rect.top - sh_h,
             ))
 
         x = HUD_MARGIN
@@ -432,6 +436,13 @@ class GameplayScene:
                              (HUD_MARGIN, y, filled, BOSS_HEALTH_BAR_H))
             pygame.draw.rect(_surf, (255, 255, 255),
                              (HUD_MARGIN, y, bar_w, BOSS_HEALTH_BAR_H), 1)
+
+        # Icono nivel de armamento — centro inferior
+        _SHOT_TRAVELS = (None, SHOT1_TRAVEL, SHOT2_TRAVEL, SHOT3_TRAVEL,
+                         SHOT4_TRAVEL, SHOT5_TRAVEL, SHOT6_TRAVEL)
+        travel = _SHOT_TRAVELS[self.player.shot_level]
+        gun_icon = pygame.transform.scale(assets.get(travel[0]), (36, 36))
+        _surf.blit(gun_icon, (SCREEN_W // 2 - 18, SCREEN_H - 36 - HUD_MARGIN))
 
         if self.state == "paused":
             self._draw_overlay(_surf, "PAUSED", "P/ENTER/SPACE: RESUME  ESC: MENU")

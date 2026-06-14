@@ -141,7 +141,7 @@ def test_player_no_active_powerups_on_init():
 def test_apply_powerup_adds_to_set():
     player = Player()
     player.apply_powerup("shield")
-    assert "shield" in player.active_powerups
+    assert player.shield_level == 1
 
 
 def test_apply_powerup_rapid_fire():
@@ -458,7 +458,7 @@ def test_gun_upgrade_lvl5_balas_divergen():
 def test_shield_activo_tint_en_balas():
     from src.settings import BULLET_TINT_SHIELD
     p = Player()
-    p.active_powerups.add("shield")
+    p.shield_level = 1
     balas = p.shoot(0)
     assert balas[0].tint == BULLET_TINT_SHIELD
 
