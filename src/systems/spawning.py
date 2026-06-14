@@ -6,6 +6,8 @@ from src.entities.kamikaze import Kamikaze
 from src.entities.gunner import Gunner
 from src.entities.striker import Striker
 from src.entities.interceptor import Interceptor
+from src.entities.flanker import Flanker
+from src.entities.raider import Raider
 from src.entities.boss import Boss
 from src.settings import (
     SCREEN_W, SCOUT_W, FIGHTER_W,
@@ -18,6 +20,7 @@ from src.settings import (
     WAVE_INTERCEPTOR_MIN_WAVE, WAVE_INTERCEPTOR_BASE, WAVE_INTERCEPTOR_INC, WAVE_INTERCEPTOR_CAP,
     WAVE_SPEED_FACTOR,
     BOSS_WAVE_INTERVAL, BOSS_SPRITES, BOSS_SPRITES_FIXED_COUNT,
+    WAVE_FORMATION_MIN, WAVE_FLANKER_MIN, WAVE_RAIDER_MIN, FORMATION_SPACING,
 )
 
 
@@ -45,8 +48,26 @@ class SpawnSystem:
                 self._wave_start = now
         if now - self._last_spawn >= self._spawn_interval():
             self._last_spawn = now
-            return [self._make_enemy()]
+            return self._make_spawn()
         return []
+
+    def _make_spawn(self) -> list:
+        if self.wave >= WAVE_FORMATION_MIN and random.random() < 0.20:
+            return self._make_formation()
+        return [self._make_enemy()]
+
+    def _make_formation(self) -> list:
+        count = random.randint(3, 5)
+        total_w = (count - 1) * FORMATION_SPACING
+        start_x = (SCREEN_W - total_w) // 2
+        scouts = []
+        speed_bonus = self.wave * WAVE_SPEED_FACTOR
+        for i in range(count):
+            x = start_x + i * FORMATION_SPACING
+            s = Scout(x)
+            s.speed_bonus = speed_bonus
+            scouts.append(s)
+        return scouts
 
     def get_boss_spawn(self):
         if self.boss_alive or self.wave < self._boss_wave_at:
@@ -99,6 +120,17 @@ class SpawnSystem:
             e = Gunner(x)
             e.speed_bonus = speed_bonus
             return e
+        # Raider: desde wave WAVE_RAIDER_MIN, 15% prob
+        if self.wave >= WAVE_RAIDER_MIN and random.randint(1, 100) <= 15:
+            r = Raider()
+            r.speed_bonus = speed_bonus
+            return r
+        # Flanker: desde wave WAVE_FLANKER_MIN, 15% prob
+        if self.wave >= WAVE_FLANKER_MIN and random.randint(1, 100) <= 15:
+            from_left = random.random() < 0.5
+            f = Flanker(from_left)
+            f.speed_bonus = speed_bonus
+            return f
         if random.randint(1, 100) <= self._kamikaze_prob():
             k = Kamikaze(x)
             k.speed_bonus = speed_bonus

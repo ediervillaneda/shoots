@@ -28,6 +28,8 @@ from src.settings import (
     EXPL_GUNNER, EXPL_STRIKER, EXPL_INTERCEPTOR,
     EXPL_BOSS, EXPL_PLAYER,
     LASER_DAMAGE_PER_S,
+    SHAKE_DURATION_MS, SHAKE_INTENSITY,
+    COMBO_MULTIPLIERS, COMBO_TIMEOUT_MS,
 )
 from src.settings.audio import (
     MUSIC_GAMEPLAY,
@@ -56,6 +58,10 @@ class GameplayScene:
         self.spawn_system = SpawnSystem()
         self.boss = None
         self._game_over_played = False
+        self._shake_ms = 0.0
+        self._shake_intensity = 0
+        self._combo = 0
+        self._combo_timer = 0.0
         audio.play_music(MUSIC_GAMEPLAY)
 
     def _reset(self):
@@ -74,6 +80,17 @@ class GameplayScene:
         self.state = "playing"
         self.boss = None
         self._game_over_played = False
+        self._shake_ms = 0.0
+        self._shake_intensity = 0
+        self._combo = 0
+        self._combo_timer = 0.0
+
+    def _start_shake(self, intensity: int) -> None:
+        self._shake_ms = SHAKE_DURATION_MS
+        self._shake_intensity = intensity
+
+    def _get_multiplier(self) -> int:
+        return COMBO_MULTIPLIERS[min(self._combo, len(COMBO_MULTIPLIERS) - 1)]
 
     def process_input(self, events):
         keys = pygame.key.get_pressed()
@@ -141,17 +158,25 @@ class GameplayScene:
         self.explosions.add(expl)
         self.all_sprites.add(expl)
         audio.play_sfx(SFX_EXPLOSION)
+        # v1.8: death_burst para Gunner y Striker
+        if isinstance(entity, (Gunner, Striker)):
+            for eb in entity.death_burst():
+                self.enemy_bullets.add(eb)
+                self.all_sprites.add(eb)
 
     def _handle_player_damage(self, now: int) -> None:
         lives_before = self.player.lives
         self.player.take_damage(now)
         if self.player.lives < lives_before:
+            self._combo = 0
+            self._combo_timer = 0.0
             expl = Explosion(
                 self.player.rect.centerx, self.player.rect.centery, EXPL_PLAYER
             )
             self.explosions.add(expl)
             self.all_sprites.add(expl)
             audio.play_sfx(SFX_PLAYER_HIT)
+            self._start_shake(SHAKE_INTENSITY)
 
     def _explode(self, cx: int, cy: int, direct_hits: list) -> None:
         expl = Explosion(cx, cy)
@@ -167,15 +192,23 @@ class GameplayScene:
                 enemy.take_damage(dmg)
                 if not enemy.alive():
                     self._spawn_death_explosion(enemy)
-                    self.score += enemy.points
+                    self.score += enemy.points * self._get_multiplier()
+                    self._combo = min(self._combo + 1, len(COMBO_MULTIPLIERS) - 1)
+                    self._combo_timer = 0.0
                     self.spawn_system.register_kill()
                     self._maybe_drop_powerup(
                         enemy.rect.centerx, enemy.rect.centery)
 
     def update(self, dt):
         self._bg.update(dt)
+        self._shake_ms = max(0.0, self._shake_ms - dt * 1000)
         if self.state != "playing":
             return
+
+        self._combo_timer += dt * 1000
+        if self._combo_timer > COMBO_TIMEOUT_MS:
+            self._combo = 0
+            self._combo_timer = 0.0
 
         self.player.update(dt)
         self.bullets.update(dt)
@@ -188,7 +221,9 @@ class GameplayScene:
                     enemy.take_damage(LASER_DAMAGE_PER_S * dt)
                     if not enemy.alive():
                         self._spawn_death_explosion(enemy)
-                        self.score += enemy.points
+                        self.score += enemy.points * self._get_multiplier()
+                        self._combo = min(self._combo + 1, len(COMBO_MULTIPLIERS) - 1)
+                        self._combo_timer = 0.0
                         self.spawn_system.register_kill()
                         self._maybe_drop_powerup(
                             enemy.rect.centerx, enemy.rect.centery)
@@ -217,6 +252,7 @@ class GameplayScene:
 
         if self.boss and not self.boss.alive():
             self._spawn_death_explosion(self.boss)
+            self._start_shake(SHAKE_INTENSITY * 2)
             self.spawn_system.notify_boss_killed()
             self.boss = None
 
@@ -235,7 +271,9 @@ class GameplayScene:
             self.player, self.enemies, True)
         for enemy in hit_enemies:
             self._spawn_death_explosion(enemy)
-            self.score += enemy.points
+            self.score += enemy.points * self._get_multiplier()
+            self._combo = min(self._combo + 1, len(COMBO_MULTIPLIERS) - 1)
+            self._combo_timer = 0.0
             self._handle_player_damage(now)
             self.spawn_system.register_kill()
             self._maybe_drop_powerup(enemy.rect.centerx, enemy.rect.centery)
@@ -256,7 +294,9 @@ class GameplayScene:
                     enemy.take_damage(bullet.damage)
                     if not enemy.alive():
                         self._spawn_death_explosion(enemy)
-                        self.score += enemy.points
+                        self.score += enemy.points * self._get_multiplier()
+                        self._combo = min(self._combo + 1, len(COMBO_MULTIPLIERS) - 1)
+                        self._combo_timer = 0.0
                         self.spawn_system.register_kill()
                         self._maybe_drop_powerup(
                             enemy.rect.centerx, enemy.rect.centery)
@@ -297,29 +337,39 @@ class GameplayScene:
         screen.blit(sub_surf, (cx - sub_surf.get_width() // 2, cy + 10))
 
     def render(self, screen):
-        self._bg.draw(screen)
+        if self._shake_ms > 0:
+            _surf = pygame.Surface(screen.get_size())
+        else:
+            _surf = screen
+
+        self._bg.draw(_surf)
         if not self.player.invincible:
-            screen.blit(self.player.shadow_image, self.player.shadow_rect)
-        self.all_sprites.draw(screen)
+            _surf.blit(self.player.shadow_image, self.player.shadow_rect)
+        self.all_sprites.draw(_surf)
 
         score_surf = self._font.render(f"SCORE: {self.score}", True, HUD_COLOR)
-        screen.blit(score_surf, (HUD_MARGIN, HUD_MARGIN))
+        _surf.blit(score_surf, (HUD_MARGIN, HUD_MARGIN))
+
+        mult = self._get_multiplier()
+        if mult > 1:
+            combo_surf = self._font.render(f"x{mult}", True, (255, 220, 0))
+            _surf.blit(combo_surf, (HUD_MARGIN, HUD_MARGIN + HUD_FONT_SIZE + 4))
 
         wave_surf = self._font.render(
             f"WAVE: {self.spawn_system.wave}", True, HUD_COLOR)
-        screen.blit(wave_surf, (SCREEN_W // 2 -
+        _surf.blit(wave_surf, (SCREEN_W // 2 -
                     wave_surf.get_width() // 2, HUD_MARGIN))
 
         heart = pygame.transform.scale(assets.get(SPRITE_HEART), (20, 20))
         for i in range(self.player.lives):
-            screen.blit(heart, (SCREEN_W - (i + 1) *
+            _surf.blit(heart, (SCREEN_W - (i + 1) *
                         26 - HUD_MARGIN, HUD_MARGIN))
 
         if "shield" in self.player.active_powerups:
             sh = assets.get(SPRITE_SHIELD_OVERLAY)
             sh_scaled = pygame.transform.scale(
                 sh, (PLAYER_W + 20, PLAYER_H + 20))
-            screen.blit(sh_scaled, (
+            _surf.blit(sh_scaled, (
                 self.player.rect.centerx - sh_scaled.get_width() // 2,
                 self.player.rect.top - sh_scaled.get_height(),
             ))
@@ -328,27 +378,33 @@ class GameplayScene:
         for kind in sorted(self.player.active_powerups):
             icon = pygame.transform.scale(
                 assets.get(POWERUP_ASSETS[kind]), (24, 24))
-            screen.blit(icon, (x, SCREEN_H - 24 - HUD_MARGIN))
+            _surf.blit(icon, (x, SCREEN_H - 24 - HUD_MARGIN))
             x += 28
         if self.player.rocket_count > 0:
             rocket_icon = pygame.transform.scale(
                 assets.get(POWERUP_ASSETS["rocket"]), (24, 24))
             for _ in range(self.player.rocket_count):
-                screen.blit(rocket_icon, (x, SCREEN_H - 24 - HUD_MARGIN))
+                _surf.blit(rocket_icon, (x, SCREEN_H - 24 - HUD_MARGIN))
                 x += 28
 
         if self.boss and self.boss.alive():
             bar_w = SCREEN_W - 2 * HUD_MARGIN
             filled = int(bar_w * self.boss.hp / BOSS_HP)
             y = HUD_MARGIN + HUD_FONT_SIZE + BOSS_BAR_Y_OFFSET
-            pygame.draw.rect(screen, (80, 0, 0),
+            pygame.draw.rect(_surf, (80, 0, 0),
                              (HUD_MARGIN, y, bar_w, BOSS_HEALTH_BAR_H))
-            pygame.draw.rect(screen, (220, 30, 30),
+            pygame.draw.rect(_surf, (220, 30, 30),
                              (HUD_MARGIN, y, filled, BOSS_HEALTH_BAR_H))
-            pygame.draw.rect(screen, (255, 255, 255),
+            pygame.draw.rect(_surf, (255, 255, 255),
                              (HUD_MARGIN, y, bar_w, BOSS_HEALTH_BAR_H), 1)
 
         if self.state == "paused":
-            self._draw_overlay(screen, "PAUSED", "P/ENTER/SPACE: RESUME  ESC: MENU")
+            self._draw_overlay(_surf, "PAUSED", "P/ENTER/SPACE: RESUME  ESC: MENU")
         elif self.state == "game_over":
-            self._draw_overlay(screen, "GAME OVER", "PRESS SPACE TO RESTART")
+            self._draw_overlay(_surf, "GAME OVER", "PRESS SPACE TO RESTART")
+
+        if self._shake_ms > 0:
+            ox = random.randint(-self._shake_intensity, self._shake_intensity)
+            oy = random.randint(-self._shake_intensity, self._shake_intensity)
+            screen.fill((0, 0, 0))
+            screen.blit(_surf, (ox, oy))

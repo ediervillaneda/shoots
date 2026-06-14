@@ -21,6 +21,8 @@ SPRITE_KAMIKAZE    = "enemies/kamikaze.png"
 SPRITE_GUNNER      = "enemies/gunner.png"
 SPRITE_STRIKER     = "enemies/striker.png"
 SPRITE_INTERCEPTOR = "enemies/interceptor.png"
+SPRITE_FLANKER     = "enemies/scout.png"      # placeholder
+SPRITE_RAIDER      = "enemies/kamikaze.png"   # placeholder
 SPRITE_ROCKET      = "enemies/missile.png"
 
 SPRITE_PU_RAPID_FIRE  = "powerups/rapid_fire.png"

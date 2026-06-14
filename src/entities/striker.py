@@ -7,6 +7,7 @@ from src.settings import (
     STRIKER_SPEED, STRIKER_W, STRIKER_H, STRIKER_HP, STRIKER_POINTS,
     STRIKER_SHOOT_INTERVAL, STRIKER_ENTRY_Y, SCREEN_W, SPRITE_STRIKER,
     ENEMY_PROJ_PROTON, ENEMY_PROJ_PROTON_W, ENEMY_PROJ_PROTON_H,
+    PLAYER_SPEED, LEAD_TIME_S,
 )
 
 
@@ -32,8 +33,10 @@ class Striker(Enemy):
         bottom = self.rect.bottom
         target = getattr(self, "target", None)
         if target:
-            dx = target.rect.centerx - cx
-            dy = target.rect.centery - bottom
+            pred_x = target.rect.centerx + getattr(target, "vel_x", 0.0) * PLAYER_SPEED * LEAD_TIME_S
+            pred_y = target.rect.centery + getattr(target, "vel_y", 0.0) * PLAYER_SPEED * LEAD_TIME_S
+            dx = pred_x - cx
+            dy = pred_y - bottom
             angle = math.degrees(math.atan2(dx, max(1, dy)))
         else:
             angle = 0

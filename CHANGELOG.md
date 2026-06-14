@@ -4,6 +4,50 @@ All notable changes to Starfall are documented here.
 
 ---
 
+## [1.8.0] — Disparos avanzados: burst Gunner, death_burst, HomingBullet, lead shot
+
+### 1.8.1
+- Gunner: ráfaga de 3 balas con 80ms entre disparos, pausa 2.2s (`_burst_idx`, `_next_burst_ms`)
+- `Enemy.death_burst()`: 8 EnemyBullet en 360° desde posición actual; llamado al morir Gunner o Striker
+- `HomingBullet`: subclase de EnemyBullet que corrige ángulo hacia target con `HOMING_TURN_SPEED=120°/s`
+- `Interceptor.shoot()` usa HomingBullet en vez de EnemyBullet
+- `Striker.shoot()` predice posición del player con `vel * PLAYER_SPEED * LEAD_TIME_S=0.5s`
+- 22 tests nuevos (`test_v18.py`) — total 329 tests
+
+---
+
+## [1.7.0] — Nuevos enemigos: Flanker, Raider, formaciones
+
+### 1.7.2
+- `Raider.update()` llama `super().update(dt)` en lugar de duplicar lógica de flash — fix: mantenibilidad
+- Boundary patrol usa `self.x` directamente en lugar de `self.rect` desactualizado — fix: jitter de posición
+- `Raider` recibe `speed_bonus` en `SpawnSystem._make_enemy()` — fix: consistencia con el resto de enemigos
+
+### 1.7.1
+- `Flanker`: entra lateral (izq o der), cruza horizontal a target_x aleatorio (SCREEN_W/4–3/4), luego baja; 400 pts, 3 HP
+- `Raider`: entra desde abajo, patrulla ping-pong en RAIDER_PATROL_Y 2.5s, dispara vulcan 3 vías hacia arriba, luego sale; 450 pts, 4 HP
+- `SpawnSystem._make_formation()`: 3-5 Scouts centrados con FORMATION_SPACING; 20% prob desde wave 5
+- Flanker spawnable desde wave 4 (15%), Raider desde wave 7 (15%)
+- 33 tests nuevos (`test_flanker.py`, `test_raider.py`, `test_formacion.py`) — total 307 tests
+
+---
+
+## [1.6.0] — Game feel: screen shake, combo multiplier, flash de daño
+
+### 1.6.2
+- `Enemy._base_image` capturado lazy en `take_damage()` (no en `__init__`) — fix: subclases actualizan `self.image` después del super().__init__; ahora el sprite real es el que se flashea
+- `_combo_timer` se resetea a 0 tras timeout — fix: el combo podía reconstruirse correctamente tras la primera expiración
+- `ENEMY_FLASH_ALPHA = 80` extraído a settings (sin magic number en entity)
+
+### 1.6.1
+- `src/settings/gameplay.py`: constantes `SHAKE_DURATION_MS`, `SHAKE_INTENSITY`, `COMBO_MULTIPLIERS`, `COMBO_TIMEOUT_MS`, `ENEMY_FLASH_MS`
+- `Enemy.take_damage()`: activa `_flash_ms = ENEMY_FLASH_MS` al sobrevivir; `update()` tinta blanco 80ms con `BLEND_RGBA_ADD`
+- `GameplayScene._start_shake()`: screen shake 400ms con offset random; se activa al perder vida y al matar boss (intensidad doble)
+- `GameplayScene`: combo multiplier x1-x8 en score; reset tras 3s sin kills o al recibir daño; HUD en amarillo si > x1
+- 8 tests nuevos (`test_gameplay_v16.py`, `test_enemy_flash.py`) — total 274 tests
+
+---
+
 ## [1.5.0] — Nuevos power-ups: spread, plasma, laser
 
 ### 1.5.2
@@ -18,12 +62,12 @@ All notable changes to Starfall are documented here.
 
 ---
 
-## [v1.4] — Power-ups con identidad visual
+## [1.4.0] — Power-ups con identidad visual
 
-### v1.4.2
+### 1.4.2
 - `MenuScene`: hover con ratón resalta opción, click izquierdo activa
 
-### v1.4.1
+### 1.4.1
 - `Bullet` guarda `self.tint` para introspección en tests
 - `GUN_UPGRADE_DIVERGE_DEG = 8.0` en settings
 - `Player.shoot()`: balas laterales con `angle_deg` proporcional por nivel (±4°, ±8°, ±16°)
@@ -34,21 +78,21 @@ All notable changes to Starfall are documented here.
 
 ---
 
-## [v1.3] — Disparos avanzados: base técnica
+## [1.3.0] — Disparos avanzados: base técnica
 
-### v1.3.4
+### 1.3.4
 - Flechas del teclado (↑↓←→) como alternativa a WASD en gameplay
 - ENTER como alternativa a SPACE en game over (fallback headless)
 
-### v1.3.3
+### 1.3.3
 - `GameplayScene`: colisiones de bala usan `bullet.damage` en lugar de constante global `BULLET_DAMAGE`
 
-### v1.3.2
+### 1.3.2
 - `Player.shoot()` pasa `damage` y `tint` a cada `Bullet` según powerups activos
 - `rapid_fire`: damage = max(1, DEFAULT * 0.5), tint azul neón
 - `shield`: tint blanco-azul (sin cambio de damage)
 
-### v1.3.1
+### 1.3.1
 - `Bullet` acepta `angle_deg` (movimiento diagonal), `damage` por instancia, `tint` RGBA, `speed_mult`
 - Helper `_apply_tint()` aplica tint a todos los frames via `BLEND_RGBA_MULT`
 - Kill check extendido a bordes izquierdo/derecho de pantalla
@@ -56,7 +100,7 @@ All notable changes to Starfall are documented here.
 
 ---
 
-## [v1.2] — Menus, pausa, records locales
+## [1.2.0] — Menus, pausa, records locales
 
 ### Added
 - `MenuScene` con 3 opciones navegables (JUGAR / RECORDS / SALIR), flechas o W/S, ENTER/SPACE
@@ -79,7 +123,7 @@ All notable changes to Starfall are documented here.
 
 ---
 
-## [v1.1] — AudioSystem
+## [1.1.0] — AudioSystem
 
 ### Added
 - `AudioSystem` singleton (`src/systems/audio.py`): `init()`, `play_sfx()`, `play_music()`, `toggle_mute()`
@@ -92,7 +136,7 @@ All notable changes to Starfall are documented here.
 
 ---
 
-## [v1.0 dev] — SpaceRage sprites + ScrollingBG
+## [1.0.0] — SpaceRage sprites + ScrollingBG
 
 ### Added
 - Player SpaceRage sprites with 5-pose directional banking animation (l2/l1/m/r1/r2)
@@ -113,7 +157,7 @@ All notable changes to Starfall are documented here.
 
 ---
 
-## [v0.9] — Animated bullets + 6 enemy types
+## [0.9.0] — Animated bullets + 6 enemy types
 
 ### Added
 - Animated player bullets with launch / travel / impact phases per shot level
@@ -127,7 +171,7 @@ All notable changes to Starfall are documented here.
 
 ---
 
-## [v0.8] — Rockets + 6-level shot progression
+## [0.8.0] — Rockets + 6-level shot progression
 
 ### Added
 - Dual angled rockets (Rocket power-up fires 2 rockets at ±ROCKET_ANGLE_DEG)
@@ -136,14 +180,14 @@ All notable changes to Starfall are documented here.
 
 ---
 
-## [v0.7.2] — Asset fix
+## [0.7.2] — Asset fix
 
 ### Fixed
 - Stripped incorrect iCCP sRGB chunks from enemy ship PNG files (libpng warnings at runtime)
 
 ---
 
-## [v0.7.1] — Death explosions
+## [0.7.1] — Death explosions
 
 ### Added
 - Entity death explosions: all 9 explosion sequences assigned per entity type
@@ -152,14 +196,14 @@ All notable changes to Starfall are documented here.
 
 ---
 
-## [v0.7] — Boss wave trigger
+## [0.7.0] — Boss wave trigger
 
 ### Changed
 - Boss triggers every BOSS_WAVE_INTERVAL waves instead of on a fixed timer
 
 ---
 
-## [v0.6] — Boss enemy
+## [0.6.0] — Boss enemy
 
 ### Added
 - Boss entity with 2-phase combat: spread shots (phase 1) → rapid fire (phase 2)
@@ -175,7 +219,7 @@ All notable changes to Starfall are documented here.
 
 ---
 
-## [v0.5] — Kamikaze + Power-ups
+## [0.5.0] — Kamikaze + Power-ups
 
 ### Added
 - Kamikaze enemy: homing movement targeting player position (500 pts)
@@ -187,7 +231,7 @@ All notable changes to Starfall are documented here.
 
 ---
 
-## [v0.4] — Enemy bullets + Wave spawning
+## [0.4.0] — Enemy bullets + Wave spawning
 
 ### Added
 - EnemyBullet entity with angle_deg spread support
@@ -198,7 +242,7 @@ All notable changes to Starfall are documented here.
 
 ---
 
-## [v0.3] — Score, lives, HUD
+## [0.3.0] — Score, lives, HUD
 
 ### Added
 - Score tracking (per-enemy points)
@@ -208,7 +252,7 @@ All notable changes to Starfall are documented here.
 
 ---
 
-## [v0.2] — Enemies + collisions
+## [0.2.0] — Enemies + collisions
 
 ### Added
 - Scout enemy (straight movement, 1 HP, 100 pts)
@@ -220,7 +264,7 @@ All notable changes to Starfall are documented here.
 
 ---
 
-## [v0.1] — Window, player, movement, shooting
+## [0.1.0] — Window, player, movement, shooting
 
 ### Added
 - Pygame window (540×960, 60 FPS)

@@ -2,7 +2,7 @@ import math
 import pygame
 import src.assets as assets
 from src.entities.enemy import Enemy
-from src.entities.enemy_bullet import EnemyBullet
+from src.entities.homing_bullet import HomingBullet
 from src.settings import (
     INTERCEPTOR_SPEED, INTERCEPTOR_W, INTERCEPTOR_H, INTERCEPTOR_HP, INTERCEPTOR_POINTS,
     INTERCEPTOR_SHOOT_INTERVAL, INTERCEPTOR_Y_TARGET, INTERCEPTOR_PATROL_SPEED,
@@ -41,7 +41,7 @@ class Interceptor(Enemy):
             angle = math.degrees(math.atan2(dx, max(1, dy)))
         else:
             angle = 0
-        return [EnemyBullet(cx, bottom, angle, ENEMY_PROJ_PLASMA, ENEMY_PROJ_PLASMA_W, ENEMY_PROJ_PLASMA_H)]
+        return [HomingBullet(cx, bottom, angle, target, ENEMY_PROJ_PLASMA, ENEMY_PROJ_PLASMA_W, ENEMY_PROJ_PLASMA_H)]
 
     def update(self, dt: float) -> None:
         speed = INTERCEPTOR_SPEED + getattr(self, "speed_bonus", 0.0)
