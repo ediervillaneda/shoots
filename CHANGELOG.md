@@ -4,6 +4,16 @@ All notable changes to Starfall are documented here.
 
 ---
 
+## [1.9.0] — Modos de juego: Endless, Survival, Daily; nuevo enemigo Orbiter
+
+### 1.9.1
+- `ModeSelectScene`: pantalla de selección de modo (ENDLESS / SURVIVAL / DAILY) accesible desde menú
+- `GameplayScene(mode=...)`: soporte de modos — survival timer 3 min con HUD M:SS, daily seed del día
+- `Orbiter`: enemigo que orbita punto central 140px de radio, 90°/s, dispara al player — spawn desde wave 12
+- 16 tests nuevos (`test_v19.py`) — total 341 tests
+
+---
+
 ## [1.8.0] — Disparos avanzados: burst Gunner, death_burst, HomingBullet, lead shot
 
 ### 1.8.2
