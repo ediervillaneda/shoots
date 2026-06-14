@@ -4,6 +4,18 @@ All notable changes to Starfall are documented here.
 
 ---
 
+## [1.8.0] — Disparos avanzados: burst Gunner, death_burst, HomingBullet, lead shot
+
+### 1.8.1
+- Gunner: ráfaga de 3 balas con 80ms entre disparos, pausa 2.2s (`_burst_idx`, `_next_burst_ms`)
+- `Enemy.death_burst()`: 8 EnemyBullet en 360° desde posición actual; llamado al morir Gunner o Striker
+- `HomingBullet`: subclase de EnemyBullet que corrige ángulo hacia target con `HOMING_TURN_SPEED=120°/s`
+- `Interceptor.shoot()` usa HomingBullet en vez de EnemyBullet
+- `Striker.shoot()` predice posición del player con `vel * PLAYER_SPEED * LEAD_TIME_S=0.5s`
+- 22 tests nuevos (`test_v18.py`) — total 329 tests
+
+---
+
 ## [1.7.0] — Nuevos enemigos: Flanker, Raider, formaciones
 
 ### 1.7.2
