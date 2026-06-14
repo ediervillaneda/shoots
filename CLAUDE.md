@@ -150,22 +150,32 @@ Modulo singleton. Carga lazy, tolerante a archivos faltantes.
 | v1.2 | DONE | Stack de escenas, MenuScene, pausa, GameOverScene con iniciales, records JSON local -- 247 tests |
 | v1.3 | DONE | Bullet con angle_deg y damage por instancia, tinting de balas -- 253 tests |
 | v1.4 | DONE | gun_upgrade divergencia lateral; shield halo en balas; rapid_fire tint azul; mouse en menu -- 259 tests |
-| v1.5 | TODO | Nuevos power-ups: spread 5 balas, plasma Shot6 lento, laser de area 3s |
-| v1.6 | TODO | Game feel: screen shake, combo multiplier x1-x8 en HUD, flash blanco en enemigos 80ms |
-| v1.7 | TODO | Nuevos enemigos: Flanker (lateral), Raider (desde abajo), formaciones cunia de Scouts |
-| v1.8 | TODO | Disparos avanzados: burst Gunner, 8 balas circular al morir, HomingBullet, lead shot Striker |
-| v1.9 | TODO | Modos: Endless, Survival, Daily (seed diaria); nuevo enemigo Orbiter (wave 12+) |
-| v2.0 | TODO | Boss fase 3 (frenesi + espiral), slow motion al matar boss, disparo auto toggle, release final |
+| 1.5.0 | TODO | Nuevos power-ups: spread 5 balas, plasma Shot6 lento, laser de area 3s |
+| 1.6.0 | TODO | Game feel: screen shake, combo multiplier x1-x8 en HUD, flash blanco en enemigos 80ms |
+| 1.7.0 | TODO | Nuevos enemigos: Flanker (lateral), Raider (desde abajo), formaciones cunia de Scouts |
+| 1.8.0 | TODO | Disparos avanzados: burst Gunner, 8 balas circular al morir, HomingBullet, lead shot Striker |
+| 1.9.0 | TODO | Modos: Endless, Survival, Daily (seed diaria); nuevo enemigo Orbiter (wave 12+) |
+| 2.0.0 | TODO | Boss fase 3 (frenesi + espiral), slow motion al matar boss, disparo auto toggle, release final |
+
+## Versionado
+
+A partir de 1.5.0 se usa **SemVer 2.0.0** (semver.org):
+- `MAYOR.MENOR.PARCHE` — ej. `1.5.0`, `1.5.1`, `2.0.0`
+- Nueva funcionalidad compatible → incrementa MENOR, PARCHE = 0
+- Correcciones → incrementa PARCHE
+- Ruptura de compatibilidad → incrementa MAYOR
+- Tags git: `v1.5.0` (el `v` es convencion de git)
+- Cambios dentro de una version (commits parciales) se documentan en CHANGELOG como `1.5.x`
 
 ## Git Workflow
 
-- `main` -- releases estables, solo merges desde `develop`, taggeado (`v1.x`)
+- `main` -- releases estables, solo merges desde `develop`, taggeado (`v1.5.0`)
 - `develop` -- integracion, base para ramas de trabajo
 
-**Ramas de trabajo:** `v{major}.{minor}/descripcion-corta`
+**Ramas de trabajo:** `v{mayor}.{menor}.{parche}/descripcion-corta`
 
 **Flujo:**
-1. `git checkout develop && git checkout -b v1.2/tema`
+1. `git checkout develop && git checkout -b v1.5.0/tema`
 2. Trabajar y commitear en la rama
-3. `git checkout develop && git merge v1.2/tema`
-4. Al cerrar version: `git checkout main && git merge develop && git tag v1.2`
+3. `git checkout develop && git merge v1.5.0/tema`
+4. Al cerrar version: `git checkout main && git merge develop && git tag v1.5.0`
